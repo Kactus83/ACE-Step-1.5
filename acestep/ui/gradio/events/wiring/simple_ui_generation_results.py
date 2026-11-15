@@ -5,6 +5,8 @@ from typing import Any
 import gradio as gr
 from loguru import logger
 
+from acestep.ui.gradio.i18n import t
+
 from acestep.ui.gradio.events.results.batch_management_helpers import _build_saved_params
 from acestep.ui.gradio.events.results.batch_queue import store_batch_in_queue
 from acestep.ui.gradio.interfaces.simple_ui_markup import _step_indicator_html
@@ -31,7 +33,7 @@ def _finish_simple_generation(
     generation_info_text = final_result[GENERATION_INFO_INDEX] if len(final_result) > GENERATION_INFO_INDEX else ""
     gen_status_message = final_result[PROGRESS_STATUS_INDEX] if len(final_result) > PROGRESS_STATUS_INDEX else ""
     if not isinstance(all_audio_paths, list) or not any(all_audio_paths[::2]):
-        err_msg = gen_status_message or generation_info_text or "Generation produced no output"
+        err_msg = gen_status_message or generation_info_text or t("simple_flow.no_output")
         logger.warning(f"Simple UI: generation result had no audio paths. Status: {gen_status_message}")
         yield (
             gr.update(value=None),  # 0: audio_1

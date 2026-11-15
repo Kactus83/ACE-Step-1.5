@@ -585,6 +585,7 @@
     "creating_status": "Creating your music…",
     "failed": "Generation failed. Check model readiness and logs, then try again.",
     "preparing": "Preparing generation…",
-    "progress_label": "Creation step {current} of {total}"
+    "progress_label": "Creation step {current} of {total}",
+    "no_output": "Generation produced no playable audio."
   }
 }

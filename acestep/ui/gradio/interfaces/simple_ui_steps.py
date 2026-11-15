@@ -119,14 +119,21 @@ def _build_step_creating() -> tuple[gr.Column, dict[str, Any]]:
             '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'
             '</svg></div>'
         )
-        gr.HTML('<div class="simple-creating-title">Creating your music...</div>')
+        gr.HTML(
+            f'<div class="simple-creating-title">'
+            f'{html.escape(t("simple_flow.creating_status"))}</div>'
+        )
         gr.HTML(
             '<div class="simple-progress-track">'
             '<div class="simple-progress-bar" id="simple-progress-bar"></div>'
             '</div>'
         )
         simple_progress_text = gr.HTML(
-            value='<div class="simple-progress-status">Preparing...</div>',
+            value=(
+                '<div class="simple-progress-status">'
+                + html.escape(t("simple_flow.preparing"))
+                + '</div>'
+            ),
             elem_classes=["simple-progress-status"],
         )
     return col, {
