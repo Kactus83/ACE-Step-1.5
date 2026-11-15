@@ -4,11 +4,13 @@
  * @internal
  */
 import http from "node:http";
+import { createDatasetSimulator } from "./mock-dataset.mjs";
 
 const port = Number(process.env.ACE_STUDIO_MOCK_PORT || 18081);
 let sequence = 0;
 const jobs = new Map();
 let trainingActive = false;
+const datasetSimulator = createDatasetSimulator();
 const wrap = data => ({ code: 200, error: null, timestamp: Date.now(), data, extra: null });
 
 const riff = (() => {
@@ -28,7 +30,7 @@ const server = http.createServer(async (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
   }
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
   if (req.method === "OPTIONS") { res.writeHead(204).end(); return; }
   const respond = (body, status = 200) => {
@@ -38,12 +40,12 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url || "/", "http://127.0.0.1");
   if (url.pathname === "/health" && req.method === "GET") {
     respond(wrap({ status: "ok", service: "ACE-Step API (mock)", version: "1.0",
-      models_initialized: true, llm_initialized: false })); return;
+      models_initialized: true, llm_initialized: true })); return;
   }
   if (url.pathname === "/v1/models" && req.method === "GET") {
     respond(wrap({ models: [{ name: "acestep-v15-turbo", is_loaded: true, is_default: true,
       supported_task_types: ["text2music", "cover", "repaint"] }],
-      default_model: "acestep-v15-turbo", lm_models: [], llm_initialized: false })); return;
+      default_model: "acestep-v15-turbo", lm_models: [], llm_initialized: true })); return;
   }
   if (url.pathname === "/v1/training/status" && req.method === "GET") {
     respond(wrap({ is_training: trainingActive, should_stop: false,
@@ -71,9 +73,7 @@ const server = http.createServer(async (req, res) => {
     trainingActive = false;
     respond(wrap({ message: "Stopping training..." })); return;
   }
-  if (url.pathname === "/v1/dataset/scan" && req.method === "POST") {
-    respond(wrap({ message: "Mock dataset scanned", num_samples: 3, samples: [] })); return;
-  }
+  if (await datasetSimulator(req, url, respond)) return;
   if (url.pathname === "/release_task" && req.method === "POST") {
     const chunks = [];
     for await (const chunk of req) chunks.push(chunk);
