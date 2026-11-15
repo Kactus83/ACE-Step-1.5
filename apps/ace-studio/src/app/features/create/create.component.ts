@@ -11,7 +11,7 @@ import { startWith } from "rxjs";
 import { BackendClient } from "../../core/backend.client";
 import { BackendStore } from "../../core/backend.store";
 import { TaskType } from "../../core/api.types";
-import { mapGenerateRequest } from "./create.request";
+import { mapGenerateRequest, TRACK_NAMES } from "./create.request";
 import { JobsStore } from "../../core/jobs.store";
 import { WorkflowStore } from "../../core/workflow.store";
 import { PresetsStore } from "../../core/presets.store";
@@ -30,6 +30,7 @@ export class CreateComponent implements OnInit {
   readonly jobs = inject(JobsStore);
   readonly workflow = inject(WorkflowStore);
   readonly presets = inject(PresetsStore);
+  readonly stems = TRACK_NAMES;
   readonly presetName = signal("");
   readonly selectedPresetId = signal("");
   readonly deletingPreset = signal(false);
@@ -182,5 +183,6 @@ export class CreateComponent implements OnInit {
     }
   }
 }
+
 
 

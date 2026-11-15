@@ -33,16 +33,16 @@ export interface CreateFormSnapshot {
   readonly audio_format: string;
 }
 
-/**
- * @public Assemble the API request without media bytes, tokens or local paths.
- * @remarks Invalid or unsupported mode values are blocked by the calling editor.
- */
 /** @public Instrument names exposed by ACE-Step in acestep/constants.py. */
 export const TRACK_NAMES = [
   "woodwinds", "brass", "fx", "synth", "strings", "percussion",
   "keyboard", "guitar", "bass", "drums", "backing_vocals", "vocals"
 ] as const;
 
+/**
+ * @public Assemble the API request without media bytes, tokens or local paths.
+ * @throws Error on unsupported stems or completion classes.
+ */
 export function mapGenerateRequest(value: CreateFormSnapshot): GenerateRequest {
   const mode = value.task_type as TaskType;
   const needsStem = mode === "extract" || mode === "lego";
@@ -80,4 +80,5 @@ export function mapGenerateRequest(value: CreateFormSnapshot): GenerateRequest {
     audio_format: value.audio_format as GenerateRequest["audio_format"]
   };
 }
+
 

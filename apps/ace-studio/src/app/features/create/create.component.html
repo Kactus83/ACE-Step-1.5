@@ -70,6 +70,22 @@
       </div><span class="section-mark" aria-hidden="true">♫</span></div>
       @if (selectedMode() !== "text2music") {
         <p class="muted">A source track is required for {{ selectedMode() }}. Only the backend processes audio.</p>
+        @if (selectedMode() === "extract" || selectedMode() === "lego") {
+          <label class="field" for="target-stem"><span>Instrument track to {{ selectedMode() }}</span>
+            <select id="target-stem" formControlName="target_stem">
+              @for (stem of stems; track stem) {
+                <option [value]="stem">{{ stem }}</option>
+              }
+            </select>
+          </label>
+          <p class="small-note">Extract isolates a stem; Lego generates an additional stem from the source context. Requires a compatible base model.</p>
+        }
+        @if (selectedMode() === "complete") {
+          <label class="field" for="complete-classes"><span>Track classes to complete (comma-separated)</span>
+            <input id="complete-classes" formControlName="track_classes" placeholder="drums, bass, synth" />
+          </label>
+          <p class="small-note">Supported classes: {{ stems.join(', ') }}. Leave empty for the backend's generic completion instruction.</p>
+        }
         @if (workflow.draft()) {
           <div class="imported-asset">
             <span>↗ Imported from results: {{ importName() }}</span>
@@ -209,4 +225,5 @@
     </section>
   </aside>
 </form>
+
 
