@@ -11,16 +11,61 @@ import re
 import shutil
 from pathlib import Path
 
+STUDIO_FILE_ROOTS_ENV = "ACESTEP_STUDIO_FILE_ROOTS"
+
 
 class StudioExportValidationError(ValueError):
     """The requested source or target violates non-destructive export policy."""
 
 
-def select_trained_adapter(training_directory: str) -> Path:
+def configured_studio_file_roots() -> tuple[Path, ...]:
+    """Resolve operator-approved roots for Studio filesystem operations.
+
+    Returns:
+        Existing directories configured in ``ACESTEP_STUDIO_FILE_ROOTS``.
+
+    Raises:
+        StudioExportValidationError: no usable root was explicitly configured.
+    """
+    values = [
+        value.strip()
+        for value in os.getenv(STUDIO_FILE_ROOTS_ENV, "").split(os.pathsep)
+    ]
+    roots: list[Path] = []
+    for value in values:
+        if not value:
+            continue
+        root = Path(value).expanduser().resolve(strict=True)
+        if not root.is_dir():
+            raise StudioExportValidationError(
+                "Studio filesystem roots must be directories."
+            )
+        roots.append(root)
+    if not roots:
+        raise StudioExportValidationError(
+            f"Set {STUDIO_FILE_ROOTS_ENV} to explicit server directories before Studio export."
+        )
+    return tuple(roots)
+
+
+def _resolve_allowed_path(value: str, roots: tuple[Path, ...], strict: bool) -> Path:
+    """Resolve one request path and require containment in an approved root."""
+    if not value.strip() or any(ord(char) < 32 for char in value):
+        raise StudioExportValidationError("A valid server directory is required.")
+    raw = Path(value.strip()).expanduser()  # lgtm[py/path-injection]
+    if ".." in raw.parts:
+        raise StudioExportValidationError("Parent-directory traversal is forbidden.")
+    resolved = raw.resolve(strict=strict)  # lgtm[py/path-injection]
+    if not any(resolved == root or resolved.is_relative_to(root) for root in roots):
+        raise StudioExportValidationError(
+            "Server directory is outside configured Studio roots."
+        )
+    return resolved
+
+
+def select_trained_adapter(training_directory: str, roots: tuple[Path, ...]) -> Path:
     """Choose the final adapter, or the highest numbered epoch checkpoint."""
-    if not training_directory.strip():
-        raise StudioExportValidationError("A training output directory is required.")
-    source_root = Path(training_directory.strip()).expanduser().resolve(strict=True)
+    source_root = _resolve_allowed_path(training_directory, roots, strict=True)
     if not source_root.is_dir():
         raise StudioExportValidationError("Training output must be a directory.")
 
@@ -58,21 +103,15 @@ def export_adapter_without_overwrite(
         StudioExportValidationError: invalid, overlapping or unsafe directories.
         OSError: the server cannot create the target directory.
     """
-    target_text = export_directory.strip()
-    if not target_text or any(ord(char) < 32 for char in target_text):
-        raise StudioExportValidationError("A valid export directory is required.")
-    raw_target = Path(target_text).expanduser()
-    if ".." in raw_target.parts:
-        raise StudioExportValidationError("Parent-directory traversal is forbidden.")
-
-    source_root = Path(training_directory.strip()).expanduser().resolve(strict=True)
-    source = select_trained_adapter(training_directory)
+    roots = configured_studio_file_roots()
+    source_root = _resolve_allowed_path(training_directory, roots, strict=True)
+    source = select_trained_adapter(training_directory, roots)
     for item in source.rglob("*"):
         if item.is_symlink():
             raise StudioExportValidationError(
                 "Adapter export refuses symbolic links inside trained weights."
             )
-    target = raw_target.resolve(strict=False)
+    target = _resolve_allowed_path(export_directory, roots, strict=False)
     if len(target.parts) < 3:
         raise StudioExportValidationError("Cannot export to a filesystem root.")
     if (target == source_root or target in source_root.parents
@@ -80,15 +119,15 @@ def export_adapter_without_overwrite(
             or target == source or target in source.parents
             or source in target.parents):
         raise StudioExportValidationError("Export directory overlaps training output.")
-    if os.path.lexists(raw_target):
+    if os.path.lexists(target):
         raise FileExistsError("Export destination already exists; no files were replaced.")
 
-    raw_target.parent.mkdir(parents=True, exist_ok=True)
+    target.parent.mkdir(parents=True, exist_ok=True)
     # copytree's default dirs_exist_ok=False is the final non-overwrite guard.
-    shutil.copytree(source, raw_target, symlinks=False, dirs_exist_ok=False)
+    shutil.copytree(source, target, symlinks=False, dirs_exist_ok=False)
     return {
         "message": "Adapter copied to a new directory without overwriting existing data.",
         "source": str(source),
-        "export_path": str(raw_target),
+        "export_path": str(target),
     }
 

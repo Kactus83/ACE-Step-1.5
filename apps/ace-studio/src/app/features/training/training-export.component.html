@@ -5,8 +5,9 @@
   <p class="notice warning">ACE Studio uses a separate no-overwrite export route.
     <strong>Existing destination directories are never removed by this action.</strong>
     Select a new dedicated server directory. This requires the Studio-enabled
-    Python API; older servers will reject the request rather than falling back
-    to ACE-Step's destructive legacy export endpoint.
+    Python API and operator-approved filesystem roots; older or unconfigured
+    servers reject the request rather than falling back to ACE-Step's
+    destructive legacy export endpoint.
   </p>
   <form [formGroup]="form" (ngSubmit)="export()" (input)="invalidate()">
     <label class="field" for="export-source"><span>Training output directory on backend</span>
