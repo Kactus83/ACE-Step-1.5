@@ -9,7 +9,8 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { startWith } from "rxjs";
 import { BackendClient } from "../../core/backend.client";
 import { BackendStore } from "../../core/backend.store";
-import { GenerateRequest, TaskType } from "../../core/api.types";
+import { TaskType } from "../../core/api.types";
+import { mapGenerateRequest } from "./create.request";
 import { JobsStore } from "../../core/jobs.store";
 import { WorkflowStore } from "../../core/workflow.store";
 import { PresetsStore } from "../../core/presets.store";
@@ -173,29 +174,7 @@ export class CreateComponent implements OnInit {
     if (mode !== "text2music" && !sourceFile && !this.workflow.draft()) {
       this.error.set("Select a source audio file for this mode."); return;
     }
-    const request: GenerateRequest = {
-      prompt: value.prompt.trim(),
-      lyrics: value.instrumental ? "[inst]" : value.lyrics,
-      task_type: mode,
-      model: value.model || undefined,
-      thinking: value.thinking,
-      use_format: value.use_format,
-      track_name: value.track_name || undefined,
-      audio_duration: value.duration,
-      bpm: value.bpm || undefined,
-      key_scale: value.key_scale || undefined,
-      time_signature: value.time_signature || undefined,
-      vocal_language: value.vocal_language || "en",
-      inference_steps: value.inference_steps,
-      guidance_scale: value.guidance_scale,
-      batch_size: value.batch_size,
-      use_random_seed: value.use_random_seed,
-      seed: value.use_random_seed ? -1 : value.seed,
-      audio_cover_strength: value.audio_cover_strength,
-      repainting_start: value.repainting_start,
-      repainting_end: value.repainting_end,
-      audio_format: value.audio_format as GenerateRequest["audio_format"]
-    };
+    const request = mapGenerateRequest(value);
     this.error.set(null);
     try {
       const draft = this.workflow.draft();
