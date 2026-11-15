@@ -15,6 +15,10 @@
         <span class="nav-icon" aria-hidden="true">◷</span> Queue & results
         @if (jobs.jobs().length) { <span class="nav-count">{{ jobs.jobs().length }}</span> }
       </button>
+      <button type="button" [class.active]="section() === 'datasets'" (click)="navigate('datasets')"
+        [attr.aria-current]="section() === 'datasets' ? 'page' : null">
+        <span class="nav-icon" aria-hidden="true">▧</span> Datasets
+      </button>
       <button type="button" [class.active]="section() === 'training'" (click)="navigate('training')"
         [attr.aria-current]="section() === 'training' ? 'page' : null">
         <span class="nav-icon" aria-hidden="true">◈</span> Training
@@ -43,6 +47,7 @@
         <strong>@switch (section()) {
           @case ("create") { Creation }
           @case ("jobs") { Queue & results }
+          @case ("datasets") { Datasets }
           @case ("training") { Training }
           @case ("system") { Connection }
         }</strong>
@@ -61,6 +66,7 @@
       @switch (section()) {
         @case ("create") { <ace-create (showJobs)="navigate('jobs')" /> }
         @case ("jobs") { <ace-jobs (reuse)="navigate('create')" /> }
+        @case ("datasets") { <ace-datasets /> }
         @case ("training") { <ace-training /> }
         @case ("system") { <ace-connection /> }
       }

@@ -10,14 +10,15 @@ import { CreateComponent } from "./features/create/create.component";
 import { JobsComponent } from "./features/results/jobs.component";
 import { ConnectionComponent } from "./features/system/connection.component";
 import { TrainingComponent } from "./features/training/training.component";
+import { DatasetComponent } from "./features/datasets/dataset.component";
 
-type Section = "create" | "jobs" | "training" | "system";
+type Section = "create" | "jobs" | "datasets" | "training" | "system";
 
 /** @public Main accessible, responsive shell. */
 @Component({
   selector: "ace-root",
   standalone: true,
-  imports: [CreateComponent, JobsComponent, TrainingComponent, ConnectionComponent],
+  imports: [CreateComponent, JobsComponent, DatasetComponent, TrainingComponent, ConnectionComponent],
   templateUrl: "./app.component.html"
 })
 export class AppComponent implements OnInit {
