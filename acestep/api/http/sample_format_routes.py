@@ -163,7 +163,7 @@ def register_sample_format_routes(
     async def create_sample_endpoint(request: Request, authorization: Optional[str] = Header(None)):
         """Create a music sample from a natural language description using the 5Hz LM.
 
-        This is the API equivalent of the Gradio UI's Simple Mode \Create Sample\ button.
+        This is the API equivalent of the Gradio UI's Simple Mode ``Create Sample`` button.
         Takes a user description and returns generated caption, lyrics, and metadata.
         """
         content_type = (request.headers.get("content-type") or "").lower()

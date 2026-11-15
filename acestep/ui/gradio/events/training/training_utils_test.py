@@ -1,5 +1,7 @@
 """Unit tests for training_utils.py."""
 
+import os
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -32,10 +34,10 @@ class TestSafeJoin(unittest.TestCase):
     """Tests for _safe_join."""
 
     def test_valid_relative_path(self):
-        result = _safe_join("/base", "subdir/file.txt")
-        # Should be under /base
-        self.assertIsNotNone(result)
-        self.assertTrue(result.startswith("/base"))
+        with tempfile.TemporaryDirectory() as base:
+            result = _safe_join(base, "subdir/file.txt")
+            self.assertIsNotNone(result)
+            self.assertEqual(os.path.commonpath([base, result]), base)
 
     def test_absolute_path_rejected(self):
         result = _safe_join("/base", "/etc/passwd")

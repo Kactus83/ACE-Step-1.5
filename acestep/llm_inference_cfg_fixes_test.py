@@ -80,6 +80,8 @@ class TestCotCfgScaleFixed(unittest.TestCase):
         handler = LLMHandler()
         handler.llm_initialized = True
         handler.llm_backend = "pt"
+        handler.llm = MagicMock()
+        handler.llm_tokenizer = MagicMock()
 
         captured_cfg = {}
 
@@ -136,7 +138,7 @@ class TestCotCfgScaleFixed(unittest.TestCase):
 
         with patch.object(handler, "generate_from_formatted_prompt", side_effect=capturing_gen):
             with patch.object(handler, "build_formatted_prompt", return_value="P"):
-                with patch.object(handler, "_parse_metadata_from_cot", return_value={}):
+                with patch.object(handler, "parse_lm_output", return_value=({}, "ok")):
                     with patch.object(handler, "_format_metadata_as_cot", return_value=""):
                         with patch.object(
                             handler, "build_formatted_prompt_with_cot", return_value="P2"

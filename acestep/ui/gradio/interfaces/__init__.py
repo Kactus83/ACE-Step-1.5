@@ -21,6 +21,9 @@ Layout:
   │  └───────────────┴────────────────┘  │
   └──────────────────────────────────────┘
 """
+import os
+from contextlib import nullcontext
+
 import gradio as gr
 from acestep.ui.gradio.i18n import get_i18n, t
 from acestep.ui.gradio.interfaces.dataset import create_dataset_section
@@ -39,6 +42,8 @@ from acestep.ui.gradio.interfaces.result import create_results_section
 from acestep.ui.gradio.interfaces.training import create_training_section
 from acestep.ui.gradio.events import setup_event_handlers, setup_training_event_handlers
 from acestep.ui.gradio.help_content import create_help_button, HELP_MODAL_CSS
+from acestep.ui.gradio.interfaces.simple_ui import build_simple_ui
+from acestep.ui.gradio.interfaces.simple_ui_styles import SIMPLE_UI_CSS
 
 
 def create_gradio_interface(dit_handler, llm_handler, dataset_handler, init_params=None, language='en') -> gr.Blocks:
@@ -61,6 +66,11 @@ def create_gradio_interface(dit_handler, llm_handler, dataset_handler, init_para
     
     # Check if running in service mode (hide training tab)
     service_mode = init_params is not None and init_params.get('service_mode', False)
+    # Opt-in while awaiting visual/GPU validation; service deployments remain unchanged.
+    enable_simple_ui = (
+        os.environ.get("ACESTEP_ENABLE_SIMPLE_UI", "").lower() in {"1", "true", "yes"}
+        and not service_mode
+    )
     
     with gr.Blocks(
         title=t("app.title"),
@@ -310,64 +320,107 @@ def create_gradio_interface(dit_handler, llm_handler, dataset_handler, init_para
             width: 13px !important;
             height: 13px !important;
         }
-        """ + HELP_MODAL_CSS,
+        """ + HELP_MODAL_CSS + (SIMPLE_UI_CSS if enable_simple_ui else ""),
     ) as demo:
         
-        gr.HTML(f"""
-        <div class="main-header">
-            <h1>{t("app.title")}</h1>
-            <p>{t("app.subtitle")}</p>
-        </div>
-        """)
-        create_help_button("getting_started")
-        
-        # Dataset Explorer Section (hidden)
-        dataset_section = create_dataset_section(dataset_handler)
-        
-        # ═══════════════════════════════════════════
-        # Top-level: Settings (contains Service Config + Advanced Settings)
-        # ═══════════════════════════════════════════
-        settings_section = create_advanced_settings_section(
-            dit_handler, llm_handler, init_params=init_params, language=language
-        )
-        
-        # ═══════════════════════════════════════════
-        # Tabs: Generation | Training
-        # ═══════════════════════════════════════════
-        with gr.Tabs():
-            # --- Generation Tab ---
-            with gr.Tab(t("generation.tab_title")):
-                gen_section = create_generation_tab_section(
-                    dit_handler, llm_handler, init_params=init_params, language=language
-                )
+        # Do not instantiate a second frontend, and keep the historic UI untouched
+        # when the experimental interface is disabled.
+        if enable_simple_ui:
+            simple_section = build_simple_ui()
+            simple_mode_state = gr.State(value="Simple")
+
+        with (gr.Column(visible=False) if enable_simple_ui else nullcontext()) as advanced_column:
+            if enable_simple_ui:
+                advanced_mode_switch = gr.Button(t("simple_flow.simple_mode"), size="sm")
+
+            gr.HTML(f"""
+            <div class="main-header">
+                <h1>{t("app.title")}</h1>
+                <p>{t("app.subtitle")}</p>
+            </div>
+            """)
+            create_help_button("getting_started")
+
+            # Dataset Explorer Section (hidden)
+            dataset_section = create_dataset_section(dataset_handler)
+
+            # ═══════════════════════════════════════════
+            # Top-level: Settings (contains Service Config + Advanced Settings)
+            # ═══════════════════════════════════════════
+            settings_section = create_advanced_settings_section(
+                dit_handler, llm_handler, init_params=init_params, language=language
+            )
+
+            # ═══════════════════════════════════════════
+            # Tabs: Generation | Training
+            # ═══════════════════════════════════════════
+            with gr.Tabs():
+                # --- Generation Tab ---
+                with gr.Tab(t("generation.tab_title")):
+                    gen_section = create_generation_tab_section(
+                        dit_handler, llm_handler, init_params=init_params, language=language
+                    )
+
+                    # Results Section (inside the Generation tab, wrapped for visibility control)
+                    with gr.Column(visible=True) as results_wrapper:
+                        results_section = create_results_section(dit_handler)
+                    # Store the wrapper in gen_section so event handlers can toggle it
+                    gen_section["results_wrapper"] = results_wrapper
                 
-                # Results Section (inside the Generation tab, wrapped for visibility control)
-                with gr.Column(visible=True) as results_wrapper:
-                    results_section = create_results_section(dit_handler)
-                # Store the wrapper in gen_section so event handlers can toggle it
-                gen_section["results_wrapper"] = results_wrapper
+                # --- Training Tab ---
+                with gr.Tab(t("training.tab_title"), visible=not service_mode):
+                    training_section = create_training_section(
+                        dit_handler, llm_handler, init_params=init_params
+                    )
             
-            # --- Training Tab ---
-            with gr.Tab(t("training.tab_title"), visible=not service_mode):
-                training_section = create_training_section(
-                    dit_handler, llm_handler, init_params=init_params
-                )
-        
-        # ═══════════════════════════════════════════
-        # Merge all generation-related component dicts for event wiring
-        # ═══════════════════════════════════════════
-        # The event handlers expect a single "generation_section" dict with all
-        # components from settings (service config + advanced) and generation tab.
-        generation_section = {}
-        generation_section.update(settings_section)
-        generation_section.update(gen_section)
-        
+            # ═══════════════════════════════════════════
+            # Merge all generation-related component dicts for event wiring
+            # ═══════════════════════════════════════════
+            # The event handlers expect a single "generation_section" dict with all
+            # components from settings (service config + advanced) and generation tab.
+            generation_section = {}
+            generation_section.update(settings_section)
+            generation_section.update(gen_section)
+
         # Connect event handlers
         setup_event_handlers(
             demo, dit_handler, llm_handler, dataset_handler,
             dataset_section, generation_section, results_section
         )
         
+        if enable_simple_ui:
+            # Imported lazily: headless API consumers must not import Gradio wiring.
+            from acestep.ui.gradio.events.wiring.simple_ui_wiring import (
+                register_simple_ui_handlers,
+                _initialize_simple_ui_models,
+            )
+
+            register_simple_ui_handlers(
+                demo, dit_handler, llm_handler, simple_section, results_section,
+                advanced_column=advanced_column,
+                simple_mode_state=simple_mode_state,
+            )
+
+            # Return to the optional flow without changing model selection,
+            # unloading a service, or initiating any generation.
+            advanced_mode_switch.click(
+                fn=lambda: (gr.update(visible=True), gr.update(visible=False), "Simple"),
+                inputs=[],
+                outputs=[simple_section["simple_column"], advanced_column, simple_mode_state],
+            ).then(
+                fn=lambda: _initialize_simple_ui_models(llm_handler, dit_handler),
+                inputs=[],
+                outputs=[simple_section["simple_create_btn"]],
+                show_progress="hidden",
+            )
+
+            demo.load(
+                fn=lambda: _initialize_simple_ui_models(llm_handler, dit_handler),
+                inputs=[],
+                outputs=[simple_section["simple_create_btn"]],
+                show_progress="hidden",
+            )
+
         # Connect training event handlers
         setup_training_event_handlers(demo, dit_handler, llm_handler, training_section)
 

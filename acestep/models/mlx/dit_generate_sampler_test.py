@@ -1,9 +1,13 @@
 """Tests for enhanced sampler modes in dit_generate.py (issue #957)."""
 
+import importlib.util
 import unittest
 from unittest.mock import MagicMock
 
 import numpy as np
+
+if importlib.util.find_spec("mlx") is None:
+    raise unittest.SkipTest("MLX is only available on supported Apple Silicon environments.")
 
 from acestep.models.mlx.dit_generate import (
     VALID_SAMPLER_MODES,

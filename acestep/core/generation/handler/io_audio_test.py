@@ -28,6 +28,7 @@ class ReadAudioFileTests(unittest.TestCase):
         import soundfile as sf
 
         tmp = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
+        tmp.close()
         try:
             data = np.random.randn(48000).astype(np.float32)
             sf.write(tmp.name, data, 48000)

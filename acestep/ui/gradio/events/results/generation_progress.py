@@ -15,7 +15,7 @@ import torch
 from loguru import logger
 
 from acestep.inference import generate_music, GenerationParams, GenerationConfig
-from acestep.audio_utils import save_audio
+from acestep.audio_utils import save_audio, AudioExportDegradedError
 from acestep.gpu_config import (
     get_global_gpu_config,
     check_duration_limit,
@@ -37,6 +37,11 @@ from acestep.ui.gradio.events.results.audio_playback_updates import (
 from acestep.ui.gradio.events.results.scoring import calculate_score_handler
 from acestep.ui.gradio.events.results.lrc_utils import lrc_to_vtt_file
 from acestep.ui.gradio.events.results.session_artifacts import persist_sample_session_artifacts
+
+
+def _lyrics_are_instrumental(lyrics: str | None) -> bool:
+    """Resolve the official instrumental sentinel regardless of casing."""
+    return (lyrics or "").strip().lower() == "[instrumental]"
 
 
 def generate_with_progress(
@@ -143,7 +148,7 @@ def generate_with_progress(
         audio_codes=text2music_audio_code_string if not think_checkbox else "",
         caption=captions or "",
         lyrics=lyrics or "",
-        instrumental=False,
+        instrumental=_lyrics_are_instrumental(lyrics),
         vocal_language=vocal_language,
         bpm=bpm,
         keyscale=key_scale,
@@ -273,6 +278,7 @@ def generate_with_progress(
     )
     time_module.sleep(0.1)
 
+    export_warnings = []
     for i in range(8):
         if i >= len(audios):
             continue
@@ -291,11 +297,20 @@ def generate_with_progress(
         ext = "wav" if audio_format == "wav32" else audio_format
         audio_path = os.path.join(temp_dir, f"{key}.{ext}").replace("\\", "/")
 
-        saved_path = save_audio(
-            audio_data=audio_tensor, output_path=audio_path,
-            sample_rate=sample_rate, format=audio_format, channels_first=True,
-            mp3_bitrate=mp3_bitrate, mp3_sample_rate=mp3_sample_rate,
-        )
+        try:
+            saved_path = save_audio(
+                audio_data=audio_tensor, output_path=audio_path,
+                sample_rate=sample_rate, format=audio_format, channels_first=True,
+                mp3_bitrate=mp3_bitrate, mp3_sample_rate=mp3_sample_rate,
+            )
+        except AudioExportDegradedError as exc:
+            # Generation itself already succeeded (audio_tensor exists); only
+            # the requested export format failed. Use the WAV ACE-Step already
+            # saved instead of discarding a valid result as a hard error.
+            saved_path = exc.wav_fallback_path
+            audio_params["audio_format"] = "wav"
+            logger.warning(f"[generate_with_progress] Sample {key}: {exc}")
+            export_warnings.append(f"{key}: {exc.requested_format} export unavailable ({exc}), saved as WAV")
         if saved_path:
             audio_path = saved_path.replace("\\", "/")
 
@@ -413,9 +428,14 @@ def generate_with_progress(
         {**result.extra_outputs, "lrcs": final_lrcs_list, "subtitles": final_subtitles_list}
     )
 
+    if export_warnings:
+        final_status = "Generation Complete (WAV). " + "; ".join(export_warnings)
+    else:
+        final_status = "Generation Complete"
+
     yield (
         *audio_playback_updates,
-        all_audio_paths, generation_info, "Generation Complete", seed_value_for_ui,
+        all_audio_paths, generation_info, final_status, seed_value_for_ui,
         *final_scores_list, *final_codes_display, *final_accordions, *final_lrcs_list,
         lm_generated_metadata, is_format_caption,
         extra_to_store,

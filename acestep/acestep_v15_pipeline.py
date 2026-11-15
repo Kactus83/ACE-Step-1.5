@@ -6,6 +6,16 @@ Handler wrapper connecting model and UI
 import os
 import sys
 
+
+def _configure_utf8_stdio() -> None:
+    """Keep Unicode CLI help and status text printable on Windows consoles."""
+    if os.name != "nt":
+        return
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            reconfigure(encoding="utf-8", errors="replace")
+
 # Load environment variables from .env file at most once per process to avoid
 # epoch-boundary stalls (e.g. on Windows when Gradio yields during training)
 _env_loaded = False  # module-level so we never reload .env in the same process
@@ -144,6 +154,8 @@ def _resolve_startup_lm_backend(requested_backend: str | None, gpu_config) -> st
 def main():
     """Main entry function"""
     import argparse
+
+    _configure_utf8_stdio()
 
     # Detect GPU memory and get configuration
     gpu_config = get_gpu_config()
