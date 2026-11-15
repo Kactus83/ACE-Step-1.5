@@ -16,6 +16,7 @@
     @if (result().seed_value) {
       <p class="small-note">Seed: {{ result().seed_value }}</p>
     }
+    <ace-result-metadata [result]="result()" />
     <div class="audio-actions">
       <button type="button" class="quiet" (click)="download()">Download</button>
       <button type="button" class="quiet" (click)="reuseRequested.emit('cover')">Remix ↗</button>
@@ -28,4 +29,5 @@
     </div>
   </div>
 </section>
+
 

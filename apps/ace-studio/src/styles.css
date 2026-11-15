@@ -298,3 +298,19 @@ h3 { font-size: 15px; font-weight: 600; }
   .comparison-selectors, .comparison-players { grid-template-columns: 1fr; }
 }
 
+
+.queue-filters { display: grid; grid-template-columns: minmax(190px,230px) minmax(0,1fr);
+  align-items: end; gap: 16px; margin: 0 0 21px; }
+.queue-filters .field { margin: 0; }
+.result-metadata { padding-top: 13px; margin-top: 12px; }
+.result-metadata summary { color: var(--muted); font-size: 11px; padding-bottom: 9px; }
+.result-metadata-list { display: grid; gap: 6px; margin: 0 0 16px; }
+.result-metadata-list div { display: flex; gap: 12px; justify-content: space-between;
+  border-bottom: 1px solid var(--line-soft); padding-bottom: 6px; font-size: 11px; }
+.result-metadata-list dt { color: var(--muted); }
+.result-metadata-list dd { margin: 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.metadata-lyrics { white-space: pre-wrap; word-break: break-word; overflow: auto;
+  background: #101218; border: 1px solid var(--line); border-radius: 8px;
+  padding: 11px; font: 11px/1.6 ui-monospace,Consolas,monospace; }
+@media (max-width: 610px) { .queue-filters { grid-template-columns: 1fr; } }
+

@@ -6,11 +6,13 @@
 import { Component, inject, input, output, signal } from "@angular/core";
 import { GeneratedAudio } from "../../core/api.types";
 import { AudioService } from "../../core/audio.service";
+import { ResultMetadataComponent } from "./result-metadata.component";
 
 /** @public A result preview, metadata and workflow reuse controls. */
 @Component({
   selector: "ace-audio-card",
   standalone: true,
+  imports: [ResultMetadataComponent],
   templateUrl: "./audio-card.component.html"
 })
 export class AudioCardComponent {
@@ -48,4 +50,5 @@ export class AudioCardComponent {
     }
   }
 }
+
 

@@ -14,6 +14,18 @@
   <summary>Compare finished tracks A/B <span aria-hidden="true">⌄</span></summary>
   <ace-comparison />
 </details>
+<div class="queue-filters">
+  <label class="field" for="queue-filter"><span>Status</span>
+    <select id="queue-filter" [value]="filter()" (change)="filterChanged($event)">
+      <option value="all">All jobs</option><option value="active">Active</option>
+      <option value="succeeded">Succeeded</option><option value="failed">Failed</option>
+    </select>
+  </label>
+  <label class="field" for="queue-search"><span>Search queue</span>
+    <input id="queue-search" [value]="search()" (input)="searchChanged($event)"
+      placeholder="Title, task ID, prompt…" />
+  </label>
+</div>
 @if (!jobs.jobs().length) {
   <section class="empty-state panel">
     <span class="empty-icon" aria-hidden="true">♫</span>
@@ -22,7 +34,7 @@
   </section>
 } @else {
   <div class="job-list">
-    @for (job of jobs.jobs(); track job.id) {
+    @for (job of visible(); track job.id) {
       <article class="panel job-card" [attr.aria-label]="'Generation job ' + job.title">
         <div class="job-heading">
           <div>
@@ -70,9 +82,12 @@
           <span class="small-note">Does not cancel inference on the backend</span>
         </div>
       </article>
+    } @empty {
+      <p class="panel muted">No jobs match this filter.</p>
     }
   </div>
 }
+
 
 
 

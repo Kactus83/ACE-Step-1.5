@@ -3,13 +3,14 @@
  * @remarks Job list, actual backend progress text, and result-to-editor actions.
  * @public
  */
-import { Component, inject, output } from "@angular/core";
+import { Component, computed, inject, output, signal } from "@angular/core";
 import { DatePipe } from "@angular/common";
 import { JobsStore } from "../../core/jobs.store";
 import { GeneratedAudio, StudioJob } from "../../core/api.types";
 import { WorkflowStore } from "../../core/workflow.store";
 import { AudioCardComponent } from "./audio-card.component";
 import { withResultSeed } from "../create/restore-request";
+import { JobFilter, filterJobs } from "./job-filter";
 import { LibrarySaveComponent } from "../library/library-save.component";
 import { ComparisonComponent } from "./comparison.component";
 
@@ -22,9 +23,29 @@ import { ComparisonComponent } from "./comparison.component";
 })
 export class JobsComponent {
   readonly jobs = inject(JobsStore);
+  readonly filter = signal<JobFilter>("all");
+  readonly search = signal("");
+  readonly visible = computed(() =>
+    filterJobs(this.jobs.jobs(), this.filter(), this.search())
+  );
   private readonly workflow = inject(WorkflowStore);
   /** @public Request navigation to create editor. */
   readonly reuse = output<void>();
+
+  /** @public Change the client-only phase filter without contacting the backend. */
+  filterChanged(event: Event): void {
+    const el = event.target;
+    if (!(el instanceof HTMLSelectElement)) return;
+    if (["all", "active", "succeeded", "failed"].includes(el.value)) {
+      this.filter.set(el.value as JobFilter);
+    }
+  }
+
+  /** @public Search task IDs, titles and returned descriptions locally. */
+  searchChanged(event: Event): void {
+    const el = event.target;
+    if (el instanceof HTMLInputElement) this.search.set(el.value);
+  }
 
   /** @public Distinguish successful analysis-only jobs from playable audio results. */
   hasPlayableAudio(job: StudioJob): boolean {
@@ -45,6 +66,7 @@ export class JobsComponent {
     this.reuse.emit();
   }
 }
+
 
 
 
