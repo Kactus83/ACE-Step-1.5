@@ -9,44 +9,45 @@ import { ConnectionStore } from "../../core/connection.store";
 import { normalizeAudioUrl } from "../../core/api-decoder";
 import { GeneratedAudio, StudioJob } from "../../core/api.types";
 import {
-  decodeLibraryCatalog, decodeLibraryTrack, encodeLibraryCatalog,
+  decodeLibraryTrack,
   importLibraryJson, MAX_PROJECTS, MAX_TRACKS, normalizeTags
 } from "./library.codec";
 import { LibraryProject } from "./library.types";
-
-const KEY = "ace-studio:library:v1";
+import { LibraryPersistence } from "./library.persistence";
 
 /** @public Safe, explicit versioned browser-local project catalog. */
 @Injectable({ providedIn: "root" })
 export class LibraryStore {
   private readonly connection = inject(ConnectionStore);
+  private readonly persistence = inject(LibraryPersistence);
   readonly projects = signal<readonly LibraryProject[]>([]);
   readonly error = signal<string | null>(null);
   readonly message = signal<string | null>(null);
 
   constructor() {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) this.projects.set(decodeLibraryCatalog(JSON.parse(raw) as unknown));
-    } catch {
-      this.error.set("Saved catalog could not be loaded; the local file was not overwritten.");
+    try { this.projects.set(this.persistence.load()); }
+    catch {
+      this.error.set("Saved catalog is corrupt; it has not been overwritten.");
     }
+    this.persistence.listen(
+      projects => {
+        this.projects.set(projects);
+        this.message.set("Project catalog updated from another browser tab.");
+      },
+      message => this.error.set(message)
+    );
   }
 
   private commit(next: readonly LibraryProject[], message: string): boolean {
     this.error.set(null);
     try {
-      const payload = JSON.stringify(encodeLibraryCatalog(next));
-      if (new TextEncoder().encode(payload).byteLength > 1_500_000) {
-        throw new Error("Project catalog exceeds the local storage size policy.");
-      }
-      localStorage.setItem(KEY, payload);
+      this.persistence.save(next);
       this.projects.set(next);
       this.message.set(message);
       return true;
     } catch (error: unknown) {
       this.error.set(error instanceof Error ? error.message
-        : "Local storage is unavailable. No changes were saved.");
+        : "Local storage unavailable; no changes saved.");
       return false;
     }
   }
