@@ -11,6 +11,8 @@ let sequence = 0;
 const jobs = new Map();
 let lastSubmittedRequest = null;
 let trainingActive = false;
+let lmInitialized = false;
+let lastModelInit = null;
 let lastTrainingExport = null;
 const exportedAdapters = new Set();
 const datasetSimulator = createDatasetSimulator();
@@ -43,12 +45,34 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url || "/", "http://127.0.0.1");
   if (url.pathname === "/health" && req.method === "GET") {
     respond(wrap({ status: "ok", service: "ACE-Step API (mock)", version: "1.0",
-      models_initialized: true, llm_initialized: true })); return;
+      models_initialized: true, llm_initialized: lmInitialized })); return;
   }
   if (url.pathname === "/v1/models" && req.method === "GET") {
     respond(wrap({ models: [{ name: "acestep-v15-turbo", is_loaded: true, is_default: true,
-      supported_task_types: ["text2music", "cover", "repaint"] }],
-      default_model: "acestep-v15-turbo", lm_models: [], llm_initialized: true })); return;
+      supported_task_types: ["text2music", "cover", "repaint"] },
+      { name: "acestep-v15-base", is_loaded: false,
+        supported_task_types: ["text2music", "cover", "repaint", "lego", "extract", "complete"] }],
+      default_model: "acestep-v15-turbo",
+      lm_models: [{ name: "acestep-5Hz-lm-0.6B", is_loaded: lmInitialized }],
+      loaded_lm_model: lmInitialized ? "acestep-5Hz-lm-0.6B" : null,
+      llm_initialized: lmInitialized })); return;
+  }
+  if (url.pathname === "/__mock__/last_model_init" && req.method === "GET") {
+    respond(wrap(lastModelInit)); return;
+  }
+  if (url.pathname === "/v1/init" && req.method === "POST") {
+    const chunks = [];
+    for await (const chunk of req) chunks.push(chunk);
+    const body = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+    lastModelInit = body;
+    if (body.init_llm === true) lmInitialized = true;
+    respond(wrap({ message: "Model initialization completed", slot: 1,
+      loaded_model: body.model,
+      loaded_lm_model: body.init_llm ? body.lm_model_path : null,
+      models: [{ name: "acestep-v15-turbo", is_loaded: true,
+        supported_task_types: ["text2music", "cover", "repaint"] }],
+      lm_models: [{ name: "acestep-5Hz-lm-0.6B", is_loaded: lmInitialized }],
+      llm_initialized: lmInitialized })); return;
   }
   if (url.pathname === "/v1/training/status" && req.method === "GET") {
     respond(wrap({ is_training: trainingActive, should_stop: false,
@@ -139,6 +163,7 @@ const server = http.createServer(async (req, res) => {
 server.listen(port, "127.0.0.1", () => {
   process.stdout.write("ACE Studio mock backend on http://127.0.0.1:" + port + "\n");
 });
+
 
 
 

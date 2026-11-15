@@ -20,9 +20,10 @@ export class ModelManagerComponent {
   readonly pending = signal<string | null>(null);
   readonly notice = signal<string | null>(null);
   readonly selectedDit = computed(() => {
-    const list = this.backend.inventory()?.models || [];
-    return list.find(model => model.is_loaded)?.name
-      || this.backend.inventory()?.default_model || "";
+    const inventory = this.backend.inventory();
+    const primary = inventory?.default_model || "";
+    return inventory?.models.some(entry => entry.name === primary && entry.is_loaded)
+      ? primary : "";
   });
 
   /** @public Select a server-reported LM name without initializing it. */
@@ -73,4 +74,5 @@ export class ModelManagerComponent {
     });
   }
 }
+
 
