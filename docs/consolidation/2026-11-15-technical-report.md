@@ -6,7 +6,10 @@
 - Upstream: https://github.com/ace-step/ACE-Step-1.5
 - Base: `ca1e85fe9430179831e6bc6be790c332190a3866` (verified for both main branches).
 - Working branch: `integration/ace-ui-foundation`, created from base without force-push; final SHA is the branch HEAD shown on GitHub once documentation is committed.
-- Code head before documentation: `d7f16928a85e57737b56fd6ff2ed818f50fcfcec`.
+- Initial code head before documentation: `d7f16928a85e57737b56fd6ff2ed818f50fcfcec`.
+- Last feature-code commit after accessibility cleanup: `5bdc909d29956d8c54d929fbeb7ff71a701a190e`.
+- Draft consolidation PR: https://github.com/Kactus83/ACE-Step-1.5/pull/1 (base: fork `main`, head: dedicated consolidation branch).
+- Exhaustive changed-file inventory at code head: [`2026-11-15-changed-files.md`](2026-11-15-changed-files.md).
 - Merge: **not performed, not authorized**; target for any later PR is the fork's own `main`.
 - Scope retained: PR #1270 refactoring with explicit opt-in, P0 #1357/#1313, safe #1283 reference-crop subset, #1309, #1365 and API fix #1383. #1199 remains an explicitly deferred separate product initiative.
 
@@ -48,7 +51,7 @@ Do not confuse newly committed regression tests with passing tests. Source-based
 
 ## Review and acceptance
 
-Review 1: `2026-11-15-review-code-integration.md` documents technical defects and corrections. Review 2: `2026-11-15-review-user-reliability.md` audits paths and known gaps. Actual local final acceptance must follow `2026-11-15-local-handoff.md`.
+Review 1: `2026-11-15-review-code-integration.md` documents technical defects and corrections. Review 2: `2026-11-15-review-user-reliability.md` audits paths and known gaps. Review 3: `2026-11-15-review-contracts-final.md` independently examines wiring, translation coverage, relative imports and whitespace. Actual local final acceptance must follow `2026-11-15-local-handoff.md`.
 
 **Status: Implémentation préparée — validation locale finale requise — merge non autorisé.**
 
