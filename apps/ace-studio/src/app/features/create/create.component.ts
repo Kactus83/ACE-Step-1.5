@@ -4,7 +4,8 @@
  * @public
  */
 import { Component, OnInit, computed, inject, output, signal } from "@angular/core";
-import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
+import { createGenerationForm } from "./create.form";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { startWith } from "rxjs";
 import { BackendClient } from "../../core/backend.client";
@@ -38,30 +39,7 @@ export class CreateComponent implements OnInit {
   readonly error = signal<string | null>(null);
   readonly importName = computed(() => this.workflow.draft()?.source.prompt || "Generated track");
 
-  readonly form = this.fb.nonNullable.group({
-    track_name: ["", [Validators.maxLength(120)]],
-    prompt: ["", [Validators.required, Validators.maxLength(5000)]],
-    lyrics: [""],
-    instrumental: [true],
-    task_type: ["text2music"],
-    model: [""],
-    thinking: [false],
-    use_format: [false],
-    duration: [180, [Validators.min(10), Validators.max(600)]],
-    bpm: [0, [Validators.min(0), Validators.max(300)]],
-    key_scale: [""],
-    time_signature: [""],
-    vocal_language: ["en"],
-    inference_steps: [8, [Validators.min(1), Validators.max(200)]],
-    guidance_scale: [7, [Validators.min(0), Validators.max(30)]],
-    batch_size: [1, [Validators.min(1), Validators.max(8)]],
-    seed: [-1],
-    use_random_seed: [true],
-    audio_cover_strength: [1, [Validators.min(0), Validators.max(1)]],
-    repainting_start: [0, [Validators.min(0)]],
-    repainting_end: [30, [Validators.min(0)]],
-    audio_format: ["mp3"]
-  });
+  readonly form = createGenerationForm(this.fb);
   private readonly changes = toSignal(
     this.form.valueChanges.pipe(startWith(this.form.getRawValue())),
     { initialValue: this.form.getRawValue() }
@@ -72,7 +50,7 @@ export class CreateComponent implements OnInit {
     const selected = this.selectedModel() || this.backend.inventory()?.default_model;
     const current = this.backend.inventory()?.models.find(item => item.name === selected);
     const tasks = current?.supported_task_types || ["text2music"];
-    return (["text2music", "cover", "repaint"] as TaskType[])
+    return (["text2music", "cover", "repaint", "extract", "lego", "complete"] as TaskType[])
       .filter(mode => tasks.includes(mode) || mode === "text2music");
   });
 
@@ -174,7 +152,16 @@ export class CreateComponent implements OnInit {
     if (mode !== "text2music" && !sourceFile && !this.workflow.draft()) {
       this.error.set("Select a source audio file for this mode."); return;
     }
-    const request = mapGenerateRequest(value);
+    if (mode === "repaint" && value.repainting_end <= value.repainting_start) {
+      this.error.set("Repaint end must be greater than its start time.");
+      return;
+    }
+    let request;
+    try { request = mapGenerateRequest(value); }
+    catch (error: unknown) {
+      this.error.set(error instanceof Error ? error.message : "Invalid generation settings.");
+      return;
+    }
     this.error.set(null);
     try {
       const draft = this.workflow.draft();
@@ -195,4 +182,5 @@ export class CreateComponent implements OnInit {
     }
   }
 }
+
 

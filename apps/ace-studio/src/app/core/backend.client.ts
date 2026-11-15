@@ -56,7 +56,11 @@ export class BackendClient {
     if (source || reference) {
       const form = new FormData();
       for (const [key, value] of Object.entries(request)) {
-        if (value !== undefined && value !== null) form.append(key, String(value));
+        if (Array.isArray(value)) {
+          for (const item of value) form.append(key, String(item));
+        } else if (value !== undefined && value !== null) {
+          form.append(key, String(value));
+        }
       }
       if (source) form.append("src_audio", source, source.name);
       if (reference) form.append("reference_audio", reference, reference.name);
@@ -96,3 +100,4 @@ export class BackendClient {
     }));
   }
 }
+

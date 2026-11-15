@@ -8,6 +8,8 @@ import { GenerateRequest, TaskType } from "../../core/api.types";
 /** @public Raw form snapshot independent from the Angular control implementation. */
 export interface CreateFormSnapshot {
   readonly track_name: string;
+  readonly target_stem: string;
+  readonly track_classes: string;
   readonly prompt: string;
   readonly lyrics: string;
   readonly instrumental: boolean;
@@ -35,15 +37,33 @@ export interface CreateFormSnapshot {
  * @public Assemble the API request without media bytes, tokens or local paths.
  * @remarks Invalid or unsupported mode values are blocked by the calling editor.
  */
+/** @public Instrument names exposed by ACE-Step in acestep/constants.py. */
+export const TRACK_NAMES = [
+  "woodwinds", "brass", "fx", "synth", "strings", "percussion",
+  "keyboard", "guitar", "bass", "drums", "backing_vocals", "vocals"
+] as const;
+
 export function mapGenerateRequest(value: CreateFormSnapshot): GenerateRequest {
+  const mode = value.task_type as TaskType;
+  const needsStem = mode === "extract" || mode === "lego";
+  if (needsStem && !TRACK_NAMES.some(name => name === value.target_stem)) {
+    throw new Error("Choose a supported instrument stem.");
+  }
+  const classes = mode === "complete"
+    ? [...new Set(value.track_classes.split(/[,\\n]+/).map(name => name.trim().toLowerCase())
+      .filter(Boolean))] : [];
+  if (classes.some(name => !TRACK_NAMES.some(allowed => allowed === name))) {
+    throw new Error("Completion classes must use supported ACE-Step track names.");
+  }
   return {
     prompt: value.prompt.trim(),
     lyrics: value.instrumental ? "[inst]" : value.lyrics,
-    task_type: value.task_type as TaskType,
+    task_type: mode,
     model: value.model || undefined,
     thinking: value.thinking,
     use_format: value.use_format,
-    track_name: value.track_name || undefined,
+    track_name: needsStem ? value.target_stem : value.track_name || undefined,
+    track_classes: classes.length ? classes : undefined,
     audio_duration: value.duration,
     bpm: value.bpm || undefined,
     key_scale: value.key_scale || undefined,
@@ -60,3 +80,4 @@ export function mapGenerateRequest(value: CreateFormSnapshot): GenerateRequest {
     audio_format: value.audio_format as GenerateRequest["audio_format"]
   };
 }
+

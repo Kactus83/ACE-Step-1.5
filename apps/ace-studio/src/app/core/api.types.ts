@@ -68,6 +68,7 @@ export interface GenerateRequest {
   readonly audio_cover_strength?: number;
   readonly use_format?: boolean;
   readonly track_name?: string;
+  readonly track_classes?: readonly string[];
   readonly audio_format?: "mp3" | "wav" | "flac" | "opus" | "aac" | "wav32";
 }
 
@@ -114,3 +115,4 @@ export interface StudioJob {
   readonly results: readonly GeneratedAudio[];
   readonly request?: GenerateRequest;
 }
+

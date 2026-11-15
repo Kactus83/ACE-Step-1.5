@@ -14,7 +14,7 @@ export interface StudioPreset {
 
 const STRING_KEYS = new Set([
   "track_name", "prompt", "lyrics", "task_type", "model", "key_scale",
-  "time_signature", "vocal_language", "audio_format"
+  "time_signature", "vocal_language", "audio_format", "target_stem", "track_classes"
 ]);
 const NUMBER_KEYS = new Set([
   "duration", "bpm", "inference_steps", "guidance_scale", "batch_size",
@@ -66,3 +66,4 @@ export function decodePresets(raw: unknown): readonly StudioPreset[] {
   }
   return result;
 }
+
