@@ -6,7 +6,7 @@ import gradio as gr
 
 from acestep.ui.gradio.interfaces.simple_ui_markup import _step_indicator_html
 from .simple_ui_generation import _simple_generate_wrapper
-from .simple_ui_helpers import _navigate_to, _save_audio_js, _start_generation
+from .simple_ui_helpers import _navigate_to, _start_generation
 
 
 def register_simple_ui_generation(
@@ -15,7 +15,8 @@ def register_simple_ui_generation(
     dit_handler: Any,
     llm_handler: Any,
 ) -> None:
-    """Wire generation and two-result playback without replacing advanced state."""
+    """Wire generation with independent state; preserve all advanced batches."""
+    _ = results_section
     _nav_outputs = [
         gs["simple_state_current_step"],
         gs["simple_step_indicator"],
@@ -37,10 +38,10 @@ def register_simple_ui_generation(
         gs["simple_gen_info"],                   # 7
         gs["simple_metadata_1"],  # 8
         gs["simple_metadata_2"],  # 9
-        results_section["current_batch_index"],   # 10
-        results_section["total_batches"],         # 11
-        results_section["batch_queue"],           # 12
-        results_section["generation_params_state"], # 13
+        gs["simple_current_batch_index"],   # 10
+        gs["simple_total_batches"],         # 11
+        gs["simple_batch_queue"],           # 12
+        gs["simple_generation_params_state"], # 13
     ]
 
     _gen_shared_inputs = [
@@ -48,10 +49,10 @@ def register_simple_ui_generation(
         gs["simple_lyrics"],
         gs["simple_instrumental"],
         gs["simple_src_audio"],
-        results_section["current_batch_index"],
-        results_section["total_batches"],
-        results_section["batch_queue"],
-        results_section["generation_params_state"],
+        gs["simple_current_batch_index"],
+        gs["simple_total_batches"],
+        gs["simple_batch_queue"],
+        gs["simple_generation_params_state"],
     ]
 
     # Generator must be a bare generator function (not wrapped in lambda)
@@ -71,19 +72,6 @@ def register_simple_ui_generation(
         inputs=_gen_shared_inputs,
         outputs=_gen_outputs,
         show_progress="hidden",
-    )
-
-    # ── Save Buttons ──
-    _save_js = _save_audio_js()
-    gs["simple_save_btn_1"].click(
-        fn=None,
-        inputs=[gs["simple_generated_audio_1"]],
-        js=_save_js,
-    )
-    gs["simple_save_btn_2"].click(
-        fn=None,
-        inputs=[gs["simple_generated_audio_2"]],
-        js=_save_js,
     )
 
     # ── Retry (Try Different Style) ──

@@ -66,12 +66,22 @@ def build_simple_ui() -> dict[str, Any]:
         simple_state_lyrics = gr.State(value="")
         simple_state_audio = gr.State(value=None)
         simple_hamburger_state = gr.State(value=False)
+        # Separate session state: the advanced eight-slot batch queue is never mutated
+        # by the experimental two-slot workflow.
+        simple_current_batch_index = gr.State(value=0)
+        simple_total_batches = gr.State(value=0)
+        simple_batch_queue = gr.State(value={})
+        simple_generation_params_state = gr.State(value={})
 
     result: dict[str, Any] = {
         "simple_column": simple_column,
         "simple_hamburger_btn": simple_hamburger_btn,
         "simple_hamburger_menu": simple_hamburger_menu,
         "simple_hamburger_state": simple_hamburger_state,
+        "simple_current_batch_index": simple_current_batch_index,
+        "simple_total_batches": simple_total_batches,
+        "simple_batch_queue": simple_batch_queue,
+        "simple_generation_params_state": simple_generation_params_state,
         "simple_about_btn": simple_about_btn,
         "simple_help_btn": simple_help_btn,
         "simple_advanced_btn": simple_advanced_btn,

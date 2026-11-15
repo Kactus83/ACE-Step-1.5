@@ -35,18 +35,13 @@ def _build_step_results() -> tuple[gr.Column, dict[str, Any]]:
                     editable=False,
                     show_label=False,
                     container=False,
-                    buttons=[],
+                    buttons=["download"],
                     elem_classes=["simple-audio"],
                 )
                 with gr.Row(elem_classes="simple-meta-row"):
                     simple_metadata_1 = gr.HTML(
                         value="",
                         elem_classes=["simple-metadata"],
-                    )
-                    simple_save_btn_1 = gr.Button(
-                        t("simple_flow.download"),
-                        size="sm",
-                        elem_classes=["simple-save-btn"],
                     )
             with gr.Column(scale=1, elem_classes="simple-result-col") as simple_result_col_2:
                 gr.HTML(
@@ -60,18 +55,13 @@ def _build_step_results() -> tuple[gr.Column, dict[str, Any]]:
                     editable=False,
                     show_label=False,
                     container=False,
-                    buttons=[],
+                    buttons=["download"],
                     elem_classes=["simple-audio"],
                 )
                 with gr.Row(elem_classes="simple-meta-row"):
                     simple_metadata_2 = gr.HTML(
                         value="",
                         elem_classes=["simple-metadata"],
-                    )
-                    simple_save_btn_2 = gr.Button(
-                        t("simple_flow.download"),
-                        size="sm",
-                        elem_classes=["simple-save-btn"],
                     )
         simple_gen_info = gr.HTML(
             value="",
@@ -98,8 +88,6 @@ def _build_step_results() -> tuple[gr.Column, dict[str, Any]]:
         "simple_result_col_2": simple_result_col_2,
         "simple_metadata_1": simple_metadata_1,
         "simple_metadata_2": simple_metadata_2,
-        "simple_save_btn_1": simple_save_btn_1,
-        "simple_save_btn_2": simple_save_btn_2,
         "simple_gen_info": simple_gen_info,
         "simple_retry_btn": simple_retry_btn,
         "simple_new_btn": simple_new_btn,

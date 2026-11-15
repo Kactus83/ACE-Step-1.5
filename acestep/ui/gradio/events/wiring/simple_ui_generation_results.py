@@ -93,8 +93,10 @@ def _finish_simple_generation(
         saved_params["seed"] = str(resolved_seed)
         saved_params["random_seed_checkbox"] = False
 
+    # Append a new independent session batch; do not overwrite a previous song.
+    next_batch_index = max(current_batch_index, total_batches)
     batch_queue = store_batch_in_queue(
-        batch_queue, current_batch_index,
+        batch_queue, next_batch_index,
         all_audio_paths, generation_info_text,
         final_result[SEED_VALUE_INDEX] if len(final_result) > SEED_VALUE_INDEX else "",
         scores=[""] * 8,
@@ -105,7 +107,7 @@ def _finish_simple_generation(
         status="completed",
     )
 
-    total_batches = max(total_batches, current_batch_index + 1)
+    total_batches = max(total_batches, next_batch_index + 1)
 
     # all_audio_paths alternates [audio, json, audio, json, ...]
     # Use every-other index to skip JSON sidecar paths
@@ -113,8 +115,9 @@ def _finish_simple_generation(
     audio_1 = audio_paths_list[0] if len(audio_paths_list) >= 1 else None
     audio_2 = audio_paths_list[2] if len(audio_paths_list) >= 3 else None
 
-    meta_1 = _build_metadata_html(0, params["audio_format"])
-    meta_2 = _build_metadata_html(0, params["audio_format"])
+    # A degraded MP3 export may have produced WAV files; display actual formats.
+    meta_1 = _build_metadata_html(0, audio_1.rsplit(".", 1)[-1] if audio_1 else "")
+    meta_2 = _build_metadata_html(0, audio_2.rsplit(".", 1)[-1] if audio_2 else "")
 
     # Surface real export degradation rather than claiming a fully successful export.
     displayed_status = (
@@ -135,7 +138,7 @@ def _finish_simple_generation(
         gr.update(value=gen_status),  # 7
         gr.update(value=meta_1),  # 8
         gr.update(value=meta_2),  # 9
-        current_batch_index,  # 10
+        next_batch_index,  # 10
         total_batches,  # 11
         batch_queue,  # 12
         saved_params,  # 13
