@@ -9,7 +9,7 @@ import { ConnectionStore } from "../../core/connection.store";
 import { normalizeAudioUrl } from "../../core/api-decoder";
 import { GeneratedAudio, StudioJob } from "../../core/api.types";
 import {
-  decodeLibraryTrack,
+  decodeLibraryTrack, encodeLibraryCatalog,
   importLibraryJson, MAX_PROJECTS, MAX_TRACKS, normalizeTags
 } from "./library.codec";
 import { LibraryProject } from "./library.types";

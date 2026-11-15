@@ -77,7 +77,8 @@ export class LibraryPersistence implements OnDestroy {
    */
   save(projects: readonly LibraryProject[]): void {
     const current = localStorage.getItem(KEY);
-    if (current !== this.lastSeen) {
+    const observed = this.lastSeen;
+    if (current !== observed) {
       try {
         const latest = this.decode(current);
         this.lastSeen = current;
@@ -85,7 +86,7 @@ export class LibraryPersistence implements OnDestroy {
       } catch {
         throw new Error("Stored catalog is corrupt; export or recover it before writing.");
       }
-      assertCatalogSnapshot("", null);
+      assertCatalogSnapshot(observed, current);
     }
     const serialized = JSON.stringify(encodeLibraryCatalog(projects));
     if (new TextEncoder().encode(serialized).byteLength > MAX_BYTES) {
