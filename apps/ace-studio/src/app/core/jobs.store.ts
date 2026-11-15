@@ -54,7 +54,8 @@ export class JobsStore implements OnDestroy {
   }
 
   /** @public Queue generation, retaining input values only in memory. */
-  async submit(request: GenerateRequest, source?: File, reference?: File): Promise<void> {
+  async submit(request: GenerateRequest, source?: File, reference?: File,
+    displayTitle?: string): Promise<void> {
     if (this.submitting()) return;
     this.submitting.set(true);
     this.error.set(null);
@@ -63,7 +64,7 @@ export class JobsStore implements OnDestroy {
       const accepted = await this.api.submit(request, source, reference);
       if (revision !== this.connection.revision()) return;
       const job: StudioJob = {
-        id: accepted.task_id, title: request.track_name || request.prompt.slice(0, 72) || "New track",
+        id: accepted.task_id, title: displayTitle || request.prompt.slice(0, 72) || "New track",
         createdAt: Date.now(), phase: "queued", progressText: "Queued",
         results: [], request
       };
@@ -150,4 +151,5 @@ export class JobsStore implements OnDestroy {
     if (this.timer) clearTimeout(this.timer);
   }
 }
+
 

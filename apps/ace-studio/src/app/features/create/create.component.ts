@@ -99,7 +99,7 @@ export class CreateComponent implements OnInit {
     this.error.set(null);
     try {
       const blob = await this.api.audio(draft.source.file);
-      this.source.set(audioBlobToSourceFile(blob));
+      this.source.set(audioBlobToSourceFile(blob, draft.source.file));
       this.workflow.clear();
     } catch (error: unknown) {
       this.error.set(error instanceof Error ? error.message : "Unable to load generated source.");
@@ -144,9 +144,10 @@ export class CreateComponent implements OnInit {
       const draft = this.workflow.draft();
       if (mode !== "text2music" && !sourceFile && draft) {
         const blob = await this.api.audio(draft.source.file);
-        sourceFile = audioBlobToSourceFile(blob);
+        sourceFile = audioBlobToSourceFile(blob, draft.source.file);
       }
-      await this.jobs.submit(request, sourceFile || undefined, this.reference() || undefined);
+      await this.jobs.submit(request, sourceFile || undefined,
+        this.reference() || undefined, value.track_name.trim() || undefined);
       if (this.jobs.error()) { this.error.set(this.jobs.error()); return; }
       this.showJobs.emit();
     } catch (error: unknown) {
@@ -154,6 +155,7 @@ export class CreateComponent implements OnInit {
     }
   }
 }
+
 
 
 
