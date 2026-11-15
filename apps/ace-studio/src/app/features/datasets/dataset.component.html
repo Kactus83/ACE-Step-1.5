@@ -1,0 +1,20 @@
+<div class="page-heading">
+  <div><p class="eyebrow">TRAINING / DATA PREPARATION</p>
+    <h1>Prepare your dataset.</h1>
+    <p class="lead">Curate server-hosted audio, label samples and preprocess tensors for LoRA or LoKr training.</p>
+  </div>
+</div>
+@if (dataset.error()) { <p class="notice danger" role="alert">{{ dataset.error() }}</p> }
+@if (dataset.message()) { <p class="notice success" role="status">{{ dataset.message() }}</p> }
+@if (tasks.error()) { <p class="notice danger" role="alert">{{ tasks.error() }}</p> }
+@if (tasks.message()) { <p class="notice success" role="status">{{ tasks.message() }}</p> }
+<div class="dataset-layout">
+  <div class="dataset-column">
+    <ace-dataset-sources />
+    <ace-dataset-workflows />
+  </div>
+  <div class="dataset-column">
+    <ace-dataset-samples />
+  </div>
+</div>
+

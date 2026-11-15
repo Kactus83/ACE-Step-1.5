@@ -1,0 +1,67 @@
+<section class="panel" aria-labelledby="dataset-samples-heading">
+  <div class="section-heading"><div>
+    <p class="eyebrow">02 / SAMPLE METADATA</p><h2 id="dataset-samples-heading">Review your tracks</h2>
+  </div><span class="section-mark" aria-hidden="true">♫</span></div>
+  @if (dataset.overview(); as overview) {
+    <p class="muted">{{ overview.labeled_count }} / {{ overview.num_samples }} samples labeled by the backend.</p>
+    <label class="field" for="dataset-search"><span>Filter by filename, genre, caption</span>
+      <input id="dataset-search" [value]="search()" (input)="searchChanged($event)"
+        placeholder="Search samples…" />
+    </label>
+    <div class="dataset-sample-list" role="group" aria-label="Dataset samples">
+      @for (item of visible(); track item.index) {
+        <button type="button" class="dataset-sample"
+          [class.active]="selectedIndex() === item.index" (click)="choose(item)">
+          <span>{{ item.index + 1 }}. {{ item.filename }}</span>
+          <small>{{ item.labeled ? 'Labeled' : 'Unlabeled' }} · {{ item.genre || 'No genre' }}</small>
+        </button>
+      } @empty {
+        <p class="muted">No matching samples.</p>
+      }
+    </div>
+    @if (overview.num_samples > 100) {
+      <p class="small-note">Showing up to 100 matching samples. Filter to locate others.</p>
+    }
+    @if (selected(); as sample) {
+      <form [formGroup]="form" (ngSubmit)="save()" class="dataset-editor">
+        <p class="eyebrow">EDITING / SAMPLE {{ sample.index + 1 }}</p>
+        <p class="muted">Source: {{ sample.filename }} · {{ sample.duration }}s</p>
+        <label class="field" for="sample-caption"><span>Caption / musical description</span>
+          <textarea id="sample-caption" formControlName="caption" rows="3"></textarea>
+        </label>
+        <label class="field" for="sample-genre"><span>Genre tags</span>
+          <input id="sample-genre" formControlName="genre" />
+        </label>
+        <label class="field" for="sample-lyrics"><span>Lyrics</span>
+          <textarea id="sample-lyrics" formControlName="lyrics" rows="4"></textarea>
+        </label>
+        <div class="field-row">
+          <label class="field" for="sample-bpm"><span>BPM (0 = unknown)</span>
+            <input type="number" id="sample-bpm" formControlName="bpm" min="0" max="400" />
+          </label>
+          <label class="field" for="sample-key"><span>Key</span>
+            <input id="sample-key" formControlName="keyscale" />
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field" for="sample-timesig"><span>Time signature</span>
+            <input id="sample-timesig" formControlName="timesignature" />
+          </label>
+          <label class="field" for="sample-lang"><span>Vocal language</span>
+            <input id="sample-lang" formControlName="language" />
+          </label>
+        </div>
+        <label class="checkbox-label"><input type="checkbox" formControlName="is_instrumental" />
+          <span>Instrumental sample</span>
+        </label>
+        <button class="secondary-action" type="submit"
+          [disabled]="form.invalid || dataset.busy()">Save sample metadata</button>
+      </form>
+    } @else {
+      <p class="small-note">Select an indexed sample to review or edit its metadata.</p>
+    }
+  } @else {
+    <p class="muted">Scan or load a dataset on the Python backend to inspect its samples.</p>
+  }
+</section>
+

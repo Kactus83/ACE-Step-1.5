@@ -1,0 +1,57 @@
+<section class="panel" aria-labelledby="dataset-sources-heading">
+  <div class="section-heading"><div>
+    <p class="eyebrow">01 / SOURCE</p><h2 id="dataset-sources-heading">Open or create dataset</h2>
+  </div><span class="section-mark" aria-hidden="true">▧</span></div>
+  <p class="muted">All paths below refer to the Python backend machine. The active dataset is shared by users of this server; replacing it can discard unsaved metadata.</p>
+  <details class="advanced" open>
+    <summary>Scan audio directory</summary>
+    <form [formGroup]="scanForm" (ngSubmit)="scan()" (input)="invalidate()" (change)="invalidate()">
+      <label class="field" for="dataset-audio-dir"><span>Backend audio directory</span>
+        <input id="dataset-audio-dir" formControlName="audio_dir" placeholder="/data/audio" required />
+      </label>
+      <label class="field" for="dataset-scan-name"><span>Dataset name</span>
+        <input id="dataset-scan-name" formControlName="dataset_name" required />
+      </label>
+      <label class="field" for="dataset-tag"><span>Custom activation tag</span>
+        <input id="dataset-tag" formControlName="custom_tag" />
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" formControlName="all_instrumental" />
+        <span>All samples instrumental</span>
+      </label>
+      <button class="secondary-action" type="submit" [disabled]="scanForm.invalid || dataset.busy()">
+        {{ confirmation() ? 'Confirm server action' : 'Review scan / replace' }}
+      </button>
+    </form>
+  </details>
+  <details class="advanced">
+    <summary>Load saved dataset JSON</summary>
+    <form [formGroup]="loadForm" (ngSubmit)="load()" (input)="invalidate()">
+      <label class="field" for="dataset-json-path"><span>Existing backend JSON path</span>
+        <input id="dataset-json-path" formControlName="dataset_path" required />
+      </label>
+      <button class="secondary-action" type="submit" [disabled]="loadForm.invalid || dataset.busy()">
+        {{ confirmation() ? 'Confirm server action' : 'Review load / replace' }}
+      </button>
+    </form>
+  </details>
+  <details class="advanced">
+    <summary>Save dataset to backend filesystem</summary>
+    <form [formGroup]="saveForm" (ngSubmit)="save()" (input)="invalidate()">
+      <label class="field" for="dataset-save-path"><span>Output JSON path</span>
+        <input id="dataset-save-path" formControlName="save_path" placeholder="/data/studio_dataset.json" required />
+      </label>
+      <label class="field" for="dataset-save-name"><span>Saved dataset name</span>
+        <input id="dataset-save-name" formControlName="dataset_name" required />
+      </label>
+      <button class="secondary-action" type="submit"
+        [disabled]="saveForm.invalid || !dataset.overview() || dataset.busy()">
+        {{ confirmation() ? 'Confirm server action' : 'Review save to disk' }}
+      </button>
+    </form>
+  </details>
+  <div class="dataset-footer">
+    <button class="quiet" type="button" [disabled]="dataset.busy()" (click)="refresh()">Refresh from backend</button>
+  </div>
+</section>
+
