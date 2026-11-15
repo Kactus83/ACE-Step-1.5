@@ -11,7 +11,7 @@ Consolidation PR #1 was already merged independently. Do not reapply it.
 
 1. Root `AGENTS.md`, Studio `AGENTS.md` and `README.md`.
 2. `docs/architecture.md`, `docs/contracts.md`, `docs/functional-coverage.md`.
-3. `docs/source-checkpoint-4.md`, `docs/continuation.md`.
+3. `docs/source-checkpoint-5.md`, `docs/continuation.md`.
 4. `docs/review-architecture.md`, `docs/review-ux.md`,
    `docs/security-review.md`, and `docs/verification.md`.
 
@@ -35,8 +35,9 @@ Consolidation PR #1 was already merged independently. Do not reapply it.
 
 - `/v1/dataset/sample/{index}` is a PUT route, now preflight allowed via the
   narrow Studio CORS helper. Confirm browser end-to-end editing.
-- `/v1/training/export` deletes an existing destination directory. Keep its
-  UI warning, typed confirmation and path-validation boundary.
+- The new `/v1/studio/training/export` route refuses a destination that
+  already exists or conflicts with training source. **Never** redirect Studio
+  back to legacy `/v1/training/export`, which remains destructive.
 - `/release_task` expert DCW fields were made available through a narrow
   Python HTTP adapter change; verify server defaults when not set.
 - Browser-local bookmarks are metadata-only and may become unplayable if the
@@ -47,4 +48,5 @@ Consolidation PR #1 was already merged independently. Do not reapply it.
 
 **This is a continuing-source handoff, not a claim that the PR has passed CI.**
 Only the user can authorize promoting/merging the completed and accepted work.
+
 

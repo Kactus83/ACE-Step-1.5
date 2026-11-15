@@ -1,72 +1,68 @@
-# ACE Studio — Coordinator continuity and source completion plan
+# ACE Studio — Coordinator continuity, post-checkpoint 5
 
-**Repository:** `Kactus83/ACE-Step-1.5`
-**Branch:** `feature/ace-studio-angular-tauri`
-**Draft PR:** https://github.com/Kactus83/ACE-Step-1.5/pull/2
-**Synchronized fork main:** `d207bdd283dc726a0d9c711ca518dcf3accd1381`
-(merged into this feature branch through two-parent commit `73b32efc`).
-**Progress:** substantial authored source; **not 100% complete** and no executed
-build, browser, GPU or packaged Tauri acceptance evidence.
+Repo: `Kactus83/ACE-Step-1.5` · Branch:
+`feature/ace-studio-angular-tauri` · Draft PR:
+https://github.com/Kactus83/ACE-Step-1.5/pull/2
 
-## Completed source tracks
+Fork `main` at last synchronization: `d207bdd283dc726a0d9c711ca518dcf3accd1381`
+via merge `73b32efc`. Do not merge PR #2, force-push or reapply
+consolidation PR #1. The local CI team will test after source completion.
 
-- Independent Angular 21 standalone Web + Tauri 2 shell, responsive dark and
-  light semantic token themes and local appearance preference.
-- Typed standalone API client, credentialed audio, model discovery and explicit
-  initialization; server counters and bounded job polling with stale-server
-  response invalidation.
-- Text2music, cover/repaint uploads and opt-in waveform, advertised
-  Extract/Lego/Complete, expert scheduler/ADG/DCW/LM control panel.
-- Audio result cards, expanded metadata, search/filter, approximate A/B
-  audition, verified seed/settings restoration, result reuse without auto-run.
-- Safe versioned *browser-local metadata-only* project catalog, intentional
-  bookmarking, tags/favorites, edit, bounded JSON import/export.
-- Datasets scan/load/save, indexed metadata editing, async label/preprocess and
-  latest-task polling; LoRA/LoKr tensor handoff, start/stop, measured loss/log.
-- Guarded trained-adapter export; destructive backend destination overwrite
-  requires typed acknowledgement and two matching user submissions.
-- Narrow opt-in desktop origins plus PUT preflight for dataset editing.
-- Unit/browser/Python tests and successive contradictory *source* reviews.
+## Written in source so far
 
-## Remaining code (continue rather than stopping for absent local compilers)
+- Shared Angular 21/Tauri 2 frontend; typed standalone FastAPI adapter,
+  opt-in native CORS, browser PUT preflight, volatile session key.
+- Model inventories and init, explicit double-confirmed DiT + 5Hz LM load,
+  real queue/status and robust authenticated media fetch.
+- Text2music, Cover, Repaint, Extract/Lego/Complete from advertised models;
+  source preserving/crossfade controls, opt-in waveform and exact upload fields.
+- Expert scheduler/ADG/CFG/DCW/LM CoT and sampling controls; 5Hz LM sample
+  query generation gated by explicit resource warning.
+- Queue search and phases, metadata/seed/details, restorable parameters
+  without auto-running GPU, approximate A/B listening.
+- Browser-local project metadata, tags, favorites, safe import/export and
+  cross-tab stale-save detection; **no permanent audio persistence claim**.
+- Dataset scan/load/save, indexed updates, auto-label, tensor preprocessing;
+  LoRA/LoKr validated starting, status/loss/log and graceful stop.
+- Additive authenticated **non-overwriting** adapter export route; Studio
+  never calls the legacy directory-deleting export endpoint.
+- Dark/light semantic design tokens, keyboard help and Alt+1–6 shortcuts,
+  labels, responsive layout, reduced-motion treatment.
+- Pure Vitest/Python unittest and Playwright mock scenarios authored;
+  structural import/template checks performed on 62 TS modules.
 
-1. Audit and integrate remaining useful generation API modes: audio-code and
-   sample-mode where genuinely supported, cover/reference controls and
-   relevant LM backend/model settings; enforce exact Pydantic/transport fields.
-2. Improve batch explorer, job metadata/seed browsing, repeat/replay and
-   resilient source handling without persisting sensitive media.
-3. Strengthen local catalog consistency across tabs: revisions, concurrent
-   writes and explicit corrupt-storage recovery; document quota and backup
-   boundaries. A durable remote audio library requires a separate backend
-   design and must not be implied.
-4. Strengthen backend response validation, error handling, retries and
-   cancellation semantics only where real API support exists. No fake GPU,
-   VRAM, completion percentage or backend task cancellation.
-5. Add explicit advanced training/dataset lifecycle recovery, pre-existing
-   task detection, destination overwrite constraints and user permission review.
-6. Finish UI quality: keyboard shortcuts, meaningful French localization,
-   responsive/zoom/screen-reader contrast, empty states and concise warnings.
-7. Expand isolated unit and E2E cases for API failures, browser CORS PUT,
-   A/B selection, corrupted catalogs, training/export confirmations,
-   connection switching, accessibility and native desktop permissions.
-8. Perform independent contradictory reviews on concurrency, WebView
-   origin/codec/security and functional parity; commit and document fixes.
-9. In a genuine local machine environment, install locked dependencies and
-   execute Angular build/lint/tests, Playwright, Python regressions, Rust/Tauri
-   bundle and real GPU scenarios. Record exit codes, platform and logs.
-10. Produce a CI-team prompt only after source milestones genuinely close.
-    Do not merge into `main` or mark production-ready without user approval.
+## Priorities for subsequent independent source passes
 
-## Constraints
+1. Complete audited optional audio-code and analysis-only generation
+   workflows with accurate output presentation, avoiding unsupported claims.
+2. Extend batch explorer, grouping and explicit repeat with source reattachment.
+3. Improve local project backup/corrupt-catalog recovery and work through the
+   browser localStorage non-atomic concurrency limitation.
+4. Expand mode-specific model capability detection, errors, request retries,
+   safe timeout policy and precise diagnostics without inventing progress.
+5. Extend training/dataset recovery, active task observation, scheduling
+   controls and server-global-state collision messaging.
+6. Complete localization (especially French), keyboard focus accessibility,
+   responsive/mobile zoom and differentiated light-theme visual QA.
+7. Expand API auth/409 scenarios, malformed result input, exact form requests,
+   Tauri permissions, packaged WebView CORS and genuine GPU acceptance plans.
+8. Perform independent architecture/security and UX reviews after each
+   meaningful integration milestone and apply corrections.
+9. Build with lockfile/dependencies when a real local toolchain becomes
+   available. Run `npm run build/lint/test/e2e:mock/desktop:build`, Python
+   unittest and real hardware tests; record evidence and fix defects.
+10. Update this file and PR status after every pass. Declare 100% only
+    when source is actually complete, not because local compilation is absent.
 
-Each source increment must be committed/pushed to its own feature branch.
-Never force-push, replay consolidation PR #1, alter the Python inference
-architecture, auto-load models, or introduce generic native filesystem/shell
-permissions. Operator confirmation is mandatory before risky server actions.
-Compilation absence **does not authorize abandoning source implementation**.
+## Never claim verified without executed evidence
 
-Backend datasets and audio outputs are server-owned. LocalStorage is not a
-backup. Imported JSON may contain creative metadata; passwords/API keys must
-never be saved. Changes involving the source backend require regression tests
-and a clear opt-in compatibility assessment.
+This pass used GitHub connector tree/file comparisons and writes. The 62
+TypeScript application files had **no unresolved relative imports, missing
+templateUrl targets or >200-line modules** at the static checkpoint.
+This is *not* proof that Angular templates compile or that browser/GPU/Tauri
+workflows run. The installed toolchain cannot access the repository and npm
+dependencies for meaningful runtime execution in this environment.
+
+If a user says "continue", implement the next source tranche immediately.
+Do not return only environmental blockers or ask previously answered questions.
 

@@ -1,46 +1,59 @@
-# Security and compatibility review (source-level, not penetration testing)
+# ACE Studio — Security and compatibility review
 
-## Trust boundaries
+Source-level review only; **not a penetration test, compiled audit or release approval**.
 
-1. **Backend identity:** explicit validated HTTPS or loopback HTTP base URL,
-   session-only API key in memory; changing endpoint/credentials invalidates
-   stale jobs, training/dataset displays and audio previews.
-2. **Protected results:** authenticated Blob fetch through the configured
-   origin and exact `/v1/audio?path=...` route. Arbitrary external URLs,
-   custom protocols and mismatched origins must not receive credentials.
-3. **Persistence:** localStorage holds only endpoint, appearance, whitelisted
-   presets and an explicit versioned local metadata catalog. It may contain
-   private lyrics, prompts, notes, tags and backend references, **unencrypted**;
-   there is no secure desktop keychain, remote sync or persisted audio binary.
-4. **Tauri host:** one shared Angular app, no native shell/filesystem commands
-   or arbitrary local file permissions. Packaged Tauri webviews require
-   operator-enabled fixed CORS origins; CORS is *not* authentication.
-5. **Server files:** dataset scanning, tensor validation/training and adapter
-   export accept server-side user-entered paths. They are processed by Python,
-   not browser filesystem operations. Security and permissions are ultimately
-   backend responsibilities.
-6. **Destructive export:** ACE-Step removes an existing destination folder
-   when exporting LoRA/LoKr. The Studio client warns clearly, rejects obvious
-   root/overlapping/traversal paths, demands typed OVERWRITE and double click.
-   UI path checks cannot prevent symlink aliasing or establish if a server
-   directory already exists. The backend must be protected by OS permissions.
-7. **CORS method:** explicit GET/POST/**PUT**/OPTIONS permits actual sample
-   metadata editing from a browser, without adding wildcards or trusting input.
+## Enforced trust boundaries
 
-## Unresolved release risks
+1. **Backend identity:** only explicitly selected HTTPS or loopback HTTP;
+   API key remains session-only. Endpoint or credentials changes invalidate
+   stale task, model, dataset, training and audio states.
+2. **Untrusted responses:** inventories, job statuses, references, task IDs,
+   counters and envelope shapes are checked before display or use. Angular
+   displays backend descriptions as escaped text, never dynamic HTML.
+3. **Audio:** authenticated Blob download, exact origin and route allowlist.
+   Audio URLs and generated output references are not native file permissions.
+4. **Local catalog:** versioned whitelisted metadata, no persisted tokens or
+   audio bytes. Cross-tab storage events propagate remote changes and stale
+   writes are refused when detected. A localStorage check is not atomic,
+   so a simultaneous-millisecond race remains possible.
+5. **Tauri:** shared Angular Web and desktop frontend; no generic native
+   filesystem/shell permission. Fixed desktop CORS origins require explicit
+   backend opt-in. CORS is not authentication.
+6. **Server-side files:** data scan, tensor preparation and training accept
+   authenticated server filesystem paths, not paths to the browser computer.
+7. **Safe adapter export:** Studio calls only authenticated
+   `POST /v1/studio/training/export`. The additive endpoint validates
+   source/target overlap, refuses empty source, existing destinations and
+   source-contained symlinks. Copytree has non-overwrite semantics; the
+   **legacy `/v1/training/export` retains its existing deletion behavior**
+   for older consumers, but Studio never uses it.
+8. **Resource consent:** DiT and 5Hz-LM initialization need two matching
+   clicks; sample-mode lazy LM initialization warns before submitting when
+   the LM is not ready. No silent inference process starts.
 
-- Verify API 401/403/429, source audio codec handling, malicious response
-  envelopes/filenames, expired audio paths and cross-origin behavior.
-- Review raw `/v1/training/export` permissions and symlink/overwrite behavior
-  for remote or multi-user deployments; never treat frontend confirmation as
-  sufficient security boundary.
-- Add storage revision policy for concurrent tabs and explicit recovery from
-  corrupted local metadata; protect prompts/notes on shared computers.
-- Confirm Angular content-security policy, Tauri WebView2 origin and native
-  capabilities across platforms.
-- Run dependency security scan, browser accessibility checks and a local
-  security review. No penetration test or runtime assurance has been obtained.
+## Residual risks
 
-No silent Python process creation, model initialization, credential storage,
-network wildcard or automatic GPU job has been added by the Studio frontend.
+- The new export route has no atomic OS-level sandbox: filesystem permission,
+  parent-symlink races and other processes on the Python host require a trusted
+  operator environment. No privilege escalation or broad native permission is
+  intended.
+- Browser localStorage is unencrypted and can contain user prompts, lyrics,
+  annotations, tags, model names and temporary backend audio paths. These
+  should not be used as sensitive-secret storage.
+- Server-global datasets are not tenant-separated; concurrent users can
+  replace or edit a single working dataset.
+- Python result retention remains temporary; a local bookmark does not
+  guarantee audio availability. Download important results separately.
+- No formal dependency scan, browser CSP/WCAG review, WebView packaging,
+  real codec validation or GPU acceptance has been performed.
+- The existing legacy destructive export route is still reachable with
+  appropriate API authorization; deployments should restrict privileged
+  API access and server filesystem permissions.
+
+## Acceptance before merge
+
+Verify real 401/403/404/409 behavior, blocked cross-origin URLs, CORS preflight
+PUT, safe-export conflicts and symlink test, local-storage corruption and
+multi-tab races, model initialization resource use, native CSP/permissions,
+screen reader, contrast, responsive layouts and the original Python CLI/Gradio.
 
