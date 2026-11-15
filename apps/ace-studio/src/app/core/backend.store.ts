@@ -45,15 +45,17 @@ export class BackendStore {
 
   /** @public Request explicit model loading, then refresh observed status. */
   async load(name: string): Promise<void> {
+    let success = false;
     this.busy.set(true);
     this.error.set(null);
     try {
       await this.api.initializeModel(name);
+      success = true;
     } catch (error: unknown) {
       this.error.set(error instanceof Error ? error.message : "Model initialization failed.");
     } finally {
       this.busy.set(false);
     }
-    await this.refresh();
+    if (success) await this.refresh();
   }
 }

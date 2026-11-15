@@ -41,9 +41,14 @@ export class AudioService implements OnDestroy {
     setTimeout(() => URL.revokeObjectURL(url), 3000);
   }
 
-  /** @public Release every preview blob URL when the service is destroyed. */
-  ngOnDestroy(): void {
+  /** @public Invalidate authenticated preview URLs after credentials or endpoint change. */
+  clear(): void {
     for (const url of this.urls.values()) URL.revokeObjectURL(url);
     this.urls.clear();
+  }
+
+  /** @public Release every preview blob URL when the service is destroyed. */
+  ngOnDestroy(): void {
+    this.clear();
   }
 }

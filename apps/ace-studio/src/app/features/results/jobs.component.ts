@@ -4,6 +4,7 @@
  * @public
  */
 import { Component, inject, output } from "@angular/core";
+import { DatePipe } from "@angular/common";
 import { JobsStore } from "../../core/jobs.store";
 import { GeneratedAudio } from "../../core/api.types";
 import { WorkflowStore } from "../../core/workflow.store";
@@ -13,7 +14,7 @@ import { AudioCardComponent } from "./audio-card.component";
 @Component({
   selector: "ace-jobs",
   standalone: true,
-  imports: [AudioCardComponent],
+  imports: [AudioCardComponent, DatePipe],
   templateUrl: "./jobs.component.html"
 })
 export class JobsComponent {

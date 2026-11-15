@@ -115,6 +115,19 @@ export class JobsStore implements OnDestroy {
     }
   }
 
+  /**
+   * @public Reset local task history when switching to a different backend.
+   * @remarks Does not cancel any running computation on the prior server.
+   */
+  resetSession(): void {
+    if (this.timer) clearTimeout(this.timer);
+    this.timer = undefined;
+    this.jobs.set([]);
+    this.error.set(null);
+    this.failureCount = 0;
+    this.persist();
+  }
+
   /** @public Forget a local item; does not cancel the backend GPU computation. */
   forget(id: string): void {
     this.jobs.update(items => items.filter(job => job.id !== id));

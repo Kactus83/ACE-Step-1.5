@@ -63,9 +63,8 @@ export class CreateComponent implements OnInit {
   readonly selectedMode = computed(() => this.changes().task_type || "text2music");
   readonly selectedModel = computed(() => this.changes().model || "");
   readonly supportedModes = computed<readonly TaskType[]>(() => {
-    const current = this.backend.inventory()?.models.find(
-      item => item.name === this.selectedModel()
-    );
+    const selected = this.selectedModel() || this.backend.inventory()?.default_model;
+    const current = this.backend.inventory()?.models.find(item => item.name === selected);
     const tasks = current?.supported_task_types || ["text2music"];
     return (["text2music", "cover", "repaint", "lego", "extract", "complete"] as TaskType[])
       .filter(mode => tasks.includes(mode) || mode === "text2music");
