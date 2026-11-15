@@ -18,7 +18,7 @@ export default defineConfig({
       timeout: 15_000
     },
     {
-      command: "npx ng serve --host 127.0.0.1 --port 4211",
+      command: "ng serve --host 127.0.0.1 --port 4211",
       url: "http://127.0.0.1:4211",
       reuseExistingServer: false,
       timeout: 120_000
