@@ -12,6 +12,7 @@
     "desktop": "tauri dev",
     "desktop:build": "tauri build",
     "test": "vitest run",
+    "e2e:mock": "playwright test",
     "test:watch": "vitest",
     "lint": "eslint ."
   },
@@ -32,6 +33,7 @@
     "@typescript-eslint/parser": "^8.46.0",
     "eslint": "^9.39.0",
     "typescript": "~5.9.3",
-    "vitest": "^3.2.0"
+    "vitest": "^3.2.0",
+    "@playwright/test": "^1.56.0"
   }
 }
