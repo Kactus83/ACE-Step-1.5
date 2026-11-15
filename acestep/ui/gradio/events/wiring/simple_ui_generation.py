@@ -1,10 +1,9 @@
 """Run the simplified creation flow using the existing progress generator."""
 
-import gc
+import html
 from typing import Any
 
 import gradio as gr
-import torch
 from loguru import logger
 
 from acestep.inference import create_sample
@@ -30,10 +29,6 @@ def _simple_generate_wrapper(
     generation_params_state: dict,
 ):
     """Generate music and stream progress through steps 4 and 5."""
-    gc.collect()
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-
     # Never reinitialize a service silently from a generation callback.
     if dit_handler is None or getattr(dit_handler, "model", None) is None:
         raise gr.Error("No DiT model loaded. Open Advanced settings to load one.")
@@ -169,9 +164,15 @@ def _simple_generate_wrapper(
             gr.skip(),                                         # 3: step 3
             gr.skip(),                                         # 4: step 4
             gr.skip(),                                         # 5: step 5
-            gr.update(value='<div class="simple-progress-status">'
-                     f'{partial[PROGRESS_STATUS_INDEX] if len(partial) > PROGRESS_STATUS_INDEX else "Creating..."}'
-                     '</div>'),                                # 6: progress
+            gr.update(
+                value='<div class="simple-progress-status">'
+                + html.escape(str(
+                    partial[PROGRESS_STATUS_INDEX]
+                    if len(partial) > PROGRESS_STATUS_INDEX
+                    else "Creating..."
+                ))
+                + '</div>'
+            ),                                # 6: progress
             gr.skip(),                                         # 7: gen info
             gr.skip(),                                         # 8: metadata 1
             gr.skip(),                                         # 9: metadata 2
