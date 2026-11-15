@@ -90,5 +90,3 @@ def _build_step_results() -> tuple[gr.Column, dict[str, Any]]:
         "simple_retry_btn": simple_retry_btn,
         "simple_new_btn": simple_new_btn,
     }
-
-

@@ -35,8 +35,6 @@ def _build_step_describe() -> tuple[gr.Column, dict[str, Any]]:
         "simple_random_btn": simple_random_btn,
         "simple_step1_continue_btn": simple_step1_continue_btn,
     }
-
-
 def _build_step_lyrics() -> tuple[gr.Column, dict[str, Any]]:
     """Build Step 2: Lyrics."""
     with gr.Column(visible=False, elem_id="simple-step-2", elem_classes="simple-step") as col:
@@ -140,5 +138,3 @@ def _build_step_creating() -> tuple[gr.Column, dict[str, Any]]:
         "simple_step_4": col,
         "simple_progress_text": simple_progress_text,
     }
-
-

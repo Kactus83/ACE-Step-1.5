@@ -86,8 +86,6 @@ def _build_header() -> str:
         </div>
     </div>
     '''
-
-
 def _about_overlay_html() -> str:
     """Return the About modal content."""
     return f'''
@@ -98,5 +96,3 @@ def _about_overlay_html() -> str:
         {html.escape(t("simple_flow.about_description"))}
     </p>
     '''
-
-

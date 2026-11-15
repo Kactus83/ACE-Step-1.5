@@ -34,7 +34,6 @@ def register_simple_ui_navigation(
         inputs=[gs["simple_state_current_step"]],
         outputs=_nav_outputs,
     )
-
     # ── Step 2 → Step 3 ──
     gs["simple_step2_continue_btn"].click(
         fn=lambda state: _navigate_to(3, state),
@@ -117,4 +116,3 @@ def register_simple_ui_navigation(
         inputs=[],
         outputs=[gs["simple_song_style"]],
     )
-

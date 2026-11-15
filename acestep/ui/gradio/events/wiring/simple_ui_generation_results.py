@@ -144,5 +144,3 @@ def _finish_simple_generation(
         batch_queue,  # 12
         saved_params,  # 13
     )
-
-
