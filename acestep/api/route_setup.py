@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.datastructures import UploadFile as StarletteUploadFile
 
 from acestep.api.http.audio_route import register_audio_route
+from acestep.api.http.studio_cors import optional_studio_origins
 from acestep.api.http.lora_routes import register_lora_routes
 from acestep.api.http.model_service_routes import register_model_service_routes
 from acestep.api.http.query_result_route import register_query_result_route
@@ -61,7 +62,7 @@ def configure_api_routes(
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["null", "http://localhost", "http://127.0.0.1"],
+        allow_origins=["null", "http://localhost", "http://127.0.0.1", *optional_studio_origins()],
         allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
         allow_methods=["GET", "POST", "OPTIONS"],
         allow_headers=["Content-Type", "Authorization"],
