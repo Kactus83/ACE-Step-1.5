@@ -44,8 +44,10 @@ Source-level review only; **not a penetration test, compiled audit or release ap
   replace or edit a single working dataset.
 - Python result retention remains temporary; a local bookmark does not
   guarantee audio availability. Download important results separately.
-- No formal dependency scan, browser CSP/WCAG review, WebView packaging,
-  real codec validation or GPU acceptance has been performed.
+- npm production dependency audit reports zero findings; 21 moderate findings
+  remain in development tooling because npm offers only incompatible major
+  changes. No browser CSP/WCAG review, signed installer test, real codec
+  validation or GPU acceptance has been performed.
 - The existing legacy destructive export route is still reachable with
   appropriate API authorization; deployments should restrict privileged
   API access and server filesystem permissions.

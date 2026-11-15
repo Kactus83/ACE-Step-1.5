@@ -1,14 +1,14 @@
 # ACE Studio — Functional coverage against ACE-Step 1.5
 
-Status: **source authored, unexecuted**. No Angular, Rust, browser E2E, real GPU,
-Python regression or accessibility test has been successfully executed in this
-GitHub-only development environment. “Written” therefore means **code exists**,
-not “working in production”. “Partial” identifies additional scope or acceptance
-required. The standalone FastAPI server is the only supported backend profile.
+Status: **locally compiled and mock-qualified on Windows**. Angular, Rust,
+focused Python, Windows desktop packaging, 78 unit tests and 20 browser-mock
+scenarios passed on 15 November 2026. Real GPU/model, full Python regression,
+signed-installer, screen-reader and non-Windows acceptance remains pending.
+The standalone FastAPI server is the only supported backend profile.
 
 | Capability | Source | Verification / limitations |
 | --- | --- | --- |
-| Angular 21 + Tauri 2 optional client | Written | Shared frontend, no embedded inference process; native packaging untested |
+| Angular 21 + Tauri 2 optional client | Verified locally | Shared frontend; Angular production build plus unsigned Windows MSI/NSIS packaging passed |
 | Connection/authentication/CORS | Written | Explicit HTTPS or loopback URL; volatile API key; Tauri CORS opt-in; CORS PUT added |
 | Backend readiness/model inventory/init | Written | /health, validated /v1/models, double-confirmed DiT + 5Hz LM /v1/init; GPU load untested |
 | Text-to-music | Written | Queued /release_task; prompt, instrumental, lyrics, model plus LM sample_mode/sample_query with resource confirmation; GPU QA pending |
@@ -29,9 +29,9 @@ required. The standalone FastAPI server is the only supported backend profile.
 | Trained adapter export | Written | New authenticated /v1/studio/training/export refuses existing targets and source symlinks; existing legacy endpoint unchanged, backend QA pending |
 | Accessibility | Partial | Semantic labels, focus-visible, skip link, responsive CSS, reduced motion; screen-reader/zoom checks pending |
 | Light and dark appearance | Written | Semantic color tokens and local preference; human contrast/visual QA pending |
-| Keyboard shortcuts / translations | Unavailable | Alt+1..6 navigation, help panel and field-focus guards authored; French translation architecture still pending |
-| Optional Tauri native integration | Partial | Safe WebView shell only, intentionally no shell/filesystem commands; packaging untested |
-| Tests | Written | Pure Vitest, Python unittest and Playwright mock scenarios authored; none executed |
+| Keyboard shortcuts / translations | Partial | Alt+1..6 navigation, help panel and field-focus guards pass browser tests; French translation architecture pending |
+| Optional Tauri native integration | Partial | Safe WebView shell only, intentionally no shell/filesystem commands; Windows MSI/NSIS built, installation and other OSes untested |
+| Tests | Verified locally | 78 Vitest, 20 Playwright mock and 16 focused Python tests passed; one symlink/platform test skipped; full Python/GPU suites pending |
 | Existing Python CLI and Gradio | Source isolated | Opt-in desktop CORS + PUT, DCW parser forwarding, additive no-overwrite export route; complete regression testing pending |
 
 Do not conflate local metadata persistence with permanent backend audio storage.

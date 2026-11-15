@@ -1,8 +1,32 @@
 # ACE Studio — local verification and acceptance gates
 
-The source PR was authored through the GitHub connector. It has **no
-successful build, unit-test, browser or GPU execution evidence** yet.
-Do not substitute source review for command exit codes.
+The source PR was authored through the GitHub connector and independently
+qualified on Windows on 15 November 2026. Angular, browser-mock, focused
+Python and Windows desktop packaging evidence is recorded below. Real GPU,
+real-model, signed-installer and non-Windows acceptance is still pending.
+Do not substitute the completed mock coverage for those remaining gates.
+
+## Executed local evidence (Windows)
+
+- Node `24.22.3` / npm `11.21.2`: clean `npm ci` succeeded from the committed
+  lockfile; `npm run build` and `npm run lint` succeeded.
+- Vitest `4.1.12`: 19 files, 78 tests passed.
+- Playwright Chromium: 20 mock-backend browser scenarios passed, including
+  creation/audio, datasets, training/export, keyboard navigation and
+  cross-tab catalog synchronization.
+- Rust `1.93.0`: `cargo check --locked` and `cargo test --locked` succeeded
+  (the minimal shell currently contains no Rust unit tests).
+- `npm run desktop:build` produced an unsigned x64 MSI and NSIS installer.
+- Python `3.13.7`: the three focused Studio/API unittest modules ran 16 tests
+  successfully with one platform/symlink skip. The repository targets Python
+  3.11–3.12, so this is additive evidence rather than the supported matrix.
+- `npm audit --omit=dev`: zero production vulnerabilities. The full audit
+  reports 21 moderate development-tool findings whose offered remediation is
+  an unqualified Angular CLI 22 major upgrade; these remain documented.
+
+Not executed: full Python discovery, real ACE-Step model/GPU generation or
+training, signed installer installation, WebView visual acceptance, macOS or
+Linux packaging, screen-reader and human contrast review.
 
 ## Local toolchain and dependency evidence
 
@@ -61,7 +85,7 @@ instances. Never treat the fake mock WAV as evidence of inference quality.
    server-global collisions and backend permission errors.
 10. Training: tensor validation, LoRA and LoKr start double-confirmation,
     graceful stop, loss plot from real server points, log truncation.
-11. Export: verify typed OVERWRITE, double confirmation, same/overlapping/root
+11. Export: verify typed EXPORT, double confirmation, same/overlapping/root
     directories rejected; perform actual export only to a throwaway destination.
     The backend deletes an existing destination; verify permissions and
     symlink behavior separately.
@@ -73,8 +97,8 @@ instances. Never treat the fake mock WAV as evidence of inference quality.
 
 ## Non-negotiable release gate
 
-Draft PR stays unmerged until all source scope is completed, actual Angular,
-Python, Rust, Web/desktop and GPU test evidence exists, remaining security
+Draft PR stays unmerged until the remaining real API/GPU, visual,
+multiplatform and full-regression gates are completed, remaining security
 issues are addressed, CI reviewer signs off and user explicitly authorizes
-promotion. A source-level feature matrix is not an acceptance certificate.
+promotion. Local mock and packaging evidence is not a production certificate.
 

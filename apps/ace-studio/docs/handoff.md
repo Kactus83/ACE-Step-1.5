@@ -46,7 +46,9 @@ Consolidation PR #1 was already merged independently. Do not reapply it.
 - Run independent source, runtime and UX/security contradiction checks and
   update the PR scope matrix before requesting review.
 
-**This is a continuing-source handoff, not a claim that the PR has passed CI.**
-Only the user can authorize promoting/merging the completed and accepted work.
+Windows local qualification is recorded in `docs/verification.md`. It does not
+cover real GPU/model execution, full Python regression, signed installation,
+visual assistive-technology acceptance or non-Windows packaging. Only the user
+can authorize promoting/merging the completed and accepted work.
 
 
