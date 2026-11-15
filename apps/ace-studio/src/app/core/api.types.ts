@@ -24,6 +24,14 @@ export interface BackendHealth {
   readonly loaded_model?: string | null;
 }
 
+/** @public Queue and job counters reported by the Python server. */
+export interface BackendStats {
+  readonly jobs: Readonly<Record<string, number>>;
+  readonly queue_size: number;
+  readonly queue_maxsize: number;
+  readonly avg_job_seconds: number;
+}
+
 /** @public Model inventory entry; task types are provided by the server. */
 export interface AceModel {
   readonly name: string;
@@ -115,4 +123,5 @@ export interface StudioJob {
   readonly results: readonly GeneratedAudio[];
   readonly request?: GenerateRequest;
 }
+
 

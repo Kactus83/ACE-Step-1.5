@@ -8,7 +8,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { firstValueFrom } from "rxjs";
 import {
-  BackendHealth, GenerateRequest, ModelInventory, SubmittedTask, TaskRecordDto
+  BackendHealth, BackendStats, GenerateRequest, ModelInventory, SubmittedTask, TaskRecordDto
 } from "./api.types";
 import { ConnectionStore } from "./connection.store";
 import { normalizeAudioUrl, unwrap } from "./api-decoder";
@@ -29,6 +29,13 @@ export class BackendClient {
     const data = await firstValueFrom(this.http.get<unknown>(
       this.connection.endpoint() + "/health", { headers: this.headers() }));
     return unwrap<BackendHealth>(data);
+  }
+
+  /** @public Read backend queue size and authoritative job counters. */
+  async stats(): Promise<BackendStats> {
+    const data = await firstValueFrom(this.http.get<unknown>(
+      this.connection.endpoint() + "/v1/stats", { headers: this.headers() }));
+    return unwrap<BackendStats>(data);
   }
 
   /** @public Enumerate available server models. */
@@ -100,4 +107,5 @@ export class BackendClient {
     }));
   }
 }
+
 

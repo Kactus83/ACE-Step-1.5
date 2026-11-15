@@ -5,7 +5,7 @@
  */
 import { Injectable, inject, signal } from "@angular/core";
 import { BackendClient } from "./backend.client";
-import { BackendHealth, ModelInventory } from "./api.types";
+import { BackendHealth, BackendStats, ModelInventory } from "./api.types";
 import { ConnectionStore } from "./connection.store";
 
 /** @public Shared connection status for studio UI. */
@@ -20,6 +20,8 @@ export class BackendStore {
   readonly health = signal<BackendHealth | null>(null);
   /** @public Server-advertised model capabilities. */
   readonly inventory = signal<ModelInventory | null>(null);
+  /** @public Backend-provided statistics, null when not exposed. */
+  readonly stats = signal<BackendStats | null>(null);
   /** @public Last connection or loading error. */
   readonly error = signal<string | null>(null);
 
@@ -40,10 +42,17 @@ export class BackendStore {
       if (!current()) return;
       this.health.set(health);
       this.inventory.set(inventory);
+      try {
+        const stats = await this.api.stats();
+        if (current()) this.stats.set(stats);
+      } catch {
+        if (current()) this.stats.set(null);
+      }
     } catch (error: unknown) {
       if (!current()) return;
       this.health.set(null);
       this.inventory.set(null);
+      this.stats.set(null);
       this.error.set(error instanceof Error ? error.message : "Backend unavailable.");
     } finally {
       if (sequence === this.requestSequence) this.busy.set(false);
@@ -69,4 +78,5 @@ export class BackendStore {
     if (success && revision === this.connection.revision()) await this.refresh();
   }
 }
+
 

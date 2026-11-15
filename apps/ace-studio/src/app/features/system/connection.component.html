@@ -42,6 +42,18 @@
       <div><dt>Model ready</dt><dd>{{ backend.health()?.models_initialized ? 'Yes' : 'Not reported ready' }}</dd></div>
       <div><dt>Language model</dt><dd>{{ backend.inventory()?.llm_initialized ? 'Ready' : 'Not initialized' }}</dd></div>
     </dl>
+    @if (backend.stats(); as stats) {
+      <h3>Queue diagnostics</h3>
+      <dl class="status-details">
+        <div><dt>Queued</dt><dd>{{ stats.queue_size }} / {{ stats.queue_maxsize }}</dd></div>
+        <div><dt>Running jobs</dt><dd>{{ stats.jobs['running'] ?? '—' }}</dd></div>
+        <div><dt>Succeeded jobs</dt><dd>{{ stats.jobs['succeeded'] ?? '—' }}</dd></div>
+        <div><dt>Failed jobs</dt><dd>{{ stats.jobs['failed'] ?? '—' }}</dd></div>
+        <div><dt>Average job duration</dt><dd>{{ stats.avg_job_seconds }}s</dd></div>
+      </dl>
+    } @else {
+      <p class="small-note">Queue statistics are unavailable from this connection.</p>
+    }
     <h3>Available DiT models</h3>
     @for (model of backend.inventory()?.models || []; track model.name) {
       <div class="model-entry">
@@ -59,3 +71,4 @@
     <p class="small-note">Loading a model may allocate GPU memory or download a checkpoint. It is always an explicit action.</p>
   </section>
 </div>
+
