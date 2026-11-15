@@ -117,6 +117,14 @@ class SimpleFoundationTests(unittest.TestCase):
         self.assertEqual(store_batch.call_args.args[1], 1)
         self.assertFalse(replay["random_seed_checkbox"])
 
+    def test_progress_skips_sentinels_and_escapes_text(self):
+        """Intermediate Gradio skip payloads must not appear as user text."""
+        from acestep.ui.gradio.events.wiring.simple_ui_helpers import (
+            _simple_progress_update,
+        )
+        self.assertNotIn("value", _simple_progress_update(None))
+        self.assertIn("&lt;error&gt;", _simple_progress_update("<error>")["value"])
+
     def test_failure_returns_fourteen_updates_and_keeps_history(self):
         """Failure moves to Done and preserves successful session batch state."""
         from acestep.ui.gradio.events.wiring.simple_ui_helpers import (

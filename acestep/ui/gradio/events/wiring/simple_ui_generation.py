@@ -13,6 +13,7 @@ from acestep.ui.gradio.events.results.batch_management_helpers import _apply_par
 from acestep.ui.gradio.interfaces.simple_ui_markup import _step_indicator_html
 from .simple_ui_helpers import (
     _generation_failure_updates,
+    _simple_progress_update,
     _resolve_simple_lyrics,
 )
 from .simple_ui_generation_results import _finish_simple_generation
@@ -155,14 +156,10 @@ def _simple_generate_wrapper(
             gr.skip(),                                         # 3: step 3
             gr.skip(),                                         # 4: step 4
             gr.skip(),                                         # 5: step 5
-            gr.update(
-                value='<div class="simple-progress-status">'
-                + html.escape(str(
-                    partial[PROGRESS_STATUS_INDEX]
-                    if len(partial) > PROGRESS_STATUS_INDEX
-                    else "Creating..."
-                ))
-                + '</div>'
+            _simple_progress_update(
+                partial[PROGRESS_STATUS_INDEX]
+                if len(partial) > PROGRESS_STATUS_INDEX
+                else None
             ),                                # 6: progress
             gr.skip(),                                         # 7: gen info
             gr.skip(),                                         # 8: metadata 1

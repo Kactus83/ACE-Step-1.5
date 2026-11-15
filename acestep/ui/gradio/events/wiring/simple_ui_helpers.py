@@ -141,3 +141,13 @@ def _generation_failure_updates(
         gr.update(value=""),
         current_batch_index, total_batches, batch_queue, generation_params_state,
     )
+
+def _simple_progress_update(status: Any) -> dict:
+    """Only render actual status strings, never Gradio skip/update sentinels."""
+    if not isinstance(status, str) or not status.strip():
+        return gr.skip()
+    return gr.update(
+        value='<div class="simple-progress-status">'
+        + html.escape(status)
+        + '</div>'
+    )
