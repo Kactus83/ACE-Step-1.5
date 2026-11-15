@@ -23,10 +23,11 @@ class ReferenceAudioValidationTests(unittest.TestCase):
         handler.batch_size = 1
         handler.sample_rate = 48000
         handler.current_offload_cost = 0.0
+        handler.config = None
 
         handler._vram_guard_reduce_batch = lambda batch_size, audio_duration=None: batch_size
         handler.prepare_seeds = lambda batch_size, seed, use_random_seed: ([123] * batch_size, 123)
-        handler.process_reference_audio = lambda _audio_file: None
+        handler.process_reference_audio = lambda _audio_file, seed=None: None
         handler.service_generate = Mock(side_effect=AssertionError("service_generate should not be called"))
 
         result = handler.generate_music(

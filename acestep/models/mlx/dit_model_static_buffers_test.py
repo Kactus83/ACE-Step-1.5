@@ -6,7 +6,7 @@ import unittest
 
 
 @unittest.skipUnless(
-    importlib.util.find_spec("mlx.core") is not None,
+    importlib.util.find_spec("mlx") is not None,
     "MLX is only available on supported Apple Silicon environments.",
 )
 class MLXStaticBufferMaterializationTests(unittest.TestCase):

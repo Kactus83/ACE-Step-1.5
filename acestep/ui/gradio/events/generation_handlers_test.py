@@ -208,16 +208,16 @@ class GenerationHandlersTests(unittest.TestCase):
 
     @patch("acestep.ui.gradio.events.generation.validation.gr.Warning")
     @patch("acestep.ui.gradio.events.generation.validation.soundfile.info")
-    def test_validate_uploaded_audio_file_returns_none_for_invalid_file(
+    def test_validate_uploaded_audio_file_preserves_backend_decodable_file(
         self,
         info_mock,
         warning_mock,
     ):
-        """Invalid audio upload should emit warning toast and clear component value."""
+        """Frontend validation should defer unsupported formats to the backend."""
         info_mock.side_effect = RuntimeError("bad file")
         result = generation_handlers.validate_uploaded_audio_file("broken.bin", "reference")
-        self.assertEqual(result.get("value"), None)
-        warning_mock.assert_called_once()
+        self.assertEqual(result, {"__type__": "update"})
+        warning_mock.assert_not_called()
 
     @patch("acestep.ui.gradio.events.generation.validation.gr.Warning")
     @patch("acestep.ui.gradio.events.generation.validation.soundfile.info")
@@ -234,20 +234,16 @@ class GenerationHandlersTests(unittest.TestCase):
 
     @patch("acestep.ui.gradio.events.generation.validation.gr.Warning")
     @patch("acestep.ui.gradio.events.generation.validation.soundfile.info")
-    def test_validate_uploaded_audio_file_shows_source_role_message(
+    def test_validate_uploaded_audio_file_preserves_source_upload(
         self,
         info_mock,
         warning_mock,
     ):
-        """Source-role validation should surface a source-specific toast message."""
+        """Source uploads should remain available for the backend decoder."""
         info_mock.side_effect = RuntimeError("bad file")
         result = generation_handlers.validate_uploaded_audio_file("broken.bin", "source")
-        self.assertEqual(result.get("value"), None)
-        expected_role = _t("generation.source_audio")
-        expected_message = _t("messages.audio_format_invalid", role=expected_role)
-        warning_mock.assert_called_once_with(
-            expected_message
-        )
+        self.assertEqual(result, {"__type__": "update"})
+        warning_mock.assert_not_called()
 
     @patch("acestep.ui.gradio.events.generation.llm_sample_actions.gr.Info")
     @patch("acestep.ui.gradio.events.generation.llm_sample_actions.create_sample")
