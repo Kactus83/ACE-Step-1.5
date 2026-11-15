@@ -5,6 +5,7 @@
  */
 import { Component, OnInit, computed, inject, output, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
+import { RepaintTimelineComponent } from "./repaint-timeline.component";
 import { createGenerationForm } from "./create.form";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { startWith } from "rxjs";
@@ -20,7 +21,7 @@ import { PresetsStore } from "../../core/presets.store";
 @Component({
   selector: "ace-create",
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RepaintTimelineComponent],
   templateUrl: "./create.component.html"
 })
 export class CreateComponent implements OnInit {
@@ -85,6 +86,32 @@ export class CreateComponent implements OnInit {
       this.source.set(file);
       if (file) this.workflow.clear();
     } else this.reference.set(file);
+  }
+
+  /** @public Synchronize the visual range selection with the advanced time inputs. */
+  setRepaintRange(range: { start: number; end: number }): void {
+    this.form.patchValue({
+      repainting_start: range.start, repainting_end: range.end
+    });
+  }
+
+  /** @public Explicitly retrieve an older generated track for local waveform inspection. */
+  async loadDraftSource(): Promise<void> {
+    const draft = this.workflow.draft();
+    if (!draft || !draft.source.file) return;
+    this.error.set(null);
+    try {
+      const blob = await this.api.audio(draft.source.file);
+      const mime = blob.type.toLowerCase();
+      const extension = mime.includes("mpeg") ? "mp3" : mime.includes("flac") ? "flac"
+        : mime.includes("ogg") ? "ogg" : mime.includes("wav") ? "wav" : "audio";
+      this.source.set(new File([blob], "ace-result." + extension, {
+        type: blob.type || "application/octet-stream"
+      }));
+      this.workflow.clear();
+    } catch (error: unknown) {
+      this.error.set(error instanceof Error ? error.message : "Unable to load generated source.");
+    }
   }
 
   /** @public Stage a title for the next local preset. */

@@ -103,6 +103,15 @@
         <input id="source-audio" type="file" accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a"
           (change)="pickAudio($event, 'source')" class="visually-hidden" />
       }
+      @if (selectedMode() === 'repaint') {
+        @if (workflow.draft() && !source()) {
+          <button type="button" class="secondary-action" (click)="loadDraftSource()">
+            Load generated source for waveform
+          </button>
+        }
+        <ace-repaint-timeline [file]="source()" [start]="changes().repainting_start || 0"
+          [end]="changes().repainting_end || 30" (rangeChange)="setRepaintRange($event)" />
+      }
       <label class="file-picker" for="reference-audio">
         <span class="file-icon" aria-hidden="true">⊛</span>
         <span><strong>{{ reference()?.name || 'Optional reference audio' }}</strong>
