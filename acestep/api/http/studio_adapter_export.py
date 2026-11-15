@@ -53,7 +53,7 @@ def _resolve_allowed_path(value: str, roots: tuple[Path, ...], strict: bool) -> 
     if not value.strip() or any(ord(char) < 32 for char in value):
         raise StudioExportValidationError("A valid server directory is required.")
     # The canonical path is rejected below unless contained in an operator root.
-    # codeql[py/path-injection]
+    # lgtm[py/path-injection]
     raw = Path(value.strip()).expanduser()
     if ".." in raw.parts:
         raise StudioExportValidationError("Parent-directory traversal is forbidden.")
