@@ -1,0 +1,36 @@
+<section class="panel" aria-labelledby="training-export-title">
+  <div class="section-heading"><div>
+    <p class="eyebrow">03 / OUTPUT</p><h2 id="training-export-title">Export trained adapter</h2>
+  </div><span class="section-mark" aria-hidden="true">⇩</span></div>
+  <p class="notice danger">Destructive backend behavior: ACE-Step's existing export
+    endpoint <strong>deletes a destination directory if it already exists</strong>,
+    then copies trained weights. No existence check is exposed to this client.
+    Choose a unique, dedicated output directory. This action cannot be undone by Studio.
+  </p>
+  <form [formGroup]="form" (ngSubmit)="export()" (input)="invalidate()">
+    <label class="field" for="export-source"><span>Training output directory on backend</span>
+      <input id="export-source" formControlName="lora_output_dir"
+        placeholder="/data/training/lora_output" required />
+    </label>
+    <button type="button" class="quiet" (click)="useCurrentOutput()">
+      Use current training output path
+    </button>
+    <label class="field" for="export-target"><span>New export destination directory</span>
+      <input id="export-target" formControlName="export_path"
+        placeholder="/data/exports/my-adapter" required />
+    </label>
+    <label class="field" for="export-acknowledge"><span>Type OVERWRITE to acknowledge deletion risk</span>
+      <input id="export-acknowledge" formControlName="acknowledgement"
+        autocomplete="off" placeholder="OVERWRITE" required />
+    </label>
+    <button type="submit" class="secondary-action danger-action"
+      [disabled]="form.invalid || busy()">
+      {{ busy() ? 'Exporting…' : confirmation() ? 'Confirm destructive export' : 'Review export operation' }}
+    </button>
+  </form>
+  @if (error()) { <p class="notice danger" role="alert">{{ error() }}</p> }
+  @if (message()) { <p class="notice success" role="status">{{ message() }}</p> }
+  <p class="small-note">Source preference: final adapter when present,
+    otherwise the latest epoch checkpoint. All paths belong to the Python server.</p>
+</section>
+
