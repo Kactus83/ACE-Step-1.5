@@ -1,0 +1,42 @@
+/**
+ * @module connection-store
+ * @remarks Nonpersistent API credentials; only the endpoint is saved on this device.
+ * @public
+ */
+import { Injectable, signal } from "@angular/core";
+import { normalizeEndpoint } from "./api-decoder";
+
+/** @public Session-scoped connection configuration shared by all features. */
+@Injectable({ providedIn: "root" })
+export class ConnectionStore {
+  private static readonly key = "ace-studio:endpoint:v1";
+  /** @public Validated backend base URL. */
+  readonly endpoint = signal("http://127.0.0.1:8001");
+  /** @public Session-only API key, never written to browser storage. */
+  readonly apiKey = signal("");
+  /** @public Distinguishes a selected standalone FastAPI profile. */
+  readonly profile = signal<"standalone">("standalone");
+
+  constructor() {
+    try {
+      const saved = localStorage.getItem(ConnectionStore.key);
+      if (saved) this.endpoint.set(normalizeEndpoint(saved));
+    } catch {
+      // Restricted storage mode: in-memory defaults still work.
+    }
+  }
+
+  /**
+   * @public Update endpoint and clear any previous server's credential.
+   * @throws Error if the URL is not safe for a credentialed connection.
+   */
+  setEndpoint(value: string): void {
+    const normalized = normalizeEndpoint(value);
+    if (normalized !== this.endpoint()) this.apiKey.set("");
+    this.endpoint.set(normalized);
+    try { localStorage.setItem(ConnectionStore.key, normalized); } catch { /* optional */ }
+  }
+
+  /** @public Replace session credential, explicitly without persistence. */
+  setApiKey(value: string): void { this.apiKey.set(value.trim()); }
+}

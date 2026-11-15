@@ -1,0 +1,116 @@
+/**
+ * @module api-types
+ * @remarks Types only for the independently verified ACE-Step standalone FastAPI profile.
+ * The backend remains authoritative; these interfaces do not assert Gradio API parity.
+ * @public
+ */
+
+/** @public Shared legacy response envelope returned by ACE-Step. */
+export interface ApiEnvelope<T> {
+  readonly data: T;
+  readonly code: number;
+  readonly error: string | null;
+  readonly timestamp?: number;
+  readonly extra?: unknown;
+}
+
+/** @public Read-only backend readiness. */
+export interface BackendHealth {
+  readonly status: string;
+  readonly service?: string;
+  readonly version?: string;
+  readonly models_initialized?: boolean;
+  readonly llm_initialized?: boolean;
+  readonly loaded_model?: string | null;
+}
+
+/** @public Model inventory entry; task types are provided by the server. */
+export interface AceModel {
+  readonly name: string;
+  readonly is_default?: boolean;
+  readonly is_loaded?: boolean;
+  readonly supported_task_types?: readonly string[];
+}
+
+/** @public Server inventory including optional 5Hz models. */
+export interface ModelInventory {
+  readonly models: readonly AceModel[];
+  readonly default_model?: string | null;
+  readonly lm_models?: readonly AceModel[];
+  readonly llm_initialized?: boolean;
+}
+
+/** @public Supported known generation modes; API may add more in future. */
+export type TaskType = "text2music" | "cover" | "repaint" | "lego" | "extract" | "complete";
+
+/**
+ * @public Serialized generation form for /release_task.
+ * @remarks Deliberately excludes server filesystem paths. Local source uploads use multipart.
+ */
+export interface GenerateRequest {
+  readonly prompt: string;
+  readonly lyrics: string;
+  readonly task_type: TaskType;
+  readonly model?: string;
+  readonly thinking: boolean;
+  readonly audio_duration?: number;
+  readonly bpm?: number;
+  readonly key_scale?: string;
+  readonly time_signature?: string;
+  readonly vocal_language?: string;
+  readonly inference_steps?: number;
+  readonly guidance_scale?: number;
+  readonly batch_size?: number;
+  readonly use_random_seed?: boolean;
+  readonly seed?: number;
+  readonly repainting_start?: number;
+  readonly repainting_end?: number;
+  readonly audio_cover_strength?: number;
+  readonly use_format?: boolean;
+  readonly track_name?: string;
+  readonly audio_format?: "mp3" | "wav" | "flac" | "opus" | "aac" | "wav32";
+}
+
+/** @public Acknowledged queue position, not a finished generation. */
+export interface SubmittedTask {
+  readonly task_id: string;
+  readonly status: string;
+  readonly queue_position?: number;
+}
+
+/** @public Server-facing raw task lookup response. */
+export interface TaskRecordDto {
+  readonly task_id: string;
+  readonly status: number;
+  readonly result: unknown;
+  readonly progress_text?: string;
+}
+
+/** @public Parsed audio result, including optional metadata. */
+export interface GeneratedAudio {
+  readonly file: string;
+  readonly prompt?: string;
+  readonly lyrics?: string;
+  readonly status?: number;
+  readonly seed_value?: string;
+  readonly generation_info?: string;
+  readonly metas?: Readonly<Record<string, unknown>>;
+  readonly error?: string | null;
+  readonly stage?: string;
+  readonly progress?: number;
+}
+
+/** @public Client normalized job phase. */
+export type JobPhase = "queued" | "running" | "succeeded" | "failed" | "unknown";
+
+/** @public One client job and its reproducibility metadata. */
+export interface StudioJob {
+  readonly id: string;
+  readonly title: string;
+  readonly createdAt: number;
+  readonly phase: JobPhase;
+  readonly progressText: string;
+  readonly error?: string;
+  readonly results: readonly GeneratedAudio[];
+  readonly request?: GenerateRequest;
+}
