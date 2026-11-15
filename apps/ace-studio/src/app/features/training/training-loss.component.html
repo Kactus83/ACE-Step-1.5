@@ -1,0 +1,19 @@
+@if (plot(); as data) {
+  <div class="training-loss-chart">
+    <h3>Training loss history</h3>
+    <svg viewBox="0 0 640 160" preserveAspectRatio="none" role="img"
+      [attr.aria-label]="'Training loss from ' + data.max.toFixed(4)
+        + ' to ' + data.min.toFixed(4) + ' across '
+        + data.count + ' server observations'">
+      <line x1="15" y1="145" x2="625" y2="145" class="loss-axis"/>
+      <line x1="15" y1="15" x2="15" y2="145" class="loss-axis"/>
+      <polyline [attr.points]="data.points" class="loss-line"/>
+    </svg>
+    <p class="small-note">Step {{ data.firstStep }}–{{ data.lastStep }} ·
+      min {{ data.min.toFixed(5) }} · max {{ data.max.toFixed(5) }}.
+      Raw history is reported by the Python trainer; no extrapolation.</p>
+  </div>
+} @else {
+  <p class="small-note">The trainer has not reported numeric loss samples yet.</p>
+}
+
