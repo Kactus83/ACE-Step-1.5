@@ -80,6 +80,50 @@ class SimpleUiDurationTests(unittest.TestCase):
         self.assertEqual(calls, 1)
         self.assertEqual(params["audio_duration"], 30.0)
 
+    def test_lm_reports_failure_without_changing_default(self):
+        """An unsuccessful LM response must preserve the user's duration."""
+        params, calls = self._run_generation(
+            draft_result=SimpleNamespace(
+                success=False,
+                status_message="metadata unavailable",
+                duration=180.0,
+            ),
+        )
+        self.assertEqual(calls, 1)
+        self.assertEqual(params["audio_duration"], 30.0)
+        self.assertEqual(params["captions"], "ambient piano")
+
+    def test_duration_is_preserved_in_simple_batch_metadata(self):
+        """A finished Simple batch retains the requested text duration."""
+        from acestep.ui.gradio.events.results.batch_management_helpers import (
+            _apply_param_defaults,
+        )
+        from acestep.ui.gradio.events.wiring.simple_ui_generation_results import (
+            _finish_simple_generation,
+        )
+
+        params = {}
+        _apply_param_defaults(params)
+        params.update({
+            "captions": "ambient piano",
+            "lyrics": "drafted lyrics",
+            "audio_duration": SIMPLE_DEFAULT_DURATION_SECONDS,
+        })
+        result = tuple([None] * 8 + [
+            ["song.flac", "song.json"],
+            "generation info",
+            "Generation Complete",
+            "4242",
+        ])
+        output = list(_finish_simple_generation(result, params, 0, 0, {}, {}))
+        self.assertEqual(len(output), 1)
+        self.assertEqual(len(output[0]), 14)
+        self.assertEqual(output[0][13]["audio_duration"], 30.0)
+        self.assertEqual(
+            output[0][12][0]["generation_params"]["audio_duration"],
+            30.0,
+        )
+
     def test_manual_lyrics_do_not_trigger_drafting(self):
         """Explicit user lyrics must bypass LM drafting and retain 30 seconds."""
         params, calls = self._run_generation(lyrics="Verse one")
