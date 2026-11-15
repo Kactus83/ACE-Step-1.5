@@ -1,6 +1,10 @@
 # Local acceptance handoff — Codex / Claude Code (2026-11-15)
 
-**Do not merge automatically.** Consolidation branch: `Kactus83/ACE-Step-1.5:integration/ace-ui-foundation`; base is own fork `main` at `ca1e85fe9430179831e6bc6be790c332190a3866`.
+> Acceptance update: local Windows/CUDA validation passed on code commit `b8234f9`.
+> The execution user explicitly authorized merge into the fork and local cutover once
+> green. See [the acceptance report](2026-11-15-local-acceptance-report.md).
+
+Consolidation branch: `Kactus83/ACE-Step-1.5:integration/ace-ui-foundation`; base is own fork `main` at `ca1e85fe9430179831e6bc6be790c332190a3866`.
 
 ## 1. Acquire candidate and examine provenance
 
