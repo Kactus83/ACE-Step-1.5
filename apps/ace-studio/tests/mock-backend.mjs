@@ -9,6 +9,7 @@ import { createDatasetSimulator } from "./mock-dataset.mjs";
 const port = Number(process.env.ACE_STUDIO_MOCK_PORT || 18081);
 let sequence = 0;
 const jobs = new Map();
+let lastSubmittedRequest = null;
 let trainingActive = false;
 const datasetSimulator = createDatasetSimulator();
 const wrap = data => ({ code: 200, error: null, timestamp: Date.now(), data, extra: null });
@@ -74,12 +75,21 @@ const server = http.createServer(async (req, res) => {
     respond(wrap({ message: "Stopping training..." })); return;
   }
   if (await datasetSimulator(req, url, respond)) return;
+  if (url.pathname === "/__mock__/last_submission" && req.method === "GET") {
+    respond(wrap(lastSubmittedRequest)); return;
+  }
   if (url.pathname === "/release_task" && req.method === "POST") {
     const chunks = [];
     for await (const chunk of req) chunks.push(chunk);
     const raw = Buffer.concat(chunks).toString("utf8");
     let prompt = "Generated example";
-    try { prompt = JSON.parse(raw).prompt || prompt; } catch { /* multipart not parsed here */ }
+    try {
+      lastSubmittedRequest = JSON.parse(raw);
+      prompt = lastSubmittedRequest.prompt || prompt;
+    } catch {
+      lastSubmittedRequest = { contentType: req.headers["content-type"],
+        multipartBody: raw.slice(0, 4000) };
+    }
     const id = "mock-" + (++sequence);
     jobs.set(id, { prompt, polls: 0 });
     respond(wrap({ task_id: id, status: "queued", queue_position: 1 })); return;
