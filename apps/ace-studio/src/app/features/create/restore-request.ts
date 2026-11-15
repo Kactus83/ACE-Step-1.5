@@ -21,6 +21,14 @@ export function restoreGenerateRequest(
     track_name: displayTitle.slice(0, 120),
     target_stem: hasStem ? request.track_name || "drums" : "drums",
     track_classes: request.track_classes?.join(", ") || "",
+    global_caption: request.global_caption ?? "",
+    cover_noise_strength: request.cover_noise_strength ?? 0,
+    chunk_mask_mode: request.chunk_mask_mode ?? "auto",
+    repaint_mode: request.repaint_mode ?? "balanced",
+    repaint_strength: request.repaint_strength ?? 0.5,
+    repaint_latent_crossfade_frames: request.repaint_latent_crossfade_frames ?? 10,
+    repaint_wav_crossfade_sec: request.repaint_wav_crossfade_sec ?? 0,
+    use_tiled_decode: request.use_tiled_decode ?? true,
     prompt: request.prompt,
     lyrics: request.lyrics === "[inst]" ? "" : request.lyrics,
     instrumental: request.lyrics === "[inst]" || request.lyrics === "[Instrumental]",
@@ -75,4 +83,5 @@ export function withResultSeed(
   return Number.isSafeInteger(seed) && seed >= 0
     ? { ...request, seed, use_random_seed: false } : request;
 }
+
 

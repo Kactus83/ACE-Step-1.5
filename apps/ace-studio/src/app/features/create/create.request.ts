@@ -5,9 +5,10 @@
  */
 import { GenerateRequest, TaskType } from "../../core/api.types";
 import { ExpertSnapshot, mapExpertRequest } from "./expert.request";
+import { SourceEditSnapshot, mapSourceEditRequest } from "./source-edit.request";
 
 /** @public Raw form snapshot independent from the Angular control implementation. */
-export interface CreateFormSnapshot extends ExpertSnapshot {
+export interface CreateFormSnapshot extends ExpertSnapshot, SourceEditSnapshot {
   readonly track_name: string;
   readonly target_stem: string;
   readonly track_classes: string;
@@ -66,6 +67,7 @@ export function mapGenerateRequest(value: CreateFormSnapshot): GenerateRequest {
     track_name: needsStem ? value.target_stem : value.track_name || undefined,
     track_classes: classes.length ? classes : undefined,
     ...mapExpertRequest(value),
+    ...mapSourceEditRequest(mode, value),
     audio_duration: value.duration,
     bpm: value.bpm || undefined,
     key_scale: value.key_scale || undefined,
@@ -82,6 +84,7 @@ export function mapGenerateRequest(value: CreateFormSnapshot): GenerateRequest {
     audio_format: value.audio_format as GenerateRequest["audio_format"]
   };
 }
+
 
 
 

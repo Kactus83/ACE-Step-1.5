@@ -75,6 +75,14 @@ export interface GenerateRequest {
   readonly repainting_end?: number;
   readonly audio_cover_strength?: number;
   readonly use_format?: boolean;
+  readonly global_caption?: string;
+  readonly cover_noise_strength?: number;
+  readonly chunk_mask_mode?: "auto" | "explicit";
+  readonly repaint_latent_crossfade_frames?: number;
+  readonly repaint_wav_crossfade_sec?: number;
+  readonly repaint_mode?: "conservative" | "balanced" | "aggressive";
+  readonly repaint_strength?: number;
+  readonly use_tiled_decode?: boolean;
   readonly track_name?: string;
   readonly track_classes?: readonly string[];
   readonly audio_format?: "mp3" | "wav" | "flac" | "opus" | "aac" | "wav32";
@@ -144,6 +152,7 @@ export interface StudioJob {
   /** @public Reference audio upload needed, but never persisted on the client. */
   readonly hasReferenceAudio?: boolean;
 }
+
 
 
 

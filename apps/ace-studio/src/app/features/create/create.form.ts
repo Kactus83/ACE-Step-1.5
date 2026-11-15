@@ -11,6 +11,14 @@ export function createGenerationForm(fb: FormBuilder) {
     track_name: ["", [Validators.maxLength(120)]],
     target_stem: ["drums"],
     track_classes: [""],
+    global_caption: ["", [Validators.maxLength(5000)]],
+    cover_noise_strength: [0, [Validators.min(0), Validators.max(1)]],
+    chunk_mask_mode: ["auto"],
+    repaint_mode: ["balanced"],
+    repaint_strength: [0.5, [Validators.min(0), Validators.max(1)]],
+    repaint_latent_crossfade_frames: [10, [Validators.min(0), Validators.max(250)]],
+    repaint_wav_crossfade_sec: [0, [Validators.min(0), Validators.max(10)]],
+    use_tiled_decode: [true],
     prompt: ["", [Validators.required, Validators.maxLength(5000)]],
     lyrics: [""],
     instrumental: [true],
@@ -51,5 +59,6 @@ export function createGenerationForm(fb: FormBuilder) {
     lm_top_p: [0.9, [Validators.min(0.01), Validators.max(0.99)]]
   });
 }
+
 
 

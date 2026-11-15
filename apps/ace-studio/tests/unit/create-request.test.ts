@@ -8,6 +8,10 @@ import { CreateFormSnapshot, mapGenerateRequest } from "../../src/app/features/c
 
 const values: CreateFormSnapshot = {
   track_name: "Aerial", target_stem: "drums", track_classes: "",
+  global_caption: "", cover_noise_strength: 0, chunk_mask_mode: "auto",
+  repaint_mode: "balanced", repaint_strength: 0.5,
+  repaint_latent_crossfade_frames: 10, repaint_wav_crossfade_sec: 0,
+  use_tiled_decode: true,
   prompt: " Deep ambient music ", lyrics: "",
   instrumental: true, task_type: "text2music", model: "",
   thinking: false, use_format: false, duration: 180, bpm: 0,
@@ -59,4 +63,5 @@ describe("generation request mapping", () => {
     })).toThrow("supported");
   });
 });
+
 

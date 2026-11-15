@@ -15,17 +15,20 @@ export interface StudioPreset {
 const STRING_KEYS = new Set([
   "track_name", "prompt", "lyrics", "task_type", "model", "key_scale",
   "time_signature", "vocal_language", "audio_format", "target_stem", "track_classes",
-  "infer_method", "timesteps", "dcw_override", "dcw_mode", "dcw_wavelet"
+  "infer_method", "timesteps", "dcw_override", "dcw_mode", "dcw_wavelet",
+  "global_caption", "chunk_mask_mode", "repaint_mode"
 ]);
 const NUMBER_KEYS = new Set([
   "duration", "bpm", "inference_steps", "guidance_scale", "batch_size",
   "seed", "audio_cover_strength", "repainting_start", "repainting_end",
   "shift", "cfg_interval_start", "cfg_interval_end", "dcw_scaler",
-  "dcw_high_scaler", "lm_temperature", "lm_cfg_scale", "lm_top_k", "lm_top_p"
+  "dcw_high_scaler", "lm_temperature", "lm_cfg_scale", "lm_top_k", "lm_top_p",
+  "cover_noise_strength", "repaint_strength", "repaint_latent_crossfade_frames",
+  "repaint_wav_crossfade_sec"
 ]);
 const BOOLEAN_KEYS = new Set([
   "instrumental", "thinking", "use_format", "use_random_seed",
-  "use_adg", "use_cot_caption", "use_cot_language"
+  "use_adg", "use_cot_caption", "use_cot_language", "use_tiled_decode"
 ]);
 
 /**
@@ -70,5 +73,6 @@ export function decodePresets(raw: unknown): readonly StudioPreset[] {
   }
   return result;
 }
+
 
 
