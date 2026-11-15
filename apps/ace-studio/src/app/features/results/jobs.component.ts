@@ -10,12 +10,13 @@ import { GeneratedAudio, StudioJob } from "../../core/api.types";
 import { WorkflowStore } from "../../core/workflow.store";
 import { AudioCardComponent } from "./audio-card.component";
 import { LibrarySaveComponent } from "../library/library-save.component";
+import { ComparisonComponent } from "./comparison.component";
 
 /** @public Accessible generation queue and track results. */
 @Component({
   selector: "ace-jobs",
   standalone: true,
-  imports: [AudioCardComponent, LibrarySaveComponent, DatePipe],
+  imports: [AudioCardComponent, LibrarySaveComponent, ComparisonComponent, DatePipe],
   templateUrl: "./jobs.component.html"
 })
 export class JobsComponent {
@@ -35,4 +36,5 @@ export class JobsComponent {
     this.reuse.emit();
   }
 }
+
 

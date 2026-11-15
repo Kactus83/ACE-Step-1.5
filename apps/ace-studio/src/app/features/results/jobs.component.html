@@ -10,6 +10,10 @@
     Connection interrupted: {{ jobs.error() }}. Pending jobs will be checked again automatically.
   </div>
 }
+<details class="comparison-details advanced">
+  <summary>Compare finished tracks A/B <span aria-hidden="true">⌄</span></summary>
+  <ace-comparison />
+</details>
 @if (!jobs.jobs().length) {
   <section class="empty-state panel">
     <span class="empty-icon" aria-hidden="true">♫</span>
@@ -67,4 +71,5 @@
     }
   </div>
 }
+
 

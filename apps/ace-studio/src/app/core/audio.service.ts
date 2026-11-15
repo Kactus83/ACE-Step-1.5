@@ -5,12 +5,15 @@
  */
 import { Injectable, OnDestroy, inject } from "@angular/core";
 import { BackendClient } from "./backend.client";
+import { ConnectionStore } from "./connection.store";
 
 /** @public Responsible for previews and downloads of backend-generated audio. */
 @Injectable({ providedIn: "root" })
 export class AudioService implements OnDestroy {
   private readonly backend = inject(BackendClient);
+  private readonly connection = inject(ConnectionStore);
   private readonly urls = new Map<string, string>();
+  private readonly pending = new Map<string, Promise<string>>();
 
   /**
    * @public Return or fetch a playable blob URL for protected audio.
@@ -19,10 +22,22 @@ export class AudioService implements OnDestroy {
   async preview(raw: string): Promise<string> {
     const existing = this.urls.get(raw);
     if (existing) return existing;
-    const blob = await this.backend.audio(raw);
-    const url = URL.createObjectURL(blob);
-    this.urls.set(raw, url);
-    return url;
+    const inFlight = this.pending.get(raw);
+    if (inFlight) return inFlight;
+    const revision = this.connection.revision();
+    let loading!: Promise<string>;
+    loading = this.backend.audio(raw).then(blob => {
+      if (revision !== this.connection.revision()) {
+        throw new Error("Backend changed during audio loading.");
+      }
+      const created = URL.createObjectURL(blob);
+      this.urls.set(raw, created);
+      return created;
+    }).finally(() => {
+      if (this.pending.get(raw) === loading) this.pending.delete(raw);
+    });
+    this.pending.set(raw, loading);
+    return loading;
   }
 
   /**
@@ -49,6 +64,7 @@ export class AudioService implements OnDestroy {
   clear(): void {
     for (const url of this.urls.values()) URL.revokeObjectURL(url);
     this.urls.clear();
+    this.pending.clear();
   }
 
   /** @public Release every preview blob URL when the service is destroyed. */
@@ -56,3 +72,4 @@ export class AudioService implements OnDestroy {
     this.clear();
   }
 }
+
