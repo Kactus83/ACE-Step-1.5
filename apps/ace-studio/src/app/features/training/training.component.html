@@ -34,29 +34,16 @@
 
     <section class="panel" aria-labelledby="dataset-heading">
       <div class="section-heading"><div>
-        <p class="eyebrow">01 / DATASET</p><h2 id="dataset-heading">Scan audio directory</h2>
+        <p class="eyebrow">01 / DATASET</p><h2 id="dataset-heading">Prepare the source</h2>
       </div><span class="section-mark" aria-hidden="true">▧</span></div>
-      <p class="muted">Paths refer to files accessible on the Python backend machine—not to the browser or Tauri computer.</p>
-      <form [formGroup]="dataset" (ngSubmit)="scanDataset()">
-        <label class="field" for="dataset-dir"><span>Server audio directory</span>
-          <input id="dataset-dir" formControlName="audio_dir" required placeholder="/path/to/audio" />
-        </label>
-        <label class="field" for="dataset-name"><span>Dataset name</span>
-          <input id="dataset-name" formControlName="dataset_name" required />
-        </label>
-        <label class="checkbox-label"><input type="checkbox" formControlName="all_instrumental" />
-          <span>All tracks are instrumental</span>
-        </label>
-        <button type="submit" class="secondary-action" [disabled]="dataset.invalid || training.busy()">
-          Scan backend folder
-        </button>
-      </form>
-      @if (training.dataset(); as datasetInfo) {
-        <p class="notice success" role="status">
-          {{ datasetInfo.num_samples }} audio samples discovered. {{ datasetInfo.message }}
-        </p>
+      <p class="muted">Build your dataset, label samples and preprocess tensors before LoRA/LoKr training.
+        All paths belong to the Python server.</p>
+      @if (datasetTasks.preprocessStatus(); as task) {
+        <p class="small-note">Latest preprocessing: {{ task.status }} · {{ task.current }} / {{ task.total }}</p>
       }
-      <p class="small-note">Dataset preprocessing and sample labeling are developed separately; a scan alone does not produce tensors.</p>
+      <button type="button" class="secondary-action" (click)="openDatasets.emit()">
+        Manage datasets & preprocessing
+      </button>
     </section>
   </div>
   <aside class="configuration-panel">
@@ -73,6 +60,11 @@
         <label class="field" for="tensor-dir"><span>Preprocessed tensor directory</span>
           <input id="tensor-dir" formControlName="tensor_dir" required placeholder="/path/to/tensors" />
         </label>
+        @if (latestTensorDirectory()) {
+          <button type="button" class="quiet" (click)="usePreprocessedTensors()">
+            Use latest preprocessed tensor directory
+          </button>
+        }
         <button type="button" class="secondary-action" (click)="validateTensors()"
           [disabled]="!form.controls.tensor_dir.value.trim()">Validate tensors</button>
         @if (training.tensorInfo(); as info) {
@@ -166,3 +158,4 @@
     </section>
   </aside>
 </div>
+

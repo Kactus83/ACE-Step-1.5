@@ -7,7 +7,7 @@ import { Injectable, OnDestroy, inject, signal } from "@angular/core";
 import { ConnectionStore } from "../../core/connection.store";
 import { TrainingClient } from "./training.client";
 import {
-  DatasetScanResult, StartLoKrRequest, StartLoRARequest,
+  StartLoKrRequest, StartLoRARequest,
   TensorDirectoryInfo, TrainingStatus
 } from "./training.types";
 
@@ -21,7 +21,6 @@ export class TrainingStore implements OnDestroy {
   private generation = 0;
   readonly status = signal<TrainingStatus | null>(null);
   readonly tensorInfo = signal<TensorDirectoryInfo | null>(null);
-  readonly dataset = signal<DatasetScanResult | null>(null);
   readonly busy = signal(false);
   readonly error = signal<string | null>(null);
   readonly message = signal<string | null>(null);
@@ -75,20 +74,6 @@ export class TrainingStore implements OnDestroy {
     }
   }
 
-  /** @public Scan server-hosted source audio without uploading local browser files. */
-  async scanDataset(dir: string, name: string, instrumental: boolean): Promise<void> {
-    const revision = this.connection.revision();
-    this.error.set(null);
-    try {
-      const data = await this.client.scan(dir.trim(), name.trim(), instrumental);
-      if (revision === this.connection.revision()) this.dataset.set(data);
-    } catch (error: unknown) {
-      if (revision === this.connection.revision()) {
-        this.error.set(error instanceof Error ? error.message : "Dataset scan failed.");
-      }
-    }
-  }
-
   /**
    * @public Start one confirmed train run from a validated server directory.
    * @throws Error when tensors were not validated for this exact path.
@@ -135,7 +120,6 @@ export class TrainingStore implements OnDestroy {
     this.generation++;
     this.status.set(null);
     this.tensorInfo.set(null);
-    this.dataset.set(null);
     this.error.set(null);
     this.message.set(null);
     this.busy.set(false);
@@ -144,5 +128,6 @@ export class TrainingStore implements OnDestroy {
   /** @public Release observation timers. */
   ngOnDestroy(): void { this.pause(); }
 }
+
 
 

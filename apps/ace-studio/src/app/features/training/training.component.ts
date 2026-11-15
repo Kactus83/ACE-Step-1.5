@@ -3,11 +3,13 @@
  * @remarks Explicit dataset and LoRA/LoKr workflows; expensive actions require reconfirmation.
  * @public
  */
-import { Component, OnDestroy, OnInit, inject, signal } from "@angular/core";
+import { Component, OnDestroy, OnInit, computed, inject, output, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { BackendStore } from "../../core/backend.store";
 import { TrainingStore } from "./training.store";
 import { mapTrainingRequest } from "./training.request";
+import { DatasetTasksStore } from "../datasets/dataset.tasks.store";
+import { isObject } from "../../core/api-decoder";
 
 /** @public Training panel with server-side path validation and live monitoring. */
 @Component({
@@ -20,16 +22,17 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   readonly backend = inject(BackendStore);
   readonly training = inject(TrainingStore);
+  readonly datasetTasks = inject(DatasetTasksStore);
+  readonly openDatasets = output<void>();
+  readonly latestTensorDirectory = computed(() => {
+    const result = this.datasetTasks.preprocessStatus()?.result;
+    return isObject(result) && typeof result["output_dir"] === "string"
+      ? result["output_dir"] : null;
+  });
   readonly mode = signal<"lora" | "lokr">("lora");
   readonly confirming = signal<string | null>(null);
   readonly stopConfirm = signal(false);
   readonly error = signal<string | null>(null);
-
-  readonly dataset = this.fb.nonNullable.group({
-    audio_dir: ["", Validators.required],
-    dataset_name: ["studio_dataset", Validators.required],
-    all_instrumental: [true]
-  });
 
   readonly form = this.fb.nonNullable.group({
     tensor_dir: ["", Validators.required],
@@ -75,11 +78,13 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.confirming.set(null);
   }
 
-  /** @public Scan the chosen folder on the server, not a local browser path. */
-  async scanDataset(): Promise<void> {
-    if (this.dataset.invalid) { this.dataset.markAllAsTouched(); return; }
-    const val = this.dataset.getRawValue();
-    await this.training.scanDataset(val.audio_dir, val.dataset_name, val.all_instrumental);
+  /** @public Prefill the latest backend tensor output; manual verification is still required. */
+  usePreprocessedTensors(): void {
+    const directory = this.latestTensorDirectory();
+    if (!directory) return;
+    this.form.patchValue({ tensor_dir: directory });
+    this.training.tensorInfo.set(null);
+    this.confirming.set(null);
   }
 
   /** @public Validate preprocessed tensor directory on the Python server. */
@@ -126,3 +131,4 @@ export class TrainingComponent implements OnInit, OnDestroy {
     await this.training.requestStop();
   }
 }
+

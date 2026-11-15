@@ -30,13 +30,6 @@ export interface TensorDirectoryInfo {
   readonly message: string;
 }
 
-/** @public Dataset scan response. Samples remain owned by the Python backend. */
-export interface DatasetScanResult {
-  readonly message: string;
-  readonly num_samples: number;
-  readonly samples: readonly unknown[];
-}
-
 /** @public Fields common to LoRA/LoKr start schema. */
 export interface TrainingCommonRequest {
   readonly tensor_dir: string;
@@ -75,3 +68,4 @@ export interface StartLoKrRequest extends TrainingCommonRequest {
 export interface TrainingActionResult {
   readonly message: string;
 }
+

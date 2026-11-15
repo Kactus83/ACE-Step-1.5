@@ -67,10 +67,11 @@
         @case ("create") { <ace-create (showJobs)="navigate('jobs')" /> }
         @case ("jobs") { <ace-jobs (reuse)="navigate('create')" /> }
         @case ("datasets") { <ace-datasets /> }
-        @case ("training") { <ace-training /> }
+        @case ("training") { <ace-training (openDatasets)="navigate('datasets')" /> }
         @case ("system") { <ace-connection /> }
       }
     </main>
   </div>
 </div>
+
 

@@ -9,7 +9,7 @@ import { firstValueFrom } from "rxjs";
 import { isObject, unwrap } from "../../core/api-decoder";
 import { ConnectionStore } from "../../core/connection.store";
 import {
-  DatasetScanResult, StartLoKrRequest, StartLoRARequest,
+  StartLoKrRequest, StartLoRARequest,
   TensorDirectoryInfo, TrainingActionResult, TrainingStatus
 } from "./training.types";
 
@@ -56,13 +56,6 @@ export class TrainingClient {
     });
   }
 
-  /** @public Scan a server-side audio directory to create the active dataset. */
-  async scan(directory: string, name: string, instrumental: boolean): Promise<DatasetScanResult> {
-    return this.post<DatasetScanResult>("/v1/dataset/scan", {
-      audio_dir: directory, dataset_name: name, all_instrumental: instrumental
-    });
-  }
-
   /** @public Start LoRA training only after an explicit user confirmation. */
   async startLoRA(request: StartLoRARequest): Promise<TrainingActionResult> {
     return this.post<TrainingActionResult>("/v1/training/start", request);
@@ -81,3 +74,4 @@ export class TrainingClient {
     return this.post<TrainingActionResult>("/v1/training/stop", {});
   }
 }
+
