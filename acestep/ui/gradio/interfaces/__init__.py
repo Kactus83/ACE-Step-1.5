@@ -340,17 +340,17 @@ def create_gradio_interface(dit_handler, llm_handler, dataset_handler, init_para
             </div>
             """)
             create_help_button("getting_started")
-            
+
             # Dataset Explorer Section (hidden)
             dataset_section = create_dataset_section(dataset_handler)
-            
+
             # ═══════════════════════════════════════════
             # Top-level: Settings (contains Service Config + Advanced Settings)
             # ═══════════════════════════════════════════
             settings_section = create_advanced_settings_section(
                 dit_handler, llm_handler, init_params=init_params, language=language
             )
-            
+
             # ═══════════════════════════════════════════
             # Tabs: Generation | Training
             # ═══════════════════════════════════════════
@@ -360,7 +360,7 @@ def create_gradio_interface(dit_handler, llm_handler, dataset_handler, init_para
                     gen_section = create_generation_tab_section(
                         dit_handler, llm_handler, init_params=init_params, language=language
                     )
-                    
+
                     # Results Section (inside the Generation tab, wrapped for visibility control)
                     with gr.Column(visible=True) as results_wrapper:
                         results_section = create_results_section(dit_handler)
