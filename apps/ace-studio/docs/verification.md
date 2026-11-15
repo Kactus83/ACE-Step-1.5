@@ -21,7 +21,7 @@ Do not substitute the completed mock coverage for those remaining gates.
   dark-theme layout, sidebar/panels, Create and Connection navigation, and the
   truthful disconnected state were visually inspected. This caught and fixed
   Angular critical-CSS loading being blocked by the strict Tauri CSP.
-- Python `3.13.7`: the three focused Studio/API unittest modules ran 16 tests
+- Python `3.13.7`: the three focused Studio/API unittest modules ran 18 tests
   successfully with one platform/symlink skip. The repository targets Python
   3.11–3.12, so this is additive evidence rather than the supported matrix.
 - `npm audit --omit=dev`: zero production vulnerabilities. The full audit

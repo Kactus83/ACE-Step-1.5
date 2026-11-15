@@ -36,8 +36,9 @@ Consolidation PR #1 was already merged independently. Do not reapply it.
 - `/v1/dataset/sample/{index}` is a PUT route, now preflight allowed via the
   narrow Studio CORS helper. Confirm browser end-to-end editing.
 - The new `/v1/studio/training/export` route refuses a destination that
-  already exists or conflicts with training source. **Never** redirect Studio
-  back to legacy `/v1/training/export`, which remains destructive.
+  already exists, conflicts with training source or resolves outside explicit
+  `ACESTEP_STUDIO_FILE_ROOTS`. **Never** redirect Studio back to legacy
+  `/v1/training/export`, which remains destructive.
 - `/release_task` expert DCW fields were made available through a narrow
   Python HTTP adapter change; verify server defaults when not set.
 - Browser-local bookmarks are metadata-only and may become unplayable if the

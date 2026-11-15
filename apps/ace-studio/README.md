@@ -30,6 +30,21 @@ works. No wildcard browser origins or native shell/filesystem permissions
 are granted. Browser sample metadata editing requires the PUT preflight
 compatibility correction in this branch.
 
+Safe trained-adapter export is disabled until the Python operator explicitly
+allowlists every server directory that may be read or written. Use the OS path
+separator to provide one or more existing roots:
+
+```powershell
+$env:ACESTEP_STUDIO_FILE_ROOTS = "C:\ACE-Step\training;D:\ACE-Step\exports"
+```
+
+```sh
+ACESTEP_STUDIO_FILE_ROOTS=/srv/acestep/training:/srv/acestep/exports acestep-api
+```
+
+Both the training source and new export destination must remain inside those
+roots. Authentication does not replace this filesystem boundary.
+
 ## Functional areas
 
 - Create: text2music, Cover/Repaint with source/reference uploads, advertised
@@ -41,16 +56,17 @@ compatibility correction in this branch.
 - Datasets: server-local scan/load/save, sample metadata updates, asynchronous
   labeling and tensor preprocessing.
 - Training: LoRA/LoKr status/start/stop, measured loss, tensor validation and
-  explicit destructive adapter export.
+  explicit non-overwriting adapter export within operator-approved roots.
 - Connection: backend profile, model inventory, explicit initialization and
   real queue statistics.
 - Appearance: persistent light/dark visual preference.
 
 **Important:** Library saves metadata and temporary audio references, not
 binary files. Explicitly download any track requiring long-term preservation.
-Dataset and export paths belong to the Python server, not the browser;
-`/v1/training/export` deletes a pre-existing destination folder. Protect
-the backend with authentication, OS permissions and trusted operators.
+Dataset and export paths belong to the Python server, not the browser. Studio
+uses only its bounded no-overwrite route; the legacy `/v1/training/export`
+still deletes a pre-existing destination for existing non-Studio consumers.
+Protect the backend with authentication, OS permissions and trusted operators.
 
 ## Validation
 
@@ -63,9 +79,9 @@ npm run desktop:build
 ```
 
 Python API and broader regression commands are in `docs/verification.md`.
-These commands have **not** been executed in the GitHub-connector authoring
-environment; no build, GPU, native package or screen-reader quality claim is
-made. See `docs/functional-coverage.md`, `docs/continuation.md`,
+Angular, mock browser, focused Python and Windows package checks have run
+locally and in CI; real GPU/model and screen-reader acceptance has not. See
+`docs/functional-coverage.md`, `docs/continuation.md`,
 `docs/source-checkpoint-4.md`, `docs/security-review.md` and the review files.
 The draft PR is not production-ready or merge-authorized.
 

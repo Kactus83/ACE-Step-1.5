@@ -24,7 +24,9 @@ Source-level review only; **not a penetration test, compiled audit or release ap
 7. **Safe adapter export:** Studio calls only authenticated
    `POST /v1/studio/training/export`. The additive endpoint validates
    source/target overlap, refuses empty source, existing destinations and
-   source-contained symlinks. Copytree has non-overwrite semantics; the
+   source-contained symlinks, and fails closed unless both paths resolve under
+   operator-approved `ACESTEP_STUDIO_FILE_ROOTS`. Copytree has non-overwrite
+   semantics; the
    **legacy `/v1/training/export` retains its existing deletion behavior**
    for older consumers, but Studio never uses it.
 8. **Resource consent:** DiT and 5Hz-LM initialization need two matching
@@ -33,10 +35,9 @@ Source-level review only; **not a penetration test, compiled audit or release ap
 
 ## Residual risks
 
-- The new export route has no atomic OS-level sandbox: filesystem permission,
-  parent-symlink races and other processes on the Python host require a trusted
-  operator environment. No privilege escalation or broad native permission is
-  intended.
+- Configured export roots are a path boundary, not an atomic OS sandbox:
+  filesystem permissions, parent-symlink races and other processes on the
+  Python host still require a trusted operator environment.
 - Browser localStorage is unencrypted and can contain user prompts, lyrics,
   annotations, tags, model names and temporary backend audio paths. These
   should not be used as sensitive-secret storage.

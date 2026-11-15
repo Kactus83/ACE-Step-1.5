@@ -21,7 +21,7 @@ The Gradio-mounted API is **not assumed equivalent**.
 | `/v1/dataset/sample/{index}` | PUT | API Bearer | Indexed metadata update; CORS preflight now allows PUT |
 | `/v1/dataset/auto_label_async,preprocess_async` | POST | API Bearer | Asynchronous task IDs, poll server status routes |
 | `/v1/training/status,load_tensor_info,start,start_lokr,stop` | GET/POST | API Bearer | Observed tensor/training states, explicit GPU operations |
-| `/v1/studio/training/export` | POST | API Bearer | **New additive Studio route**, same `lora_output_dir/export_path` request; refuses overwrite |
+| `/v1/studio/training/export` | POST | API Bearer | **New additive Studio route**; refuses overwrite and paths outside `ACESTEP_STUDIO_FILE_ROOTS` |
 | `/v1/training/export` | POST | API Bearer | **Existing legacy route deletes existing output; Studio never calls it** |
 
 ## Generation request fields verified from Python model and request builder
@@ -51,13 +51,14 @@ caption, lyrics and musical metadata; it may lazily initialize the LM.
 - CORS allows GET/POST/PUT/OPTIONS for explicitly allowed browser origins;
   fixed Tauri origins remain opt-in and never wildcard.
 - Python's server-global dataset and training state remains authoritative.
-- The new safe export route fails if its destination exists or source paths
-  overlap. It does not fall back to the legacy destructive route on 404.
+- The new safe export route is disabled unless the operator configures
+  `ACESTEP_STUDIO_FILE_ROOTS`. Source and destination must resolve inside those
+  roots; existing/overlapping targets fail and Studio never falls back to the
+  legacy destructive route.
 
 ## Verification warning
 
-The frontend, Python route additions and regression tests were written and
-committed through the GitHub connector. They have **not** been compiled or
-executed against a GPU, Angular browser or Tauri bundle. Test and integrate
-with a disposable backend before using remote or production data.
+Angular, browser-mock, focused Python and Windows Tauri package checks passed
+locally and in CI. They have **not** been executed against a real model/GPU or
+production dataset. Test with disposable roots before using production data.
 

@@ -1,7 +1,7 @@
 # ACE Studio — Functional coverage against ACE-Step 1.5
 
 Status: **locally compiled and mock-qualified on Windows**. Angular, Rust,
-focused Python, Windows desktop packaging, 78 unit tests and 20 browser-mock
+focused Python, Windows desktop packaging, 79 unit tests and 20 browser-mock
 scenarios passed on 15 November 2026. Real GPU/model, full Python regression,
 signed-installer, screen-reader and non-Windows acceptance remains pending.
 The standalone FastAPI server is the only supported backend profile.
@@ -26,12 +26,12 @@ The standalone FastAPI server is the only supported backend profile.
 | Queue diagnostics | Written | Actual /v1/stats job counts; no fabricated GPU or VRAM metrics |
 | Server dataset lifecycle | Partial | Scan/load/save, indexed sample editing, LM auto-label and tensor preprocess; concurrent server-global state and GPU QA |
 | LoRA/LoKr training | Partial | Tensor validation, explicit double-confirm start, stop request, real loss/history/log, preprocessed tensor handoff |
-| Trained adapter export | Written | New authenticated /v1/studio/training/export refuses existing targets and source symlinks; existing legacy endpoint unchanged, backend QA pending |
+| Trained adapter export | Written | Authenticated route fails closed without configured filesystem roots and refuses outside/existing/symlink targets; legacy endpoint unchanged |
 | Accessibility | Partial | Semantic labels, focus-visible, skip link, responsive CSS, reduced motion; screen-reader/zoom checks pending |
 | Light and dark appearance | Written | Semantic color tokens and local preference; human contrast/visual QA pending |
 | Keyboard shortcuts / translations | Partial | Alt+1..6 navigation, help panel and field-focus guards pass browser tests; French translation architecture pending |
 | Optional Tauri native integration | Partial | Safe WebView shell only; Windows MSI/NSIS built and release executable startup/layout/navigation inspected; installation and other OSes untested |
-| Tests | Verified locally | 79 Vitest, 20 Playwright mock and 16 focused Python tests passed; one symlink/platform test skipped; full Python/GPU suites pending |
+| Tests | Verified locally | 79 Vitest, 20 Playwright mock and 18 focused Python tests passed locally; full Python/GPU suites pending |
 | Existing Python CLI and Gradio | Source isolated | Opt-in desktop CORS + PUT, DCW parser forwarding, additive no-overwrite export route; complete regression testing pending |
 
 Do not conflate local metadata persistence with permanent backend audio storage.
