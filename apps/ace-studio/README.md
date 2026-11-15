@@ -26,6 +26,10 @@ The backend allows browser CORS from localhost/127.0.0.1. If enabled, API key au
 - `npm run desktop:build`: Rust/native bundling
 - Actual GPU workflows require the running compatible Python API.
 
-See `docs/contracts.md` and `docs/verification.md` for contract boundaries and validation caveats.
+See `docs/architecture.md`, `docs/contracts.md`,
+`docs/functional-coverage.md`, `docs/security-review.md`, both contradictory
+review reports, `docs/verification.md` and `docs/continuation.md`.
+Packaged desktop requires the opt-in CORS setting documented in
+`docs/desktop-cors.md`.
 
 **Not yet declared production-ready.**
