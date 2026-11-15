@@ -127,10 +127,10 @@ def _generation_failure_updates(
     batch_queue: dict,
     generation_params_state: dict,
 ) -> tuple:
-    """Exit the creating step safely without mutating successful batches."""
+    """Exit Creating while retaining any playable audio from earlier batches."""
     return (
-        gr.update(value=None),
-        gr.update(value=None),
+        gr.skip(),
+        gr.skip(),
         gr.update(value=_step_indicator_html(5)),
         gr.update(visible=False),
         gr.update(visible=False),

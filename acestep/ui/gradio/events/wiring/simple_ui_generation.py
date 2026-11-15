@@ -177,7 +177,14 @@ def _simple_generate_wrapper(
         )
         return
 
-    yield from _finish_simple_generation(
-        final_result, params, current_batch_index, total_batches, batch_queue,
-        generation_params_state,
-    )
+    try:
+        yield from _finish_simple_generation(
+            final_result, params, current_batch_index, total_batches, batch_queue,
+            generation_params_state,
+        )
+    except Exception:
+        logger.exception("Simple UI result finalization failed")
+        yield _generation_failure_updates(
+            t("simple_flow.failed"),
+            current_batch_index, total_batches, batch_queue, generation_params_state,
+        )
