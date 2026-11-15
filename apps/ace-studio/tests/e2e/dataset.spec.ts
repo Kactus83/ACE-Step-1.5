@@ -14,7 +14,7 @@ test("scan, edit, label and preprocess a backend-owned dataset", async ({ page }
   await page.getByRole("button", { name: "Datasets" }).click();
   await page.getByLabel("Backend audio directory").fill("/mock/audio");
   await page.getByRole("button", { name: "Review scan / replace" }).click();
-  await page.getByRole("button", { name: "Confirm server action" }).click();
+  await page.getByRole("button", { name: "Confirm scan and replace" }).click();
   await expect(page.getByText(/0 \/ 3 samples labeled/)).toBeVisible();
   await page.getByRole("button", { name: /1\. mock-0\.wav/ }).click();
   await page.getByLabel("Caption / musical description").fill("Organic glitch texture");
@@ -36,4 +36,5 @@ test("requires an active dataset before starting preprocessing", async ({ page }
   await page.getByRole("button", { name: "Review preprocessing" }).click();
   await expect(page.getByText("At least one labeled dataset sample is required.")).toBeVisible();
 });
+
 

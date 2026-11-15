@@ -4,6 +4,7 @@
  * @public
  */
 import { Injectable, OnDestroy, inject, signal } from "@angular/core";
+import { ConnectionStore } from "../../core/connection.store";
 import { TrainingClient } from "./training.client";
 import {
   DatasetScanResult, StartLoKrRequest, StartLoRARequest,
@@ -14,6 +15,7 @@ import {
 @Injectable({ providedIn: "root" })
 export class TrainingStore implements OnDestroy {
   private readonly client = inject(TrainingClient);
+  private readonly connection = inject(ConnectionStore);
   private timer: ReturnType<typeof setTimeout> | undefined;
   private active = false;
   private generation = 0;
@@ -60,20 +62,30 @@ export class TrainingStore implements OnDestroy {
 
   /** @public Validate tensor manifest before submitting an expensive run. */
   async validateTensors(directory: string): Promise<void> {
+    const revision = this.connection.revision();
     this.tensorInfo.set(null);
     this.error.set(null);
-    try { this.tensorInfo.set(await this.client.tensors(directory.trim())); }
-    catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Tensor validation failed.");
+    try {
+      const info = await this.client.tensors(directory.trim());
+      if (revision === this.connection.revision()) this.tensorInfo.set(info);
+    } catch (error: unknown) {
+      if (revision === this.connection.revision()) {
+        this.error.set(error instanceof Error ? error.message : "Tensor validation failed.");
+      }
     }
   }
 
   /** @public Scan server-hosted source audio without uploading local browser files. */
   async scanDataset(dir: string, name: string, instrumental: boolean): Promise<void> {
+    const revision = this.connection.revision();
     this.error.set(null);
-    try { this.dataset.set(await this.client.scan(dir.trim(), name.trim(), instrumental)); }
-    catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Dataset scan failed.");
+    try {
+      const data = await this.client.scan(dir.trim(), name.trim(), instrumental);
+      if (revision === this.connection.revision()) this.dataset.set(data);
+    } catch (error: unknown) {
+      if (revision === this.connection.revision()) {
+        this.error.set(error instanceof Error ? error.message : "Dataset scan failed.");
+      }
     }
   }
 
@@ -82,6 +94,7 @@ export class TrainingStore implements OnDestroy {
    * @throws Error when tensors were not validated for this exact path.
    */
   async start(mode: "lora" | "lokr", payload: StartLoRARequest | StartLoKrRequest): Promise<void> {
+    const revision = this.connection.revision();
     if (!this.tensorInfo() || this.tensorInfo()?.tensor_dir !== payload.tensor_dir) {
       throw new Error("Validate the exact tensor directory before starting training.");
     }
@@ -90,22 +103,29 @@ export class TrainingStore implements OnDestroy {
       const accepted = mode === "lora"
         ? await this.client.startLoRA(payload as StartLoRARequest)
         : await this.client.startLoKr(payload as StartLoKrRequest);
+      if (revision !== this.connection.revision()) return;
       this.message.set(accepted.message);
       await this.refresh();
     } catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Unable to start training.");
+      if (revision === this.connection.revision()) {
+        this.error.set(error instanceof Error ? error.message : "Unable to start training.");
+      }
     }
   }
 
   /** @public Ask the backend to stop a run gracefully, not terminate a process. */
   async requestStop(): Promise<void> {
+    const revision = this.connection.revision();
     this.error.set(null);
     try {
       const result = await this.client.requestStop();
+      if (revision !== this.connection.revision()) return;
       this.message.set(result.message);
       await this.refresh();
     } catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Stop request failed.");
+      if (revision === this.connection.revision()) {
+        this.error.set(error instanceof Error ? error.message : "Stop request failed.");
+      }
     }
   }
 
@@ -124,4 +144,5 @@ export class TrainingStore implements OnDestroy {
   /** @public Release observation timers. */
   ngOnDestroy(): void { this.pause(); }
 }
+
 

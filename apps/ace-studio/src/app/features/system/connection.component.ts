@@ -56,7 +56,7 @@ export class ConnectionComponent {
       this.connection.setApiKey(this.token());
       const changed = previousEndpoint !== this.connection.endpoint()
         || previousKey !== this.connection.apiKey();
-      if (previousEndpoint !== this.connection.endpoint()) {
+      if (changed) {
         this.jobs.resetSession();
         this.workflow.clear();
       }
@@ -79,4 +79,5 @@ export class ConnectionComponent {
     await this.backend.load(name);
   }
 }
+
 

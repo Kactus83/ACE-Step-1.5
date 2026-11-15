@@ -18,6 +18,7 @@ export class DatasetSourcesComponent {
   private readonly fb = inject(FormBuilder);
   readonly dataset = inject(DatasetStore);
   readonly confirmation = signal<string | null>(null);
+  readonly pendingKind = signal<"scan" | "load" | "save" | null>(null);
   readonly scanForm = this.fb.nonNullable.group({
     audio_dir: ["", Validators.required],
     dataset_name: ["studio_dataset", Validators.required],
@@ -33,13 +34,15 @@ export class DatasetSourcesComponent {
     dataset_name: ["studio_dataset", Validators.required]
   });
 
-  private confirm(kind: string, data: unknown): boolean {
+  private confirm(kind: "scan" | "load" | "save", data: unknown): boolean {
     const signature = JSON.stringify({ kind, data });
     if (this.confirmation() !== signature) {
       this.confirmation.set(signature);
+      this.pendingKind.set(kind);
       return false;
     }
     this.confirmation.set(null);
+    this.pendingKind.set(null);
     return true;
   }
 
@@ -74,9 +77,10 @@ export class DatasetSourcesComponent {
   }
 
   /** @public Change a pending confirmation when the user edits any field. */
-  invalidate(): void { this.confirmation.set(null); }
+  invalidate(): void { this.confirmation.set(null); this.pendingKind.set(null); }
 
   /** @public Refresh server state without changing it. */
   async refresh(): Promise<void> { await this.dataset.refresh(); }
 }
+
 

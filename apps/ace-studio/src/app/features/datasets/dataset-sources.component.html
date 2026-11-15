@@ -20,7 +20,7 @@
         <span>All samples instrumental</span>
       </label>
       <button class="secondary-action" type="submit" [disabled]="scanForm.invalid || dataset.busy()">
-        {{ confirmation() ? 'Confirm server action' : 'Review scan / replace' }}
+        {{ pendingKind() === 'scan' ? 'Confirm scan and replace' : 'Review scan / replace' }}
       </button>
     </form>
   </details>
@@ -31,7 +31,7 @@
         <input id="dataset-json-path" formControlName="dataset_path" required />
       </label>
       <button class="secondary-action" type="submit" [disabled]="loadForm.invalid || dataset.busy()">
-        {{ confirmation() ? 'Confirm server action' : 'Review load / replace' }}
+        {{ pendingKind() === 'load' ? 'Confirm load and replace' : 'Review load / replace' }}
       </button>
     </form>
   </details>
@@ -46,7 +46,7 @@
       </label>
       <button class="secondary-action" type="submit"
         [disabled]="saveForm.invalid || !dataset.overview() || dataset.busy()">
-        {{ confirmation() ? 'Confirm server action' : 'Review save to disk' }}
+        {{ pendingKind() === 'save' ? 'Confirm save to server disk' : 'Review save to disk' }}
       </button>
     </form>
   </details>
@@ -54,4 +54,5 @@
     <button class="quiet" type="button" [disabled]="dataset.busy()" (click)="refresh()">Refresh from backend</button>
   </div>
 </section>
+
 
