@@ -5,6 +5,7 @@ from typing import Any
 import gradio as gr
 
 from acestep.ui.gradio.i18n import t
+from acestep.ui.gradio.help_content import create_help_button
 
 from .simple_ui_markup import _about_overlay_html, _build_header, _step_indicator_html
 from .simple_ui_steps import (_build_step_describe, _build_step_lyrics, _build_step_remix, _build_step_creating)
@@ -19,6 +20,8 @@ def build_simple_ui() -> dict[str, Any]:
     """
     with gr.Column(visible=True, elem_id="simple-ui-column") as simple_column:
         gr.HTML(_build_header())
+        # Keep Help in the visible Simple column, not the hidden Advanced view.
+        create_help_button("getting_started")
 
         # ── Hamburger toggle button ──
         simple_hamburger_btn = gr.Button(

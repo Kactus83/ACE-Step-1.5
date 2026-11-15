@@ -139,6 +139,13 @@ class SimpleUiContractTests(unittest.TestCase):
         ):
             self.assertIn(f'"{key}":', builder)
 
+    def test_simple_help_uses_visible_modal_not_advanced(self) -> None:
+        """The hamburger Help action must only activate a visible Simple modal."""
+        builder = _source(_INTERFACE_DIR + "simple_ui.py")
+        wiring = _source(_WIRING_DIR + "simple_ui_navigation.py")
+        self.assertIn('create_help_button("getting_started")', builder)
+        self.assertIn("document.querySelector('#simple-ui-column .help-inline-btn')", wiring)
+
     def test_model_readiness_never_initializes_services(self) -> None:
         """Initial viewing and switching back to Simple must be read-only."""
         readiness = _source(_WIRING_DIR + "simple_ui_model_readiness.py")

@@ -81,7 +81,7 @@ def register_simple_ui_navigation(
         outputs=[gs["simple_about_overlay"]],
     )
 
-    # ── Help (trigger hidden help button via JS) ──
+    # ── Help (activate only the modal mounted in the visible Simple column) ──
     gs["simple_help_btn"].click(
         fn=lambda: (
             gr.update(visible=False),   # close menu
@@ -90,7 +90,7 @@ def register_simple_ui_navigation(
         inputs=[],
         outputs=[gs["simple_hamburger_menu"], gs["simple_hamburger_state"]],
         js="""() => {
-            var btn = document.querySelector('.help-inline-btn');
+            var btn = document.querySelector('#simple-ui-column .help-inline-btn');
             if (btn) btn.click();
         }""",
     )

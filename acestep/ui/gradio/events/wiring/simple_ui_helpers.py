@@ -142,6 +142,18 @@ def _generation_failure_updates(
         current_batch_index, total_batches, batch_queue, generation_params_state,
     )
 
+def _preserve_audio_on_null(update: Any) -> Any:
+    """Keep earlier playable audio if the upstream stream reports a null slot.
+
+    The explicit New Song action still resets players independently.
+    """
+    if update is None:
+        return gr.skip()
+    if isinstance(update, dict) and update.get("__type__") == "update" and update.get("value", object()) is None:
+        return gr.skip()
+    return update
+
+
 def _simple_progress_update(status: Any) -> dict:
     """Only render actual status strings, never Gradio skip/update sentinels."""
     if not isinstance(status, str) or not status.strip():

@@ -15,6 +15,7 @@ from .simple_ui_helpers import (
     _generation_failure_updates,
     _simple_progress_update,
     _resolve_simple_lyrics,
+    _preserve_audio_on_null,
 )
 from .simple_ui_generation_results import _finish_simple_generation
 from .simple_ui_generation_dispatch import _dispatch_existing_generation
@@ -150,8 +151,8 @@ def _simple_generate_wrapper(
             return
         final_result = partial
         yield (
-            partial[0] if len(partial) > 0 else gr.skip(),   # 0: audio_1
-            partial[1] if len(partial) > 1 else gr.skip(),   # 1: audio_2
+            _preserve_audio_on_null(partial[0]) if len(partial) > 0 else gr.skip(),   # 0: audio_1
+            _preserve_audio_on_null(partial[1]) if len(partial) > 1 else gr.skip(),   # 1: audio_2
             gr.skip(),                                         # 2: step indicator
             gr.skip(),                                         # 3: step 3
             gr.skip(),                                         # 4: step 4

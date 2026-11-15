@@ -20,6 +20,7 @@ from acestep.ui.gradio.events.wiring.simple_ui_helpers import (
     _navigate_to,
     _resolve_simple_lyrics,
     _start_generation,
+    _preserve_audio_on_null,
 )
 from acestep.ui.gradio.events.wiring.simple_ui_model_readiness import (
     _initialize_simple_ui_models,
@@ -116,6 +117,15 @@ class SimpleFoundationTests(unittest.TestCase):
         self.assertEqual(replay["seed"], "1234,5678")
         self.assertEqual(store_batch.call_args.args[1], 1)
         self.assertFalse(replay["random_seed_checkbox"])
+
+    def test_error_stream_null_does_not_discard_playable_audio(self):
+        """An upstream null audio output must not clear a previous valid card."""
+        import gradio as gr
+
+        self.assertNotIn("value", _preserve_audio_on_null(None))
+        self.assertNotIn("value", _preserve_audio_on_null(gr.update(value=None)))
+        self.assertEqual(_preserve_audio_on_null("saved.wav"), "saved.wav")
+        self.assertEqual(_preserve_audio_on_null(gr.update(value="new.wav"))["value"], "new.wav")
 
     def test_progress_skips_sentinels_and_escapes_text(self):
         """Intermediate Gradio skip payloads must not appear as user text."""
