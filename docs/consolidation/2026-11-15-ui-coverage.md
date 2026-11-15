@@ -1,8 +1,8 @@
 # ACE-Step 1.5 — Functional coverage matrix, 2026-11-15
 
-Baseline: \`docs/en/UI_SUPPORT.md\` on upstream \`ca1e85fe9430179831e6bc6be790c332190a3866\`.
+Baseline: `docs/en/UI_SUPPORT.md` on upstream `ca1e85fe9430179831e6bc6be790c332190a3866`.
 
-**Interpretation:** \`Préservée\` means historical component paths and wiring are retained by the source structure, **not** that a runtime test has passed. \`Améliorée\` means code was changed in this candidate, pending runtime validation. \`Non testée\` explicitly marks a path for which neither an independent source-preservation finding nor execution validation is sufficient. No production-quality guarantee follows from this table.
+**Interpretation:** `Préservée` means historical component paths and wiring are retained by the source structure, **not** that a runtime test has passed. `Améliorée` means code was changed in this candidate, pending runtime validation. `Non testée` explicitly marks a path for which neither an independent source-preservation finding nor execution validation is sufficient. No production-quality guarantee follows from this table.
 
 | Area (UI_SUPPORT.md) | Statut | Validation d'exécution | Notes |
 |---|---|---|---|

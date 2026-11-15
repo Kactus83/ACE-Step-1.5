@@ -1,10 +1,10 @@
 # Local acceptance handoff — Codex / Claude Code (2026-11-15)
 
-**Do not merge automatically.** Consolidation branch: \`Kactus83/ACE-Step-1.5:integration/ace-ui-foundation\`; base is own fork \`main\` at \`ca1e85fe9430179831e6bc6be790c332190a3866\`.
+**Do not merge automatically.** Consolidation branch: `Kactus83/ACE-Step-1.5:integration/ace-ui-foundation`; base is own fork `main` at `ca1e85fe9430179831e6bc6be790c332190a3866`.
 
 ## 1. Acquire candidate and examine provenance
 
-\`\`\`bash
+```bash
 git clone https://github.com/Kactus83/ACE-Step-1.5.git
 cd ACE-Step-1.5
 git remote add upstream https://github.com/ace-step/ACE-Step-1.5.git
@@ -15,26 +15,26 @@ git rev-parse HEAD
 git rev-parse upstream/main
 git diff --check upstream/main...HEAD
 git diff --stat upstream/main...HEAD
-\`\`\`
+```
 
 If the local checkout already exists, fetch and switch carefully; do not reset uncommitted work. **Never** force-push, and do not merge into main during acceptance. Check the two main branches still share the expected base, or reassess if upstream advanced.
 
 ## 2. Install only required dependencies; no model downloads
 
-ACE-Step targets Python 3.11–3.12 and pins Gradio 6.2.0 in \`pyproject.toml\`.
+ACE-Step targets Python 3.11–3.12 and pins Gradio 6.2.0 in `pyproject.toml`.
 
-\`\`\`bash
+```bash
 uv sync
 uv run python --version
 uv run python -m compileall -q acestep
 uv run python -m unittest discover -s acestep/ui/gradio/events/wiring -p "simple_ui_contracts_test.py"
-\`\`\`
+```
 
 On Windows PowerShell, use equivalent shell commands. Do not install checkpoints or fetch large GPU weights solely to make tests green; use models already available locally.
 
 ## 3. Focused regression and global discovery
 
-\`\`\`bash
+```bash
 uv run python -m unittest \
   acestep.inference_seed_metadata_test \
   acestep.inference_seed_fallback_test \
@@ -52,15 +52,15 @@ uv run python -m unittest \
 uv run python -m unittest discover -s . -p "*_test.py"
 uv run python -m unittest discover -s . -p "test_*.py"
 git diff --check upstream/main...HEAD
-\`\`\`
+```
 
 Use one line per command or PowerShell backticks on Windows. Classify each test as **passed / failed / skipped / blocked** and retain the exact command/log; never report unexecuted tests as passed. If failures stem from model/network prerequisites, record them separately from code regressions.
 
 ## 4. Run baseline UI first (flag off)
 
-\`\`\`bash
+```bash
 uv run acestep --port 7860 --language en
-\`\`\`
+```
 
 Open http://127.0.0.1:7860. Verify original Settings, Generation, eight audio outputs, Training/Dataset Builder/LoRA/LoKr, source modes, batch navigation, metadata download/load, help, preferences after refresh, and advanced controls. No Simple UI menu should appear.
 
@@ -70,16 +70,16 @@ Stop the server cleanly before switching launch modes.
 
 Windows PowerShell:
 
-\`\`\`powershell
+```powershell
 $env:ACESTEP_ENABLE_SIMPLE_UI = "1"
 uv run acestep --port 7860 --language en
-\`\`\`
+```
 
 Linux/macOS shell:
 
-\`\`\`bash
+```bash
 ACESTEP_ENABLE_SIMPLE_UI=1 uv run acestep --port 7860 --language en
-\`\`\`
+```
 
 Initially no DiT loaded: verify Create remains disabled and communicates the need for Advanced model setup. Switch to Advanced, load an **existing local** compatible checkpoint with current device/offload settings, return Simple; verify readiness updates and model identity stays unchanged. No model should load just by opening the page.
 
@@ -99,15 +99,15 @@ Initially no DiT loaded: verify Create remains disabled and communicates the nee
 | 10. Run fixed/random/partial seeds and batch clamp cases | Effective seeds and emitted count saved; JSON sidecar matches audio |
 | 11. Switch modes during and after a queued generation | No unrequested generation/initialization, no advanced-state corruption |
 | 12. Open viewport 375px, 768px, 1440px; keyboard Tab/Shift+Tab/Enter/Escape | No clipping or invisible controls; logical focus, contrast and readable errors |
-| 13. Launch with \`--language it\` and flag | Italian legacy UI loads; new untranslated keys fall back to English |
-| 14. Launch \`--service_mode true\` with flag set | Optional Simple UI absent; original service behavior and mounted API preserved |
-| 15. Launch \`uv run acestep-api\`, exercise \`/release_task\` timesteps | API accepts supplied timesteps; absent/empty uses legacy defaults |
+| 13. Launch with `--language it` and flag | Italian legacy UI loads; new untranslated keys fall back to English |
+| 14. Launch `--service_mode true` with flag set | Optional Simple UI absent; original service behavior and mounted API preserved |
+| 15. Launch `uv run acestep-api`, exercise `/release_task` timesteps | API accepts supplied timesteps; absent/empty uses legacy defaults |
 
 For slow GPU cases use a short audio duration, one batch first; avoid repeated expensive generations when mocked checks suffice. Observe device memory and logs without modifying model selection silently.
 
 ## 7. Contradictory reviews and controlled acceptance
 
-Review A (code): inspect every changed file against \`upstream/main\`, validate AST/compile, signatures, imports, paths, permissions, no dead callbacks, no unintended hardware changes. Review B (user/security): independently rerun the step table above, especially failures, downloads, mode switches and no-LM/offloading.
+Review A (code): inspect every changed file against `upstream/main`, validate AST/compile, signatures, imports, paths, permissions, no dead callbacks, no unintended hardware changes. Review B (user/security): independently rerun the step table above, especially failures, downloads, mode switches and no-LM/offloading.
 
 Record each discrepancy; implement minimal fixes **on this branch**, commit/push after coherent groups, repeat affected tests, and append evidence to the two reviews. Do not silently remove features.
 
