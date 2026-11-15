@@ -59,6 +59,8 @@
         }</strong>
       </div>
       <div class="topbar-actions">
+        <button type="button" class="quiet" [attr.aria-expanded]="shortcutsOpen()"
+          aria-controls="studio-shortcuts" (click)="toggleShortcuts()">Shortcuts ?</button>
         <button type="button" class="theme-toggle" (click)="theme.toggle()"
           [attr.aria-label]="theme.mode() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'">
           {{ theme.mode() === 'dark' ? '☀ Light' : '☾ Dark' }}
@@ -73,6 +75,20 @@
       </div>
     </header>
     <main class="content" id="main-content" tabindex="-1">
+      @if (shortcutsOpen()) {
+        <section id="studio-shortcuts" class="panel shortcut-help" aria-label="Keyboard shortcuts">
+          <div class="section-heading"><h2>Keyboard shortcuts</h2>
+            <button type="button" class="quiet" (click)="toggleShortcuts()">Close</button>
+          </div>
+          <p class="small-note">Available outside text inputs and dropdowns.</p>
+          <div class="shortcut-list">
+            <span><kbd>Alt + 1</kbd> Create</span><span><kbd>Alt + 2</kbd> Queue</span>
+            <span><kbd>Alt + 3</kbd> Library</span><span><kbd>Alt + 4</kbd> Datasets</span>
+            <span><kbd>Alt + 5</kbd> Training</span><span><kbd>Alt + 6</kbd> Connection</span>
+          </div>
+          <p class="small-note"><kbd>?</kbd> Toggle help · <kbd>Esc</kbd> Close help</p>
+        </section>
+      }
       @switch (section()) {
         @case ("create") { <ace-create (showJobs)="navigate('jobs')" /> }
         @case ("jobs") { <ace-jobs (reuse)="navigate('create')" /> }
@@ -84,6 +100,7 @@
     </main>
   </div>
 </div>
+
 
 
 

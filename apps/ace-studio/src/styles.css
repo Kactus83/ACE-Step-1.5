@@ -425,3 +425,15 @@ h3 { font-size: 15px; font-weight: 600; }
 .model-lm .field { margin: 13px 0; }
 .model-manager .notice { margin: 12px 0; }
 
+
+.shortcut-help { margin-bottom: 24px; }
+.shortcut-help .section-heading { margin-bottom: 15px; }
+.shortcut-list { display: grid; grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 12px; margin-bottom: 13px; }
+.shortcut-list span { color: var(--text); display: flex; align-items: center; gap: 9px; font-size: 12px; }
+.shortcut-help kbd { background: var(--surface-inset); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 7px; font: 11px ui-monospace, Consolas, monospace;
+  color: var(--accent); }
+@media (max-width: 720px) { .shortcut-list { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 450px) { .shortcut-list { grid-template-columns: 1fr; } }
+
