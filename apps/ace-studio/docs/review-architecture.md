@@ -13,14 +13,27 @@ documentation. This is not a static analyzer or runtime compilation.
   Tauri webview origins. Added narrowly scoped opt-in fixed origins with tests.
 - **Model lifecycle:** no silent model/process initialization; explicit user
   operation and readiness observation only.
-- **Feature claims:** unimplemented Extract/Lego/Complete modes removed from
-  enabled UI selection, regardless of model inventory advertisement.
+- **Feature claims:** Extract/Lego/Complete are now conditionally exposed only\n  when the selected backend model advertises them; request DTOs use audited\n  source audio, instrument names and track classes. GPU verification remains outstanding.
 - **Format mismatch:** generated audio reuse and download now preserve detected
   source extension instead of claiming every file is MP3 or WAV.
 - **Type/code decomposition:** moved form-to-API mapping into pure tested module,
   returning the main component to the repository's <=200-line module target.
 - **Angular v21 modern defaults:** removed unnecessary ZoneJS and NgZone
   override, leveraging signal-triggered zoneless change detection.
+
+## Follow-up contradictory findings, 15 Nov 2026
+
+- Connection credential/origin changes previously leaked old local job and
+  dataset snapshots; revision-based invalidation has been added across stores.
+- The form exposed one `track_name` for both user-facing title and Extract/Lego
+  instruction; source request mapping now separates instrument stem from title.
+- Multipart `track_classes` must be transmitted as repeated form keys rather
+  than a comma-separated scalar; the adapter was corrected accordingly.
+- A detached Repaint WAV/MP3 conversion relied on incorrect MIME from the server.
+  The selected source extension is now taken from the backend audio route path.
+- The 37 application TS files were checked via connected GitHub for relative
+  import existence and a <=200 LOC threshold, both clean at that checkpoint.
+  This is a structural text check, **not** TypeScript/Angular compiler evidence.
 
 ## Critical open questions
 
@@ -32,10 +45,11 @@ documentation. This is not a static analyzer or runtime compilation.
   confirmation gate and timeouts in the next increment.
 - Task results are transient in upstream server memory; permanent library needs
   an independent, authoritative data model and safe retention policy.
-- The LoRA/LoKr start/status/stop and dataset scan/tensor contracts have been audited and exposed; remaining preprocessing, sample editing, labeling and export routes still need complete integration.
+- LoRA/LoKr and dataset scan/load/save, sample update, labeling and preprocessing\n  routes have been audited and authored; adapter export and other specialized\n  training operations remain unfinished.
 - No dependency lockfile or vulnerability scan yet (network/package install
   unavailable in this environment).
 
 **Review verdict:** architecture consistent at source level, **not build-ready
 proven**. Continue implementation; do not merge or declare 100% completion.
+
 

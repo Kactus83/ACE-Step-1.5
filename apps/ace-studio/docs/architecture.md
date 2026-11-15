@@ -72,7 +72,7 @@ Submission acknowledges `task_id` before tracking starts. Polling takes at
 least 2.5 seconds between successful rounds and increases delay to 30 seconds
 on transport errors. A disconnected backend does not automatically cancel the
 GPU job; an HTTP aborted request is not equivalent to canceling inference.
-The list is reset when users explicitly switch servers, preserving separation.
+The list and workflow state are reset on backend origin or credential changes.\nEvery in-flight asynchronous response is checked against a connection revision,\npreventing old-server results from being displayed on the new connection.
 
 ### Integration invariants
 
@@ -83,4 +83,5 @@ The list is reset when users explicitly switch servers, preserving separation.
 5. Never mutate Gradio/CLI/training defaults for ACE Studio convenience.
 6. Keep every backend extension additive, opt-in and testable.
 7. Tauri and Web must continue to use one Angular source tree.
+
 

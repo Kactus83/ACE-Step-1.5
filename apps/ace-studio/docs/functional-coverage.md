@@ -12,25 +12,25 @@ establish that the feature actually works. `Partial` marks a real functional gap
 | Model init/switch | Written | Unexecuted | Explicit /v1/init; no implicit model download |
 | Text-to-music creation | Written | Unexecuted | /release_task via queued backend |
 | Prompt, lyrics, instrumental | Written | Unexecuted | Backend instrumental sentinel |
-| Model-aware mode availability | Partial | Unexecuted | Only text2music/cover/repaint are wired |
+| Model-aware mode availability | Partial | Unexecuted | Advertised text2music/cover/repaint/extract/lego/complete; advanced modes lack real GPU acceptance |
 | Remix/Cover with uploaded source | Written | Unexecuted | Multipart; backend controls quality/semantics |
-| Repaint with uploaded source | Partial | Unexecuted | Numeric time controls, no waveform selection |
+| Repaint with uploaded source | Partial | Unexecuted | Accessible numeric inputs plus opt-in decoded waveform and synchronized range sliders |
 | Reference audio | Written | Unexecuted | Multipart reference upload |
 | Advanced inference controls | Partial | Unexecuted | Steps/guidance/seed/batch/format; not DCW, custom timesteps etc |
 | Model/LM thinking | Partial | Unexecuted | Boolean thinking; no full LM control panel |
 | Batches / variants | Partial | Unexecuted | Batch parameter and result cards; no A/B synchronized comparison |
 | Job queue / progress | Written | Unexecuted | Polling, status, backend text, backoff; no invented percentages |
 | Failure/reconnection | Written | Unexecuted | Session task IDs; needs outage scenario |
-| Audio playback/download | Written | Unexecuted | Authenticated Blob fetch; raw MIME test needed |
+| Audio playback/download | Written | Unexecuted | Authenticated Blob fetch; source extension from server path where possible, full codec validation pending |
 | Result-to-remix/repaint | Written | Unexecuted | Re-upload resulting audio to the same backend |
 | Local presets | Written | Unexecuted | Whitelist versioned settings, no binary data |
 | Cross-session server library/projects | Unavailable | Not applicable | Requires backend/storage design and security review |
 | Audio metadata, seeds | Partial | Unexecuted | Display available seed/BPM; no complete catalog |
-| Extract | Unavailable | Not applicable | API mode exists; not yet implemented in Studio |
-| Lego | Unavailable | Not applicable | Needs track conditioning UX/API validation |
-| Complete | Unavailable | Not applicable | Needs own form and source-data contracts |
-| GPU/runtime stats | Unavailable | Not applicable | /v1/stats could be exposed read-only |
-| Dataset preparation | Partial | Unexecuted | Server directory scanning only; preprocessing/labeling still missing |
+| Extract | Partial | Unexecuted | Source audio and instrument stem mapped to API; hardware/model validation pending |
+| Lego | Partial | Unexecuted | Source audio and requested added stem mapped; real source-conditioned behavior unverified |
+| Complete | Partial | Unexecuted | Source and validated track_classes forwarded; specialized output review pending |
+| GPU/runtime stats | Partial | Unexecuted | Real queue and job counts from /v1/stats; no GPU/VRAM telemetry API |
+| Dataset preparation | Partial | Unexecuted | Server scan/load/save, sample metadata editor, asynchronous labeling and preprocessing; full integration/QA pending |
 | LoRA/LoKr training | Partial | Unexecuted | Server status, tensor validation, explicit start/stop authored; needs runtime and extended controls |
 | Desktop integration | Partial | Unexecuted | Tauri 2 host and icons, no native capabilities |
 | Native process supervision | Voluntarily excluded | Not applicable | Do not duplicate existing Python inference instance |
@@ -39,7 +39,7 @@ establish that the feature actually works. `Partial` marks a real functional gap
 | Test unit / browser mock | Written | Unexecuted | Vitest/Playwright and mocked API provided |
 | Python original CLI/Gradio | Untouched except optional CORS | Unexecuted | Full nonregression tests required |
 
-The project is **not** at 100% source coverage. A polished shell must not be
-counted as API-backed Extract/Lego/Complete, training, or persistent library.
+The project is **not** at 100% source coverage. A polished shell and API request mapping do not prove GPU correctness for advanced modes or a persistent server-side library.
+
 
 

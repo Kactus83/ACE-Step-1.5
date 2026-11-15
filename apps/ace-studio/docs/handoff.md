@@ -57,10 +57,9 @@ install and commit it only after dependency resolution and security review.
   configured HTTPS instance. Avoid starting a second model process.
 - In packaged desktop mode, launch Python API with
   `ACESTEP_ENABLE_STUDIO_DESKTOP_CORS=1`, testing all actual origins.
-- Perform basic generation, lyrics, instrumental, seed/batches, reference audio,
-  Cover, Repaint, server fail/recovery, authorization, audio preview/download.
+- Perform basic generation, lyrics, instrumental, seed/batches, reference audio,\n  Cover, Repaint timeline, Extract/Lego/Complete on supporting base models,\n  server fail/recovery, authorization, audio preview/download.
 - Inspect Windows WebView2, Linux GTK and macOS webviews independently.
-- Assess GPU memory, queue saturation, long-running jobs and file cleanup.
+- Assess dataset scan/load/save, sample indexing, async labeling and preprocessing,\n  LoRA/LoKr start/stop, and server-global dataset race behavior.\n- Assess GPU memory, queue saturation, long-running jobs and file cleanup.
 - Record exact platform, Node/npm/Rust/Python versions and command exits.
 - Restore any source regressions before considering merge eligibility.
 
@@ -70,4 +69,5 @@ The draft PR can be promoted only after functional scope completion,
 independent contradictions resolved, unit and integration build/test evidence,
 native packaging checks and explicit user authorization. Do not treat the code
 written so far as a substitute for that evidence.
+
 

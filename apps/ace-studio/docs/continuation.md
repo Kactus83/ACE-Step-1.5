@@ -16,29 +16,37 @@ blocked by unavailable local compilation/GPU.
 - Mock backend + Vitest + Playwright test source.
 - Source-level architecture/security/UX audits.
 
+- Server-global dataset scan/load/save, indexed metadata editing, auto-label and
+  tensor preprocessing status; handoff to validated LoRA/LoKr tensor directory.
+- Backend queue and job counters from `/v1/stats`.
+- Model-gated Extract/Lego/Complete submissions, instrument stems and classes.
+- Optional Repaint waveform with accessible numeric fallback.
+- Stale-response invalidation when URL or API credentials change.
+- Pure API/data contract and waveform unit tests plus mocked E2E source.
+
 ## Next implementation increments (work even without local compilation)
 
-1. Extend audited training/dataset routes: sample editing, dataset persistence,
-   async preprocessing, auto-label, task progress, export, model adapter load.
-2. Implement Extract, Lego and Complete with task-specific validation,
-   file upload, mode-aware configuration and precise capabilities.
-3. Improve Repaint with a real waveform + accessible numeric range syncing,
-   and maintain backend time-range fidelity.
-4. Implement full metadata/seed management, result comparisons, batch explorer,
-   score/codes results when available, and repeat generation.
-5. Build local projects with versioned schema and opt-in file handling;
-   distinguish nonpersistent session history from a server-persistent library.
-6. Add server stats, diagnostics, GPU/memory reported by API, and structured
-   error reporting. Never invent progress from elapsed time.
-7. Build training dataset, labeling, preprocessing and LoRA/LoKr workflows
-   from server contracts; validate destructive actions and permissions.
-8. Add polished a11y interaction, shortcut system, translations, presets import/
-   export and cohesive light theme where justified.
-9. Expand tests: unit stores/service adapters, API error/capability matrix,
-   E2E failure/reconnection, Playwright a11y, Tauri command/permission tests.
-10. Do two further contradictory source reviews and then local merge handoff.
-    When local toolchains become available, run actual build/unit/browser/GPU
-    validations, log evidence and fix failures.
+1. Extend training API UI for adapter export, sample metadata navigation,
+   label/preprocess task diagnostics, and complete retry policies.
+2. Add model/LM advanced generation controls from actual request contracts:
+   DCW, custom timesteps, scheduler, CoT, reference/cover tuning and validation.
+3. Implement A/B result comparison, batches, metadata/seed browsing and repeat
+   generation with reproducibility controls.
+4. Build local projects and catalog with versioned storage, safe import/export
+   and clear server-retention limitations; never claim a durable remote library.
+5. Expand backend connection diagnostics with meaningful errors and opt-in
+   supported hardware indicators (do not infer GPU values).
+6. Improve Repaint source preview, selected region visualization and the exact
+   server-boundary contract through E2E tests.
+7. Implement browser/Tauri native abstraction where needed, keyboard shortcuts,
+   translations and a consistent design-system accessibility review.
+8. Add focused adapter/store tests, API failure scenarios, E2E reconnect,
+   Playwright accessibility checks and Tauri permissions/packaging tests.
+9. Carry out another two independent source reviews and fix their findings,
+   including concurrent mutation and model switching edge cases.
+10. After all code paths are implemented, local team runs real Angular/Rust
+    builds and Python/Playwright/GPU tests and documents exit codes. Do not
+    declare production readiness or merge approval from source inspection.
 
 ## Non-negotiable interpretation
 
@@ -49,5 +57,6 @@ Mark source as written/unexecuted. Do not invent success or call the mission
 The only legitimate final environmental handoff is after the fully authored
 target scope can be compiled/tested by the local team, with all incomplete
 items explicitly identified and independent approvals pending.
+
 
 

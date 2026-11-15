@@ -5,7 +5,7 @@ No screenshots or real keyboard/screen-reader execution were available.
 
 ## Observable source improvements
 
-- Distinct Create, Queue & Results, and Connection views with a persistent
+- Distinct Create, Queue & Results, Datasets, Training and Connection views with a persistent
   backend-readiness indicator.
 - Advanced generation parameters are progressively disclosed; the beginner's
   prompt and instrumental choice remain prominent.
@@ -20,11 +20,10 @@ No screenshots or real keyboard/screen-reader execution were available.
 
 ## Defects / missing user journeys
 
-- No graphical waveform/timeline for Repaint; numerical start/end fields alone
-  are only a partial editing UX.
+- Opt-in browser-decoded Repaint waveform and synchronized start/end sliders\n  now exist; the waveform and actual codec behavior still require browser QA.
 - No A/B synchronized audition, favourites, tagging, batch navigation across
   sessions, or persistent remote project library.
-- Dataset scanning and LoRA/LoKr training controls now exist, but sample editing, preprocessing, auto-label, training exports and runtime verification are not yet present.
+- Dataset scan/load/save, sample editing, auto-label and preprocessing controls\n  now exist. Dataset collaboration conflicts, training export and runtime QA\n  are still outstanding.
 - Source audio remains volatile; restoring a preset will never restore files.
 - No true multi-panel rearrangement or keyboard hotkey map yet.
 - Browser contrast, screen-reader output, 320px width, zoom, Tauri native
@@ -36,4 +35,5 @@ No screenshots or real keyboard/screen-reader execution were available.
 
 **Review verdict:** credible working-generation studio source, but the entire
 advanced-product scope is unfinished. No UI acceptance claim before local QA.
+
 
