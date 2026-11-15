@@ -5,7 +5,7 @@
  */
 import { expect, test } from "@playwright/test";
 
-test("requires explicit acknowledgement and confirms adapter export twice", async ({ page }) => {
+test("requires explicit acknowledgement and refuses legacy destructive fallback", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Connection" }).click();
   await page.getByLabel("API server address").fill("http://127.0.0.1:18081");
@@ -15,12 +15,12 @@ test("requires explicit acknowledgement and confirms adapter export twice", asyn
     .fill("/mock/training/lora_output");
   await page.getByLabel("New export destination directory")
     .fill("/mock/exports/adapter-01");
-  await page.getByLabel("Type OVERWRITE to acknowledge deletion risk").fill("OVERWRITE");
-  await page.getByRole("button", { name: "Review export operation" }).click();
-  await expect(page.getByRole("button", { name: "Confirm destructive export" }))
+  await page.getByLabel("Type EXPORT to confirm the new-directory copy").fill("EXPORT");
+  await page.getByRole("button", { name: "Review adapter export" }).click();
+  await expect(page.getByRole("button", { name: "Confirm safe adapter export" }))
     .toBeVisible();
   await page.getByRole("button", { name: "Confirm destructive export" }).click();
-  await expect(page.getByText("Mock adapter exported")).toBeVisible();
+  await expect(page.getByText("Mock adapter exported without overwrite")).toBeVisible();
 
   const response = await page.request.get("http://127.0.0.1:18081/__mock__/last_export");
   const body = await response.json();
@@ -29,4 +29,5 @@ test("requires explicit acknowledgement and confirms adapter export twice", asyn
     export_path: "/mock/exports/adapter-01"
   });
 });
+
 

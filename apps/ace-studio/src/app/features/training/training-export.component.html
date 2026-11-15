@@ -2,10 +2,11 @@
   <div class="section-heading"><div>
     <p class="eyebrow">03 / OUTPUT</p><h2 id="training-export-title">Export trained adapter</h2>
   </div><span class="section-mark" aria-hidden="true">⇩</span></div>
-  <p class="notice danger">Destructive backend behavior: ACE-Step's existing export
-    endpoint <strong>deletes a destination directory if it already exists</strong>,
-    then copies trained weights. No existence check is exposed to this client.
-    Choose a unique, dedicated output directory. This action cannot be undone by Studio.
+  <p class="notice warning">ACE Studio uses a separate no-overwrite export route.
+    <strong>Existing destination directories are never removed by this action.</strong>
+    Select a new dedicated server directory. This requires the Studio-enabled
+    Python API; older servers will reject the request rather than falling back
+    to ACE-Step's destructive legacy export endpoint.
   </p>
   <form [formGroup]="form" (ngSubmit)="export()" (input)="invalidate()">
     <label class="field" for="export-source"><span>Training output directory on backend</span>
@@ -19,13 +20,13 @@
       <input id="export-target" formControlName="export_path"
         placeholder="/data/exports/my-adapter" required />
     </label>
-    <label class="field" for="export-acknowledge"><span>Type OVERWRITE to acknowledge deletion risk</span>
+    <label class="field" for="export-acknowledge"><span>Type EXPORT to confirm the new-directory copy</span>
       <input id="export-acknowledge" formControlName="acknowledgement"
-        autocomplete="off" placeholder="OVERWRITE" required />
+        autocomplete="off" placeholder="EXPORT" required />
     </label>
     <button type="submit" class="secondary-action danger-action"
       [disabled]="form.invalid || busy()">
-      {{ busy() ? 'Exporting…' : confirmation() ? 'Confirm destructive export' : 'Review export operation' }}
+      {{ busy() ? 'Exporting…' : confirmation() ? 'Confirm safe adapter export' : 'Review adapter export' }}
     </button>
   </form>
   @if (error()) { <p class="notice danger" role="alert">{{ error() }}</p> }
@@ -33,4 +34,5 @@
   <p class="small-note">Source preference: final adapter when present,
     otherwise the latest epoch checkpoint. All paths belong to the Python server.</p>
 </section>
+
 

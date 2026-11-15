@@ -59,10 +59,10 @@ export class TrainingClient {
 
   /**
    * @public Export a trained LoRA/LoKr adapter after destructive UI confirmation.
-   * @remarks Existing backend route overwrites an existing destination folder.
+   * @remarks Studio-only backend route rejects existing destination directories.
    */
   async exportAdapter(request: TrainingExportRequest): Promise<TrainingActionResult> {
-    return this.post<TrainingActionResult>("/v1/training/export", request);
+    return this.post<TrainingActionResult>("/v1/studio/training/export", request);
   }
 
   /** @public Start LoRA training only after an explicit user confirmation. */
@@ -83,5 +83,6 @@ export class TrainingClient {
     return this.post<TrainingActionResult>("/v1/training/stop", {});
   }
 }
+
 
 

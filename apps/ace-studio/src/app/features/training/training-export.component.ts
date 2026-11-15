@@ -11,7 +11,7 @@ import { validateTrainingExport } from "./training-export.request";
 
 /**
  * @public Adapter export dialog with two-step confirmation and typed overwrite acknowledgement.
- * @remarks The upstream endpoint deletes a pre-existing destination directory.
+ * @remarks Studio uses a separate backend endpoint that refuses an existing destination.
  */
 @Component({
   selector: "ace-training-export",
@@ -44,15 +44,15 @@ export class TrainingExportComponent {
   invalidate(): void { this.confirmation.set(null); }
 
   /**
-   * @public Export a trained adapter after typed and repeated destructive confirmation.
-   * @remarks No filesystem existence probe is available, so assume overwrite is possible.
+   * @public Copy a trained adapter after explicit two-step export confirmation.
+   * @remarks The backend enforces no overwrite; Studio never falls back to legacy export.
    */
   async export(): Promise<void> {
     this.error.set(null);
     this.message.set(null);
     if (this.busy() || this.form.invalid) { this.form.markAllAsTouched(); return; }
-    if (this.form.controls.acknowledgement.value.trim() !== "OVERWRITE") {
-      this.error.set("Type OVERWRITE exactly to acknowledge possible destination deletion.");
+    if (this.form.controls.acknowledgement.value.trim() !== "EXPORT") {
+      this.error.set("Type EXPORT exactly to acknowledge the server-side copy.");
       return;
     }
     let request;
@@ -83,4 +83,5 @@ export class TrainingExportComponent {
     } finally { this.busy.set(false); }
   }
 }
+
 
