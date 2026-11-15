@@ -88,15 +88,15 @@ export function mapExpertRequest(raw: ExpertSnapshot): Partial<GenerateRequest> 
     lm_top_k: bounded(raw.lm_top_k, 0, 10000, "LM top-k") || undefined,
     lm_top_p: bounded(raw.lm_top_p, 0.01, 0.99, "LM top-p")
   };
-  if (raw.dcw_override !== "auto") {
-    result.dcw_enabled = raw.dcw_override === "on";
-  }
-  if (raw.dcw_override === "on") {
-    result.dcw_mode = raw.dcw_mode as "low" | "high" | "double" | "pix";
-    result.dcw_scaler = bounded(raw.dcw_scaler, 0, 1, "DCW low scaler");
-    result.dcw_high_scaler = bounded(raw.dcw_high_scaler, 0, 1, "DCW high scaler");
-    result.dcw_wavelet = raw.dcw_wavelet;
-  }
-  return result;
+  const override: Partial<GenerateRequest> = raw.dcw_override === "auto"
+    ? {} : { dcw_enabled: raw.dcw_override === "on" };
+  const config: Partial<GenerateRequest> = raw.dcw_override === "on" ? {
+    dcw_mode: raw.dcw_mode as "low" | "high" | "double" | "pix",
+    dcw_scaler: bounded(raw.dcw_scaler, 0, 1, "DCW low scaler"),
+    dcw_high_scaler: bounded(raw.dcw_high_scaler, 0, 1, "DCW high scaler"),
+    dcw_wavelet: raw.dcw_wavelet
+  } : {};
+  return { ...result, ...override, ...config };
 }
+
 

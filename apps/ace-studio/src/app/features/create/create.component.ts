@@ -17,12 +17,13 @@ import { mapGenerateRequest, TRACK_NAMES } from "./create.request";
 import { JobsStore } from "../../core/jobs.store";
 import { WorkflowStore } from "../../core/workflow.store";
 import { CreatePresetsComponent } from "./create-presets.component";
+import { CreateExpertComponent } from "./create-expert.component";
 
 /** @public Primary creation form, shared by web and desktop. */
 @Component({
   selector: "ace-create",
   standalone: true,
-  imports: [ReactiveFormsModule, RepaintTimelineComponent, CreatePresetsComponent],
+  imports: [ReactiveFormsModule, RepaintTimelineComponent, CreatePresetsComponent, CreateExpertComponent],
   templateUrl: "./create.component.html"
 })
 export class CreateComponent implements OnInit {
@@ -36,6 +37,7 @@ export class CreateComponent implements OnInit {
   readonly source = signal<File | null>(null);
   readonly reference = signal<File | null>(null);
   readonly error = signal<string | null>(null);
+  readonly pendingDcwConfirmation = signal<string | null>(null);
   readonly importName = computed(() => this.workflow.draft()?.source.prompt || "Generated track");
 
   readonly form = createGenerationForm(this.fb);
@@ -139,6 +141,15 @@ export class CreateComponent implements OnInit {
       this.error.set(error instanceof Error ? error.message : "Invalid generation settings.");
       return;
     }
+    if (request.dcw_enabled === true) {
+      const fingerprint = JSON.stringify({ endpoint: this.backend.health()?.service, value });
+      if (this.pendingDcwConfirmation() !== fingerprint) {
+        this.pendingDcwConfirmation.set(fingerprint);
+        this.error.set("Forced DCW can distort non-turbo models. Review the warning and submit again to confirm.");
+        return;
+      }
+    }
+    this.pendingDcwConfirmation.set(null);
     this.error.set(null);
     try {
       const draft = this.workflow.draft();
@@ -155,6 +166,7 @@ export class CreateComponent implements OnInit {
     }
   }
 }
+
 
 
 

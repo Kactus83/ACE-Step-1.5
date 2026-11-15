@@ -1,0 +1,101 @@
+<div [formGroup]="form()" class="expert-controls">
+  <h3>Diffusion scheduler</h3>
+  <div class="field-row">
+    <label class="field" for="infer-method"><span>Inference method</span>
+      <select id="infer-method" formControlName="infer_method">
+        <option value="ode">ODE</option><option value="sde">SDE</option>
+      </select>
+    </label>
+    <label class="field" for="shift"><span>Shift (base models only)</span>
+      <input id="shift" type="number" step=".1" min="1" max="5" formControlName="shift" />
+    </label>
+  </div>
+  <label class="field" for="custom-timesteps"><span>Custom timesteps (optional)</span>
+    <textarea id="custom-timesteps" rows="2" formControlName="timesteps"
+      placeholder="0.97,0.76,0.5,0.28,0"></textarea>
+  </label>
+  <p class="small-note">When set, custom timesteps replace inference-step count and shift.
+    Enter 2–128 strictly descending values between 0 and 1.</p>
+  <label class="checkbox-label"><input type="checkbox" formControlName="use_adg" />
+    <span>Adaptive dual guidance (ADG)</span>
+  </label>
+  <div class="field-row">
+    <label class="field" for="cfg-start"><span>CFG interval start (0–1)</span>
+      <input id="cfg-start" type="number" min="0" max="1" step=".01"
+        formControlName="cfg_interval_start" />
+    </label>
+    <label class="field" for="cfg-end"><span>CFG interval end (0–1)</span>
+      <input id="cfg-end" type="number" min="0" max="1" step=".01"
+        formControlName="cfg_interval_end" />
+    </label>
+  </div>
+
+  <h3>Wavelet correction (DCW)</h3>
+  <label class="field" for="dcw-override"><span>DCW policy</span>
+    <select id="dcw-override" formControlName="dcw_override">
+      <option value="auto">Backend model default (recommended)</option>
+      <option value="off">Force off</option>
+      <option value="on">Force on — expert only</option>
+    </select>
+  </label>
+  <p class="small-note">Automatic mode keeps the backend model policy. Forcing DCW on
+    for incompatible non-turbo models can severely distort generated audio.</p>
+  @if (form().controls.dcw_override.value === "on") {
+    <div class="field-row">
+      <label class="field" for="dcw-mode"><span>Correction mode</span>
+        <select id="dcw-mode" formControlName="dcw_mode">
+          <option value="double">Double band</option>
+          <option value="low">Low band</option>
+          <option value="high">High band</option>
+          <option value="pix">Pixel</option>
+        </select>
+      </label>
+      <label class="field" for="dcw-wavelet"><span>Wavelet</span>
+        <select id="dcw-wavelet" formControlName="dcw_wavelet">
+          <option value="haar">Haar</option><option value="db4">Daubechies 4</option>
+          <option value="sym8">Symlet 8</option>
+        </select>
+      </label>
+    </div>
+    <div class="field-row">
+      <label class="field" for="dcw-low"><span>Low/single scaler</span>
+        <input id="dcw-low" type="number" min="0" max="1" step=".01"
+          formControlName="dcw_scaler" />
+      </label>
+      <label class="field" for="dcw-high"><span>High scaler (double)</span>
+        <input id="dcw-high" type="number" min="0" max="1" step=".01"
+          formControlName="dcw_high_scaler" />
+      </label>
+    </div>
+  }
+
+  <h3>5Hz language model</h3>
+  <p class="small-note">LM thinking and prompt formatting are controlled in the
+    main form. The options below may lazily initialize a language model and consume GPU memory.</p>
+  <label class="checkbox-label"><input type="checkbox" formControlName="use_cot_caption" />
+    <span>CoT: enhance music caption</span>
+  </label>
+  <label class="checkbox-label"><input type="checkbox" formControlName="use_cot_language" />
+    <span>CoT: infer lyric language</span>
+  </label>
+  <div class="field-row">
+    <label class="field" for="lm-temperature"><span>LM temperature</span>
+      <input id="lm-temperature" type="number" min=".05" max="2" step=".05"
+        formControlName="lm_temperature" />
+    </label>
+    <label class="field" for="lm-cfg"><span>LM CFG scale</span>
+      <input id="lm-cfg" type="number" min="0" max="20" step=".1"
+        formControlName="lm_cfg_scale" />
+    </label>
+  </div>
+  <div class="field-row">
+    <label class="field" for="lm-top-k"><span>LM top-k (0 = server default)</span>
+      <input id="lm-top-k" type="number" min="0" max="10000" step="1"
+        formControlName="lm_top_k" />
+    </label>
+    <label class="field" for="lm-top-p"><span>LM top-p</span>
+      <input id="lm-top-p" type="number" min=".01" max=".99" step=".01"
+        formControlName="lm_top_p" />
+    </label>
+  </div>
+</div>

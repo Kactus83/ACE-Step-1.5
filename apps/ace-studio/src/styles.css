@@ -246,3 +246,7 @@ h3 { font-size: 15px; font-weight: 600; }
 .timeline-range label { font-size: 11px; color: var(--muted); }
 .timeline-range input[type=range] { width: 100%; accent-color: var(--accent); }
 .timeline-range .small-note { margin: 5px 0 0; }
+
+.expert-controls h3 { margin: 24px 0 14px; border-top: 1px solid var(--line-soft); padding-top: 20px; }
+.expert-controls .small-note { margin: -2px 0 15px; }
+
