@@ -147,6 +147,8 @@ class SimpleFoundationTests(unittest.TestCase):
         self.assertFalse(outputs[4]["visible"])
         self.assertTrue(outputs[5]["visible"])
         self.assertEqual(outputs[12], queue)
+        self.assertNotIn("value", outputs[8])
+        self.assertNotIn("value", outputs[9])
 
     def test_empty_final_result_is_reported_as_failure(self):
         """An empty path list must not masquerade as a successful generation."""
@@ -155,6 +157,8 @@ class SimpleFoundationTests(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(len(results[0]), 14)
         self.assertIn("Generation failed", results[0][7]["value"])
+        self.assertNotIn("value", results[0][0])
+        self.assertNotIn("value", results[0][1])
 
 
 if __name__ == "__main__":

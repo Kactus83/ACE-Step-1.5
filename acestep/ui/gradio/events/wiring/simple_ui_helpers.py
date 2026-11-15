@@ -137,8 +137,8 @@ def _generation_failure_updates(
         gr.update(visible=True),
         gr.update(value=""),
         gr.update(value=_build_status_html(message, False)),
-        gr.update(value=""),
-        gr.update(value=""),
+        gr.skip(),  # Retain metadata for the audio that remains playable.
+        gr.skip(),
         current_batch_index, total_batches, batch_queue, generation_params_state,
     )
 

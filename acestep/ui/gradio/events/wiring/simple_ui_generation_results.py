@@ -36,8 +36,8 @@ def _finish_simple_generation(
         err_msg = gen_status_message or generation_info_text or t("simple_flow.no_output")
         logger.warning(f"Simple UI: generation result had no audio paths. Status: {gen_status_message}")
         yield (
-            gr.update(value=None),  # 0: audio_1
-            gr.update(value=None),  # 1: audio_2
+            gr.skip(),  # 0: keep previous playable audio
+            gr.skip(),  # 1: keep previous playable audio
             gr.update(value=_step_indicator_html(5)),  # 2
             gr.update(visible=False),  # 3: step 3 hide
             gr.update(visible=False),  # 4: step 4 hide
