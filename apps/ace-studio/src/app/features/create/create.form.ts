@@ -31,7 +31,25 @@ export function createGenerationForm(fb: FormBuilder) {
     audio_cover_strength: [1, [Validators.min(0), Validators.max(1)]],
     repainting_start: [0, [Validators.min(0)]],
     repainting_end: [30, [Validators.min(0)]],
-    audio_format: ["mp3"]
+    audio_format: ["mp3"],
+    infer_method: ["ode"],
+    shift: [3, [Validators.min(1), Validators.max(5)]],
+    timesteps: [""],
+    use_adg: [false],
+    cfg_interval_start: [0, [Validators.min(0), Validators.max(1)]],
+    cfg_interval_end: [1, [Validators.min(0), Validators.max(1)]],
+    dcw_override: ["auto"],
+    dcw_mode: ["double"],
+    dcw_scaler: [0.05, [Validators.min(0), Validators.max(1)]],
+    dcw_high_scaler: [0.02, [Validators.min(0), Validators.max(1)]],
+    dcw_wavelet: ["haar"],
+    use_cot_caption: [false],
+    use_cot_language: [false],
+    lm_temperature: [0.85, [Validators.min(0.05), Validators.max(2)]],
+    lm_cfg_scale: [2.5, [Validators.min(0), Validators.max(20)]],
+    lm_top_k: [0, [Validators.min(0), Validators.max(10000)]],
+    lm_top_p: [0.9, [Validators.min(0.01), Validators.max(0.99)]]
   });
 }
+
 

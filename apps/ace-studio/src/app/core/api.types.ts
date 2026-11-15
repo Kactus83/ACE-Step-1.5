@@ -78,6 +78,23 @@ export interface GenerateRequest {
   readonly track_name?: string;
   readonly track_classes?: readonly string[];
   readonly audio_format?: "mp3" | "wav" | "flac" | "opus" | "aac" | "wav32";
+  readonly infer_method?: "ode" | "sde";
+  readonly shift?: number;
+  readonly timesteps?: string;
+  readonly use_adg?: boolean;
+  readonly cfg_interval_start?: number;
+  readonly cfg_interval_end?: number;
+  readonly dcw_enabled?: boolean;
+  readonly dcw_mode?: "low" | "high" | "double" | "pix";
+  readonly dcw_scaler?: number;
+  readonly dcw_high_scaler?: number;
+  readonly dcw_wavelet?: string;
+  readonly use_cot_caption?: boolean;
+  readonly use_cot_language?: boolean;
+  readonly lm_temperature?: number;
+  readonly lm_cfg_scale?: number;
+  readonly lm_top_k?: number;
+  readonly lm_top_p?: number;
 }
 
 /** @public Acknowledged queue position, not a finished generation. */
@@ -123,5 +140,6 @@ export interface StudioJob {
   readonly results: readonly GeneratedAudio[];
   readonly request?: GenerateRequest;
 }
+
 
 
