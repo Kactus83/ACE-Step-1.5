@@ -1,5 +1,7 @@
 # Contradictory Review 4 — Final hardening / negative-path inspection (2026-11-15)
 
+> **Historical source-only review.** Its unexecuted-test warnings were subsequently addressed by the [local acceptance report](2026-11-15-local-acceptance-report.md) before PR #1 merged. This record is retained for audit traceability.
+
 ## Scope and evidence
 
 Re-read the consolidation candidate PR #1 and verified all earlier scope decisions against unchanged upstream and fork main. Inspected source for the five-stage Simple flow, Advanced preservation, progress adapter, seeded metadata, WAV fallback, source conditioning, offloading, API parameters and service flag. This fourth review is **static source inspection**; it is **not** compilation, a Gradio render, or a GPU run.
