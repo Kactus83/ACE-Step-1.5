@@ -20,12 +20,13 @@ import { JobsStore } from "../../core/jobs.store";
 import { WorkflowStore } from "../../core/workflow.store";
 import { CreatePresetsComponent } from "./create-presets.component";
 import { CreateExpertComponent } from "./create-expert.component";
+import { CreateSourceEditComponent } from "./create-source-edit.component";
 
 /** @public Primary creation form, shared by web and desktop. */
 @Component({
   selector: "ace-create",
   standalone: true,
-  imports: [ReactiveFormsModule, RepaintTimelineComponent, CreatePresetsComponent, CreateExpertComponent],
+  imports: [ReactiveFormsModule, RepaintTimelineComponent, CreatePresetsComponent, CreateExpertComponent, CreateSourceEditComponent],
   templateUrl: "./create.component.html"
 })
 export class CreateComponent implements OnInit {
@@ -178,6 +179,7 @@ export class CreateComponent implements OnInit {
     }
   }
 }
+
 
 
 

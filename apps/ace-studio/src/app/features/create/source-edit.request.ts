@@ -33,11 +33,10 @@ export function mapSourceEditRequest(
   mode: TaskType, value: SourceEditSnapshot
 ): Partial<GenerateRequest> {
   const common: Partial<GenerateRequest> = {
-    use_tiled_decode: value.use_tiled_decode
+    use_tiled_decode: value.use_tiled_decode,
+    ...(mode === "lego" && value.global_caption.trim()
+      ? { global_caption: value.global_caption.trim().slice(0, 5000) } : {})
   };
-  if (mode === "lego" && value.global_caption.trim()) {
-    common.global_caption = value.global_caption.trim().slice(0, 5000);
-  }
   if (mode !== "cover" && mode !== "repaint") return common;
   const cover: Partial<GenerateRequest> = {
     cover_noise_strength: bound(value.cover_noise_strength, 0, 1, "Cover noise strength")
@@ -63,4 +62,5 @@ export function mapSourceEditRequest(
       ? { repaint_strength: bound(value.repaint_strength, 0, 1, "Repaint strength") } : {})
   };
 }
+
 
