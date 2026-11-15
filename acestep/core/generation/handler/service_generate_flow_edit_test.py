@@ -8,6 +8,7 @@ the user's ``caption`` / ``lyrics`` are the *target*; the overlay adds a
 """
 
 import unittest
+from contextlib import contextmanager
 
 import torch
 
@@ -19,6 +20,46 @@ from acestep.core.generation.handler._flow_edit_dispatch_test_support import (
     make_flow_edit_ctx,
     make_payload,
 )
+
+
+class ModelContextTrackingHandler(FakeHandler):
+    """FakeHandler that records whether _load_model_context("model") is active
+    when prepare_condition runs — catches offload device mismatches."""
+
+    def __init__(self, *args, **kwargs):
+        """Set up tracking state and wrap prepare_condition to log context depth.
+
+        The wrapped ``tracked`` appends whether the model context is currently
+        active (depth > 0) for the downstream prepare_condition call, so the
+        offload-path regression test can assert that call runs with the model
+        loaded onto the device.
+        """
+        super().__init__(*args, **kwargs)
+        self._model_ctx_depth = 0
+        self.prepare_condition_model_ctx = []
+        enc_hs, enc_am, ctx = self.prepared_enc_hs, self.prepared_enc_am, self.prepared_ctx
+
+        def tracked(*args, **kwargs):
+            """Record context depth, then defer to the prepared condition tensors."""
+            self.prepare_condition_model_ctx.append(self._model_ctx_depth > 0)
+            return (enc_hs, enc_am, ctx)
+
+        self.model.prepare_condition = tracked
+
+    @contextmanager
+    def _load_model_context(self, name: str):
+        """Teach this handler the real offload context depth tracking.
+
+        Mirrors the production ``_load_model_context`` (a no-op under the test
+        fake otherwise) so depth is visible inside ``prepare_condition``.
+        """
+        if name == "model":
+            self._model_ctx_depth += 1
+        try:
+            yield
+        finally:
+            if name == "model":
+                self._model_ctx_depth -= 1
 
 
 class FlowEditOverlayDispatchTests(unittest.TestCase):
@@ -129,20 +170,29 @@ class FlowEditOverlayDispatchTests(unittest.TestCase):
         self.assertEqual(kwargs["seed"], 42)
         self.assertEqual(kwargs["retake_seed"], [99, 100])
 
+    def test_offload_path_loads_model_for_downstream_prepare_condition(self):
+        handler = ModelContextTrackingHandler()
+        dispatch_flow_edit_overlay(
+            handler, payload=make_payload(), generate_kwargs={"infer_steps": 4},
+            seed_param=None, flow_edit_ctx=make_flow_edit_ctx(),
+        )
+        # Dispatch directly calls prepare_condition once (the downstream call).
+        # It must run while the model is loaded, or F.linear has a device mismatch.
+        self.assertEqual(handler.prepare_condition_model_ctx, [True])
+
 
 class CoverStillRunsLmTests(unittest.TestCase):
-    """The overlay layers on cover; cover stays in skip_lm_tasks (LM Phase 1
-    skipped because cover already extracts codes from the ref audio)."""
+    """The overlay keeps cover and related modes under direct conditioning."""
 
-    def test_no_edit_in_skip_lm_tasks(self):
-        from pathlib import Path
-        src = (Path(__file__).resolve().parents[3] / "inference.py").read_text()
-        self.assertIn(
-            'skip_lm_tasks = {"cover", "cover-nofsq", "repaint", "extract"}',
-            src,
-            "edit task is removed; skip_lm_tasks should no longer mention it",
+    def test_direct_conditioning_contract(self):
+        """Cover/editing modes skip LM planning; no independent edit task exists."""
+        from acestep.inference import DIRECT_CONDITIONING_TASKS
+
+        self.assertTrue(
+            {"cover", "cover-nofsq", "repaint", "extract", "complete", "lego"}
+            .issubset(DIRECT_CONDITIONING_TASKS)
         )
-        self.assertNotIn('"edit"', src.split("skip_lm_tasks")[1].split("\n")[0])
+        self.assertNotIn("edit", DIRECT_CONDITIONING_TASKS)
 
 
 if __name__ == "__main__":
