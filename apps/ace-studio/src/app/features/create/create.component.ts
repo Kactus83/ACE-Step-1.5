@@ -12,6 +12,7 @@ import { BackendStore } from "../../core/backend.store";
 import { GenerateRequest, TaskType } from "../../core/api.types";
 import { JobsStore } from "../../core/jobs.store";
 import { WorkflowStore } from "../../core/workflow.store";
+import { PresetsStore } from "../../core/presets.store";
 
 /** @public Primary creation form, shared by web and desktop. */
 @Component({
@@ -26,6 +27,10 @@ export class CreateComponent implements OnInit {
   readonly backend = inject(BackendStore);
   readonly jobs = inject(JobsStore);
   readonly workflow = inject(WorkflowStore);
+  readonly presets = inject(PresetsStore);
+  readonly presetName = signal("");
+  readonly selectedPresetId = signal("");
+  readonly deletingPreset = signal(false);
   readonly showJobs = output<void>();
   readonly source = signal<File | null>(null);
   readonly reference = signal<File | null>(null);
@@ -102,6 +107,56 @@ export class CreateComponent implements OnInit {
     } else this.reference.set(file);
   }
 
+  /** @public Stage a title for the next local preset. */
+  changePresetName(event: Event): void {
+    const element = event.target;
+    if (element instanceof HTMLInputElement) this.presetName.set(element.value);
+  }
+
+  /** @public Select a previously saved set of generation parameters. */
+  selectPreset(event: Event): void {
+    const element = event.target;
+    if (element instanceof HTMLSelectElement) {
+      this.selectedPresetId.set(element.value);
+      this.deletingPreset.set(false);
+    }
+  }
+
+  /** @public Save current form parameters without any media or credential. */
+  savePreset(): void {
+    this.error.set(null);
+    try {
+      const preset = this.presets.save(this.presetName(), this.form.getRawValue());
+      this.selectedPresetId.set(preset.id);
+      this.presetName.set("");
+    } catch (error: unknown) {
+      this.error.set(error instanceof Error ? error.message : "Unable to save preset.");
+    }
+  }
+
+  /** @public Restore a saved form snapshot without stale audio references. */
+  restorePreset(): void {
+    const selected = this.presets.get(this.selectedPresetId());
+    if (!selected) return;
+    this.source.set(null);
+    this.reference.set(null);
+    this.workflow.clear();
+    this.form.patchValue(
+      selected.fields as unknown as Parameters<typeof this.form.patchValue>[0]
+    );
+    this.error.set(null);
+  }
+
+  /** @public Require a second explicit click before permanently deleting a preset. */
+  deletePreset(): void {
+    const id = this.selectedPresetId();
+    if (!id) return;
+    if (!this.deletingPreset()) { this.deletingPreset.set(true); return; }
+    this.presets.remove(id);
+    this.selectedPresetId.set("");
+    this.deletingPreset.set(false);
+  }
+
   /** @public Prepare an explicitly acknowledged generation request. */
   async submit(): Promise<void> {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
@@ -161,3 +216,4 @@ export class CreateComponent implements OnInit {
     }
   }
 }
+

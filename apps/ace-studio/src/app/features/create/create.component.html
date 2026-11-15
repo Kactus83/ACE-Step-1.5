@@ -98,6 +98,36 @@
   </div>
 
   <aside class="configuration-panel">
+    <section class="panel" aria-labelledby="presets-heading">
+      <div class="section-heading"><div><p class="eyebrow">YOUR WORKSPACE</p>
+        <h2 id="presets-heading">Saved presets</h2></div>
+        <span class="section-mark" aria-hidden="true">▧</span>
+      </div>
+      <label class="field" for="preset-name"><span>New preset name</span>
+        <input id="preset-name" type="text" maxlength="80" [value]="presetName()"
+          (input)="changePresetName($event)" placeholder="Name these settings" />
+      </label>
+      <button type="button" class="secondary-action" [disabled]="!presetName().trim()"
+        (click)="savePreset()">Save settings</button>
+      @if (presets.presets().length) {
+        <label class="field preset-select" for="preset-existing"><span>Existing presets</span>
+          <select id="preset-existing" [value]="selectedPresetId()" (change)="selectPreset($event)">
+            <option value="">Choose preset</option>
+            @for (preset of presets.presets(); track preset.id) {
+              <option [value]="preset.id">{{ preset.name }}</option>
+            }
+          </select>
+        </label>
+        <div class="preset-actions">
+          <button type="button" class="quiet" [disabled]="!selectedPresetId()"
+            (click)="restorePreset()">Load preset</button>
+          <button type="button" class="quiet" [disabled]="!selectedPresetId()"
+            (click)="deletePreset()">{{ deletingPreset() ? 'Confirm delete' : 'Delete preset' }}</button>
+        </div>
+      }
+      <p class="small-note">Stored locally on this device. Audio, jobs and API keys are not included.</p>
+    </section>
+
     <section class="panel" aria-labelledby="settings-heading">
       <div class="section-heading"><div><p class="eyebrow">03 / PARAMETERS</p>
         <h2 id="settings-heading">Fine-tune</h2></div>
@@ -179,3 +209,4 @@
     </section>
   </aside>
 </form>
+

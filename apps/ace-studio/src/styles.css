@@ -198,3 +198,7 @@ h3 { font-size: 15px; font-weight: 600; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+.preset-select { margin-top: 19px; }
+.preset-actions { display: flex; justify-content: space-between; gap: 8px; margin-top: -5px; }
+
