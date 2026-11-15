@@ -6,6 +6,9 @@
 
 **Draft PR:** https://github.com/Kactus83/ACE-Step-1.5/pull/2
 
+**Latest synchronized fork main:** `d207bdd283dc726a0d9c711ca518dcf3accd1381`
+(integrated into feature branch with two-parent merge `73b32efc`).
+
 **Starting base:** `ca1e85fe9430179831e6bc6be790c332190a3866`
 (fork main = official main when branch was cut).
 
@@ -16,7 +19,7 @@
 3. `apps/ace-studio/docs/contracts.md`.
 4. `apps/ace-studio/docs/functional-coverage.md`.
 5. Two contradictory reviews under `apps/ace-studio/docs/`.
-6. Consolidation PR #1 **is independent** and must not be merged by this team.
+6. Consolidation PR #1 **was merged into main by another team**. The Studio branch now includes that main as a merge parent; do not replay or cherry-pick its changes.
 
 ## Agent operational constraints
 

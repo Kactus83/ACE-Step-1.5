@@ -1,6 +1,6 @@
 # Coordinator continuity — remaining work until source-complete
 
-This file is the next-pass worklist. Treat the mission as **in progress**, not
+Current branch checkpoint includes consolidated main via merge commit `73b32efc`.\nThis file is the next-pass worklist. Treat the mission as **in progress**, not
 blocked by unavailable local compilation/GPU.
 
 ## Completed source increments

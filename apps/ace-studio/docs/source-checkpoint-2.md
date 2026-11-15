@@ -46,3 +46,16 @@ retrieve npm dependencies or the remote repository through local DNS.
   remain incomplete. Full API capabilities and model-specific semantics must
   be tested on a real backend before production or merge.
 
+
+## Base synchronization after consolidation PR #1 merge
+
+On 15 Nov 2026, the consolidation PR #1 was independently merged into fork
+`main` (main HEAD `d207bdd283dc726a0d9c711ca518dcf3accd1381`).
+An explicit source comparison against the original common ancestor found **zero
+file-level overlap** between main's 75 modified files and ACE Studio's 99 files.
+A non-force, two-parent merge of current `main` into the Studio feature branch
+was committed as `73b32efc0f9da45f978695601aaf51f9f830514a`.
+Post-merge compare reported **33 commits ahead, 0 behind, 99 changed files**;
+PR #2 remained open and draft. This validates file-level isolation, not runtime
+API compatibility or Angular/Rust compilation. All original Gradio and backend
+runtime acceptance criteria remain in force.
