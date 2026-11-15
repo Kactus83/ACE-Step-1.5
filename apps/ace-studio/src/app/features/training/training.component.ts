@@ -9,6 +9,7 @@ import { BackendStore } from "../../core/backend.store";
 import { TrainingStore } from "./training.store";
 import { mapTrainingRequest } from "./training.request";
 import { TrainingExportComponent } from "./training-export.component";
+import { TrainingLossComponent } from "./training-loss.component";
 import { DatasetTasksStore } from "../datasets/dataset.tasks.store";
 import { isObject } from "../../core/api-decoder";
 
@@ -16,7 +17,7 @@ import { isObject } from "../../core/api-decoder";
 @Component({
   selector: "ace-training",
   standalone: true,
-  imports: [ReactiveFormsModule, TrainingExportComponent],
+  imports: [ReactiveFormsModule, TrainingExportComponent, TrainingLossComponent],
   templateUrl: "./training.component.html"
 })
 export class TrainingComponent implements OnInit, OnDestroy {
@@ -25,6 +26,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
   readonly training = inject(TrainingStore);
   readonly datasetTasks = inject(DatasetTasksStore);
   readonly openDatasets = output<void>();
+  readonly logText = computed(() => (this.training.status()?.training_log || "").slice(-4000));
   readonly latestTensorDirectory = computed(() => {
     const result = this.datasetTasks.preprocessStatus()?.result;
     return isObject(result) && typeof result["output_dir"] === "string"
@@ -132,5 +134,6 @@ export class TrainingComponent implements OnInit, OnDestroy {
     await this.training.requestStop();
   }
 }
+
 
 

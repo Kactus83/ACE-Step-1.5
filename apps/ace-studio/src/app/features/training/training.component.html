@@ -27,6 +27,17 @@
       } @else {
         <p class="muted">No training is currently reported. Status is refreshed every 5 seconds while this view is open.</p>
       }
+      <ace-training-loss [history]="training.status()?.loss_history || []" />
+      @if (training.status()?.steps_per_second) {
+        <p class="small-note">Measured training speed:
+          {{ training.status()?.steps_per_second }} steps/sec</p>
+      }
+      @if (logText()) {
+        <details class="advanced training-console">
+          <summary>View latest backend training log</summary>
+          <pre>{{ logText() }}</pre>
+        </details>
+      }
       @if (training.status()?.error) {
         <p class="notice danger" role="alert">{{ training.status()?.error }}</p>
       }
@@ -159,5 +170,6 @@
     </section>
   </aside>
 </div>
+
 
 
