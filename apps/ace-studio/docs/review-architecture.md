@@ -32,7 +32,7 @@ documentation. This is not a static analyzer or runtime compilation.
   confirmation gate and timeouts in the next increment.
 - Task results are transient in upstream server memory; permanent library needs
   an independent, authoritative data model and safe retention policy.
-- Train/dataset routes need full contract enumeration before exposing UI.
+- The LoRA/LoKr start/status/stop and dataset scan/tensor contracts have been audited and exposed; remaining preprocessing, sample editing, labeling and export routes still need complete integration.
 - No dependency lockfile or vulnerability scan yet (network/package install
   unavailable in this environment).
 

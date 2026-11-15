@@ -41,7 +41,7 @@ uv run python -m unittest discover -s . -p "*_test.py"
 9. In packaged Tauri, set `ACESTEP_ENABLE_STUDIO_DESKTOP_CORS=1` for the Python process.
 10. Check native Windows release, Linux and macOS where toolchains are available.
 11. Check keyboard navigation, screen reader semantics, responsive widths, reduced motion.
-12. Reject merge on any regressions in existing Gradio, CLI, FastAPI, or Python training.
+12. Exercise LoRA/LoKr status, server tensor validation, double-confirmed start, graceful stop, and dataset scanning.\n13. Reject merge on any regressions in existing Gradio, CLI, FastAPI, or Python training.
 
 ## Remaining coverage
 

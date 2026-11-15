@@ -28,12 +28,12 @@ Browser (http://127.0.0.1:4200)          Tauri 2 webview (packaged)
 - `features/create/`: generation form and pure request mapper.
 - `features/results/`: queue and authenticated audio cards.
 - `features/system/`: connection and explicit model initialization.
-- `core/backend.client`: typed HTTP adapter. All backend mutations go through this class.
+- `core/backend.client`: typed generation HTTP adapter; training mutations are isolated in `features/training/training.client`.
 - `core/backend.store`: observed health/model inventory and explicit load state.
 - `core/jobs.store`: bounded, non-overlapping polling and ephemeral job recovery.
 - `core/audio.service`: authenticated Blob previews and browser-native downloads.
 - `core/workflow.store`: result-to-cover/repaint intent.
-- `core/presets.store` and `preset-codec`: whitelist-sanitized browser-local settings.
+- `core/presets.store` and `preset-codec`: whitelist-sanitized browser-local settings.\n- `features/training/`: audited LoRA/LoKr status, dataset scan, tensor validation, confirmed start/stop.
 - `core/api-decoder`: runtime envelope/URL validation and legacy result coercion.
 
 ### Tauri adapter

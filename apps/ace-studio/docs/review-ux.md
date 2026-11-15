@@ -24,7 +24,7 @@ No screenshots or real keyboard/screen-reader execution were available.
   are only a partial editing UX.
 - No A/B synchronized audition, favourites, tagging, batch navigation across
   sessions, or persistent remote project library.
-- No dataset builder or LoRA/LoKr training views.
+- Dataset scanning and LoRA/LoKr training controls now exist, but sample editing, preprocessing, auto-label, training exports and runtime verification are not yet present.
 - Source audio remains volatile; restoring a preset will never restore files.
 - No true multi-panel rearrangement or keyboard hotkey map yet.
 - Browser contrast, screen-reader output, 320px width, zoom, Tauri native

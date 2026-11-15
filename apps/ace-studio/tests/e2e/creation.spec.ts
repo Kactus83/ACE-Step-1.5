@@ -16,7 +16,7 @@ test("connect, queue, inspect job and request playable audio", async ({ page }) 
   await expect(page.locator("audio[controls]")).toBeVisible();
   await page.getByRole("button", { name: "Remix" }).click();
   await expect(page.getByText(/Imported from results/)).toBeVisible();
-  await expect(page.getByText(/source audio is required/)).toBeVisible();
+  await expect(page.getByText(/A source track is required/)).toBeVisible();
 });
 
 test("refuses generation when no backend is available", async ({ page }) => {
