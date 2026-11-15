@@ -12,7 +12,7 @@ export function audioBlobToSourceFile(blob: Blob, backendAudioUrl?: string): Fil
   const type = blob.type.toLowerCase();
   const path = backendAudioUrl
     ? new URL(backendAudioUrl, "http://localhost").searchParams.get("path") || "" : "";
-  const matching = path.match(/\\.(mp3|wav|flac|ogg|opus|aac)$/i);
+  const matching = path.match(/\.(mp3|wav|flac|ogg|opus|aac)$/i);
   const extension = matching?.[1]?.toLowerCase() || (type.includes("mpeg") ? "mp3"
     : type.includes("flac") ? "flac"
     : type.includes("ogg") ? "ogg"

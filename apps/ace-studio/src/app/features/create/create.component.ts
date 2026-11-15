@@ -13,6 +13,7 @@ import { startWith } from "rxjs";
 import { BackendClient } from "../../core/backend.client";
 import { BackendStore } from "../../core/backend.store";
 import { TaskType } from "../../core/api.types";
+import { ConnectionStore } from "../../core/connection.store";
 import { mapGenerateRequest, TRACK_NAMES } from "./create.request";
 import { JobsStore } from "../../core/jobs.store";
 import { WorkflowStore } from "../../core/workflow.store";
@@ -29,6 +30,7 @@ import { CreateExpertComponent } from "./create-expert.component";
 export class CreateComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly api = inject(BackendClient);
+  private readonly connection = inject(ConnectionStore);
   readonly backend = inject(BackendStore);
   readonly jobs = inject(JobsStore);
   readonly workflow = inject(WorkflowStore);
@@ -142,7 +144,7 @@ export class CreateComponent implements OnInit {
       return;
     }
     if (request.dcw_enabled === true) {
-      const fingerprint = JSON.stringify({ endpoint: this.backend.health()?.service, value });
+      const fingerprint = JSON.stringify({ revision: this.connection.revision(), value });
       if (this.pendingDcwConfirmation() !== fingerprint) {
         this.pendingDcwConfirmation.set(fingerprint);
         this.error.set("Forced DCW can distort non-turbo models. Review the warning and submit again to confirm.");
