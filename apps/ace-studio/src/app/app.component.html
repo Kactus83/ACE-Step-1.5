@@ -15,6 +15,10 @@
         <span class="nav-icon" aria-hidden="true">◷</span> Queue & results
         @if (jobs.jobs().length) { <span class="nav-count">{{ jobs.jobs().length }}</span> }
       </button>
+      <button type="button" [class.active]="section() === 'training'" (click)="navigate('training')"
+        [attr.aria-current]="section() === 'training' ? 'page' : null">
+        <span class="nav-icon" aria-hidden="true">◈</span> Training
+      </button>
       <button type="button" [class.active]="section() === 'system'" (click)="navigate('system')"
         [attr.aria-current]="section() === 'system' ? 'page' : null">
         <span class="nav-icon" aria-hidden="true">⚙</span> Connection
@@ -39,6 +43,7 @@
         <strong>@switch (section()) {
           @case ("create") { Creation }
           @case ("jobs") { Queue & results }
+          @case ("training") { Training }
           @case ("system") { Connection }
         }</strong>
       </div>
@@ -56,8 +61,10 @@
       @switch (section()) {
         @case ("create") { <ace-create (showJobs)="navigate('jobs')" /> }
         @case ("jobs") { <ace-jobs (reuse)="navigate('create')" /> }
+        @case ("training") { <ace-training /> }
         @case ("system") { <ace-connection /> }
       }
     </main>
   </div>
 </div>
+

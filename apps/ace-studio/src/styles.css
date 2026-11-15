@@ -202,3 +202,15 @@ h3 { font-size: 15px; font-weight: 600; }
 .preset-select { margin-top: 19px; }
 .preset-actions { display: flex; justify-content: space-between; gap: 8px; margin-top: -5px; }
 
+
+.training-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(320px,420px); gap: 22px; align-items: start; }
+.training-stats { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; margin-bottom: 20px; }
+.training-stats div { padding: 15px; border: 1px solid var(--line-soft); border-radius: 8px; background: #15161e; }
+.training-stats small, .training-stats strong { display: block; overflow-wrap: anywhere; }
+.training-stats small { color: var(--muted); font-size: 10px; margin-bottom: 8px; }
+.training-stats strong { font-size: 14px; }
+.training-divider { margin-top: 25px; }
+.danger-action { color: var(--danger); border-color: #805054; background: #38272c; }
+@media (max-width: 1150px) { .training-grid { grid-template-columns: 1fr; } }
+@media (max-width: 550px) { .training-stats { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+

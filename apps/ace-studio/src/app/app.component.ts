@@ -9,14 +9,15 @@ import { JobsStore } from "./core/jobs.store";
 import { CreateComponent } from "./features/create/create.component";
 import { JobsComponent } from "./features/results/jobs.component";
 import { ConnectionComponent } from "./features/system/connection.component";
+import { TrainingComponent } from "./features/training/training.component";
 
-type Section = "create" | "jobs" | "system";
+type Section = "create" | "jobs" | "training" | "system";
 
 /** @public Main accessible, responsive shell. */
 @Component({
   selector: "ace-root",
   standalone: true,
-  imports: [CreateComponent, JobsComponent, ConnectionComponent],
+  imports: [CreateComponent, JobsComponent, TrainingComponent, ConnectionComponent],
   templateUrl: "./app.component.html"
 })
 export class AppComponent implements OnInit {
@@ -30,3 +31,4 @@ export class AppComponent implements OnInit {
   /** @public Navigate between always-shared Angular features. */
   navigate(destination: Section): void { this.section.set(destination); }
 }
+

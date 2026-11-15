@@ -1,0 +1,168 @@
+<div class="page-heading">
+  <div><p class="eyebrow">ADVANCED / MODEL CUSTOMIZATION</p>
+    <h1>Train your own sound.</h1>
+    <p class="lead">Prepare a dataset and fine-tune LoRA or LoKr adapters through the existing ACE-Step Python engine.</p>
+  </div>
+</div>
+@if (training.error()) { <p class="notice danger" role="alert">{{ training.error() }}</p> }
+@if (error()) { <p class="notice danger" role="alert">{{ error() }}</p> }
+@if (training.message()) { <p class="notice success" role="status">{{ training.message() }}</p> }
+<div class="training-grid">
+  <div class="main-panel">
+    <section class="panel" aria-labelledby="training-status-heading">
+      <div class="section-heading"><div>
+        <p class="eyebrow">LIVE / ENGINE STATE</p><h2 id="training-status-heading">Training monitor</h2>
+      </div><span class="section-mark" aria-hidden="true">◎</span></div>
+      <div class="training-stats">
+        <div><small>State</small><strong>{{ training.status()?.status || 'Unavailable' }}</strong></div>
+        <div><small>Epoch</small><strong>{{ training.status()?.current_epoch ?? '—' }}</strong></div>
+        <div><small>Step</small><strong>{{ training.status()?.current_step ?? '—' }}</strong></div>
+        <div><small>Loss</small><strong>{{ training.status()?.current_loss ?? '—' }}</strong></div>
+      </div>
+      @if (training.status()?.is_training) {
+        <p class="muted">Training is active on the backend. Navigation does not stop the training run.</p>
+        <button type="button" class="secondary-action danger-action" (click)="stop()">
+          {{ stopConfirm() ? 'Confirm graceful stop' : 'Request training stop' }}
+        </button>
+      } @else {
+        <p class="muted">No training is currently reported. Status is refreshed every 5 seconds while this view is open.</p>
+      }
+      @if (training.status()?.error) {
+        <p class="notice danger" role="alert">{{ training.status()?.error }}</p>
+      }
+    </section>
+
+    <section class="panel" aria-labelledby="dataset-heading">
+      <div class="section-heading"><div>
+        <p class="eyebrow">01 / DATASET</p><h2 id="dataset-heading">Scan audio directory</h2>
+      </div><span class="section-mark" aria-hidden="true">▧</span></div>
+      <p class="muted">Paths refer to files accessible on the Python backend machine—not to the browser or Tauri computer.</p>
+      <form [formGroup]="dataset" (ngSubmit)="scanDataset()">
+        <label class="field" for="dataset-dir"><span>Server audio directory</span>
+          <input id="dataset-dir" formControlName="audio_dir" required placeholder="/path/to/audio" />
+        </label>
+        <label class="field" for="dataset-name"><span>Dataset name</span>
+          <input id="dataset-name" formControlName="dataset_name" required />
+        </label>
+        <label class="checkbox-label"><input type="checkbox" formControlName="all_instrumental" />
+          <span>All tracks are instrumental</span>
+        </label>
+        <button type="submit" class="secondary-action" [disabled]="dataset.invalid || training.busy()">
+          Scan backend folder
+        </button>
+      </form>
+      @if (training.dataset(); as datasetInfo) {
+        <p class="notice success" role="status">
+          {{ datasetInfo.num_samples }} audio samples discovered. {{ datasetInfo.message }}
+        </p>
+      }
+      <p class="small-note">Dataset preprocessing and sample labeling are developed separately; a scan alone does not produce tensors.</p>
+    </section>
+  </div>
+  <aside class="configuration-panel">
+    <section class="panel" aria-labelledby="train-config-heading">
+      <div class="section-heading"><div>
+        <p class="eyebrow">02 / CONFIGURATION</p><h2 id="train-config-heading">Fine-tuning</h2>
+      </div><span class="section-mark" aria-hidden="true">⚙</span></div>
+      <label class="field" for="training-mode"><span>Algorithm</span>
+        <select id="training-mode" [value]="mode()" (change)="changeMode($event)">
+          <option value="lora">LoRA</option><option value="lokr">LoKr</option>
+        </select>
+      </label>
+      <form [formGroup]="form" (ngSubmit)="start()">
+        <label class="field" for="tensor-dir"><span>Preprocessed tensor directory</span>
+          <input id="tensor-dir" formControlName="tensor_dir" required placeholder="/path/to/tensors" />
+        </label>
+        <button type="button" class="secondary-action" (click)="validateTensors()"
+          [disabled]="!form.controls.tensor_dir.value.trim()">Validate tensors</button>
+        @if (training.tensorInfo(); as info) {
+          <p class="notice success" role="status">
+            {{ info.dataset_name }} · {{ info.num_samples }} preprocessed tensors
+          </p>
+        }
+        <label class="field training-divider" for="output-dir"><span>Backend output directory</span>
+          <input id="output-dir" formControlName="output_dir" required />
+        </label>
+        <div class="field-row">
+          <label class="field" for="training-lr"><span>Learning rate</span>
+            <input id="training-lr" type="number" formControlName="learning_rate"
+              min="0.000000001" step="0.00001" />
+          </label>
+          <label class="field" for="training-epochs"><span>Epochs</span>
+            <input id="training-epochs" type="number" formControlName="train_epochs" min="1" />
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field" for="training-batch"><span>Batch size</span>
+            <input id="training-batch" type="number" formControlName="train_batch_size" min="1" />
+          </label>
+          <label class="field" for="training-gradient"><span>Gradient accumulation</span>
+            <input id="training-gradient" type="number" formControlName="gradient_accumulation" min="1" />
+          </label>
+        </div>
+        @if (mode() === 'lora') {
+          <div class="field-row">
+            <label class="field" for="lora-rank"><span>LoRA rank</span>
+              <input id="lora-rank" type="number" formControlName="lora_rank" min="1" max="256" />
+            </label>
+            <label class="field" for="lora-alpha"><span>LoRA alpha</span>
+              <input id="lora-alpha" type="number" formControlName="lora_alpha" min="1" max="512" />
+            </label>
+          </div>
+          <label class="field" for="lora-dropout"><span>Dropout</span>
+            <input id="lora-dropout" type="number" formControlName="lora_dropout"
+              min="0" max="1" step=".01" />
+          </label>
+          <label class="checkbox-label"><input type="checkbox" formControlName="use_fp8" />
+            <span>Enable FP8 if hardware supports it</span>
+          </label>
+        } @else {
+          <div class="field-row">
+            <label class="field" for="lokr-dim"><span>LoKr dimension</span>
+              <input id="lokr-dim" type="number" formControlName="lokr_linear_dim" min="1" max="256" />
+            </label>
+            <label class="field" for="lokr-alpha"><span>LoKr alpha</span>
+              <input id="lokr-alpha" type="number" formControlName="lokr_linear_alpha" min="1" max="512" />
+            </label>
+          </div>
+          <label class="field" for="lokr-factor"><span>Factor (-1 = auto)</span>
+            <input id="lokr-factor" type="number" formControlName="lokr_factor" min="-1" max="8" />
+          </label>
+          <label class="checkbox-label"><input type="checkbox" formControlName="lokr_decompose_both" />
+            <span>Decompose both matrices</span>
+          </label>
+          <label class="checkbox-label"><input type="checkbox" formControlName="lokr_use_tucker" />
+            <span>Use Tucker decomposition</span>
+          </label>
+          <label class="checkbox-label"><input type="checkbox" formControlName="lokr_use_scalar" />
+            <span>Use scalar calibration</span>
+          </label>
+          <label class="checkbox-label"><input type="checkbox" formControlName="lokr_weight_decompose" />
+            <span>Enable weight decomposition</span>
+          </label>
+        }
+        <details class="advanced">
+          <summary>Advanced training parameters <span aria-hidden="true">⌄</span></summary>
+          <label class="field" for="save-every"><span>Save every N epochs</span>
+            <input id="save-every" type="number" min="1" formControlName="save_every_n_epochs" />
+          </label>
+          <label class="field" for="training-shift"><span>Training shift</span>
+            <input id="training-shift" type="number" min="0" step=".1" formControlName="training_shift" />
+          </label>
+          <label class="field" for="training-seed"><span>Training seed</span>
+            <input id="training-seed" type="number" formControlName="training_seed" />
+          </label>
+          <label class="checkbox-label"><input type="checkbox" formControlName="gradient_checkpointing" />
+            <span>Gradient checkpointing</span>
+          </label>
+        </details>
+        <p class="small-note">Starting training can occupy the GPU for hours and temporarily move/unload models.</p>
+        <button type="submit" class="primary-action"
+          [disabled]="form.invalid || training.status()?.is_training || backend.health()?.status !== 'ok'">
+          {{ confirming() ? 'Confirm start ' + mode().toUpperCase() : 'Review training impact' }}
+          <span aria-hidden="true">→</span>
+        </button>
+      </form>
+    </section>
+  </aside>
+</div>
