@@ -1,35 +1,71 @@
 # ACE Studio
 
-Optional Angular 21 / Tauri 2 application for the existing ACE-Step 1.5 FastAPI server.
+An **optional** standalone Angular 21 Web frontend and Tauri 2 desktop shell
+for the existing ACE-Step 1.5 Python FastAPI server.
 
-## Run
+Repository: `Kactus83/ACE-Step-1.5`, dedicated development branch
+`feature/ace-studio-angular-tauri`, draft PR #2. No code is automatically
+merged into fork main or upstream ACE-Step.
 
-From this directory, install Node 22.12+ / npm, then run:
+## Run locally
 
-1. `npm install`
-2. `npm run start` — Web application at http://127.0.0.1:4200
-3. `npm run desktop` — Same Angular frontend in Tauri; requires Rust and OS-specific desktop dependencies.
+Use Node 22.12+ and npm from this directory:
 
-Separately start the **existing** ACE-Step standalone API (`acestep-api`) with its standard Python environment; its normal port is 8001. The Studio never starts another model process implicitly. Configure the backend endpoint in Studio.
+```sh
+npm install
+npm run start        # Angular web frontend on http://127.0.0.1:4200
+npm run desktop      # same frontend in Tauri (needs Rust and OS dependencies)
+```
 
-## Architecture boundary
+Separately start **one existing** ACE-Step standalone FastAPI Python service,
+normally at `http://127.0.0.1:8001`. The Studio never starts Python, downloads
+model checkpoints or launches a model initialization implicitly. Configure the
+backend address/API key explicitly from Connection. Remote origins require
+HTTPS; the API key is session memory only.
 
-The Python backend remains authoritative for model and job state. The browser and Tauri webview share the same Angular source. No Tauri command is currently exposed. The existing Gradio, Python CLI, training and REST API are untouched. The initial API adapter targets **standalone FastAPI**; the Gradio-mounted API may not be equivalent.
+For packaged desktop WebViews, opt in to the fixed local-origin setting on
+the existing Python process: `ACESTEP_ENABLE_STUDIO_DESKTOP_CORS=1`.
+Without that setting, the native app may fail CORS even when browser Web
+works. No wildcard browser origins or native shell/filesystem permissions
+are granted. Browser sample metadata editing requires the PUT preflight
+compatibility correction in this branch.
 
-The backend allows browser CORS from localhost/127.0.0.1. If enabled, API key authentication applies also to the audio endpoint: Studio retrieves protected audio via fetch/Blob rather than embedding an uncredentialed media URL. Never expose ACE-Step's API to a public network without independent authentication/TLS review.
+## Functional areas
 
-## Local verification
+- Create: text2music, Cover/Repaint with source/reference uploads, advertised
+  Extract/Lego/Complete, waveform boundaries, expert diffusion/DCW/LM panel.
+- Queue & Results: actual status, authenticated audio, server metadata, batch
+  cards, settings/seed restore, approximate A/B audition.
+- Library: optional browser-local projects and bookmarks, tags, favorites,
+  notes and bounded JSON import/export.
+- Datasets: server-local scan/load/save, sample metadata updates, asynchronous
+  labeling and tensor preprocessing.
+- Training: LoRA/LoKr status/start/stop, measured loss, tensor validation and
+  explicit destructive adapter export.
+- Connection: backend profile, model inventory, explicit initialization and
+  real queue statistics.
+- Appearance: persistent light/dark visual preference.
 
-- `npm run build`: Angular TypeScript and template compilation
-- `npm run lint`
-- `npm run test`
-- `npm run desktop:build`: Rust/native bundling
-- Actual GPU workflows require the running compatible Python API.
+**Important:** Library saves metadata and temporary audio references, not
+binary files. Explicitly download any track requiring long-term preservation.
+Dataset and export paths belong to the Python server, not the browser;
+`/v1/training/export` deletes a pre-existing destination folder. Protect
+the backend with authentication, OS permissions and trusted operators.
 
-See `docs/architecture.md`, `docs/contracts.md`,
-`docs/functional-coverage.md`, `docs/security-review.md`, both contradictory
-review reports, `docs/verification.md` and `docs/continuation.md`.
-Packaged desktop requires the opt-in CORS setting documented in
-`docs/desktop-cors.md`.
+## Validation
 
-**Not yet declared production-ready.**
+```sh
+npm run lint
+npm run test
+npm run build
+npm run e2e:mock
+npm run desktop:build
+```
+
+Python API and broader regression commands are in `docs/verification.md`.
+These commands have **not** been executed in the GitHub-connector authoring
+environment; no build, GPU, native package or screen-reader quality claim is
+made. See `docs/functional-coverage.md`, `docs/continuation.md`,
+`docs/source-checkpoint-4.md`, `docs/security-review.md` and the review files.
+The draft PR is not production-ready or merge-authorized.
+

@@ -1,80 +1,50 @@
-# ACE Studio — handoff for local Codex / Claude Code / CI team
+# ACE Studio — local CI and reviewer handoff
 
-**Fork:** `Kactus83/ACE-Step-1.5`
-
+**Repo:** `Kactus83/ACE-Step-1.5`
 **Branch:** `feature/ace-studio-angular-tauri`
-
 **Draft PR:** https://github.com/Kactus83/ACE-Step-1.5/pull/2
+**Fork main:** `d207bdd283dc726a0d9c711ca518dcf3accd1381`,
+merged non-destructively into the feature branch at `73b32efc`.
+Consolidation PR #1 was already merged independently. Do not reapply it.
 
-**Latest synchronized fork main:** `d207bdd283dc726a0d9c711ca518dcf3accd1381`
-(integrated into feature branch with two-parent merge `73b32efc`).
+## Read before compiling
 
-**Starting base:** `ca1e85fe9430179831e6bc6be790c332190a3866`
-(fork main = official main when branch was cut).
+1. Root `AGENTS.md`, Studio `AGENTS.md` and `README.md`.
+2. `docs/architecture.md`, `docs/contracts.md`, `docs/functional-coverage.md`.
+3. `docs/source-checkpoint-4.md`, `docs/continuation.md`.
+4. `docs/review-architecture.md`, `docs/review-ux.md`,
+   `docs/security-review.md`, and `docs/verification.md`.
 
-## Read before applying changes
+## Local workflow
 
-1. `AGENTS.md` at repository root.
-2. `apps/ace-studio/docs/architecture.md`.
-3. `apps/ace-studio/docs/contracts.md`.
-4. `apps/ace-studio/docs/functional-coverage.md`.
-5. Two contradictory reviews under `apps/ace-studio/docs/`.
-6. Consolidation PR #1 **was merged into main by another team**. The Studio branch now includes that main as a merge parent; do not replay or cherry-pick its changes.
+- Check that the PR is still draft, inspect latest `main` and other teams'
+  commits, preserve any concurrent work, no force-push/auto-merge.
+- Run the exact commands and capture evidence specified in
+  `docs/verification.md`; no fabricated green CI declarations.
+- Prefer minimal, reversible, well-tested fixes on the Studio feature branch,
+  commit/push after each coherent checkpoint.
+- Keep existing model inference, Gradio, CLI and training behavior intact.
+- Treat remote server files as privileged operator-owned paths. Never exercise
+  destructive training export against user data; use disposable directories.
+- Do not start a second Python model service, download models automatically or
+  run repeated costly GPU actions unless the user approves.
+- Validate actual desktop origins on Windows, macOS and Linux, including
+  keyboard focus, browser codecs, CORS PUT and native application icons.
 
-## Agent operational constraints
+## Critical integration checks
 
-- Do not check out or commit to `main`, force-push, auto-merge or alter PR #1.
-- Rebase/sync only after assessing drift and concurrent edits.
-- Preserve all non-target Python, Gradio, GPU, CLI and training functionality.
-- Only announce green tests with actual executed commands and logs.
-- If a test fails, fix source in the ACE Studio branch; update the draft PR.
-- Do not launch/reload backend, install heavyweight models or reset user
-  conversations without explicit approval if doing so would consume resources.
+- `/v1/dataset/sample/{index}` is a PUT route, now preflight allowed via the
+  narrow Studio CORS helper. Confirm browser end-to-end editing.
+- `/v1/training/export` deletes an existing destination directory. Keep its
+  UI warning, typed confirmation and path-validation boundary.
+- `/release_task` expert DCW fields were made available through a narrow
+  Python HTTP adapter change; verify server defaults when not set.
+- Browser-local bookmarks are metadata-only and may become unplayable if the
+  backend removes generated temp audio. They are not backups.
+- A/B playback uses two HTML media elements and is not phase-aligned.
+- Run independent source, runtime and UX/security contradiction checks and
+  update the PR scope matrix before requesting review.
 
-## Build and test
-
-From `apps/ace-studio`, after npm dependency availability:
-```bash
-npm install
-npm run lint
-npm run test
-npm run build
-npx playwright install chromium
-npm run e2e:mock
-npm run desktop:build
-```
-
-From root in the existing Python environment:
-```bash
-uv run python -m unittest acestep.api.http.studio_cors_test
-uv run python -m unittest discover -s . -p "*_test.py"
-```
-
-Also run `git diff --check main...feature/ace-studio-angular-tauri` and
-inspect all file changes in the PR. Check the package lockfile produced by the
-install and commit it only after dependency resolution and security review.
-
-## Real API / native acceptance
-
-- Use a running standalone ACE-Step API on loopback port 8001, or a securely
-  configured HTTPS instance. Avoid starting a second model process.
-- In packaged desktop mode, launch Python API with
-  `ACESTEP_ENABLE_STUDIO_DESKTOP_CORS=1`, testing all actual origins.
-- Audit new expert-generation contract in
-  `apps/ace-studio/docs/expert-generation-contract.md`; execute Python builder
-  tests and verify absent/forced DCW across real model types.
-- Perform basic generation, lyrics, instrumental, seed/batches, reference audio,\n  Cover, Repaint timeline, Extract/Lego/Complete on supporting base models,\n  server fail/recovery, authorization, audio preview/download.
-- Inspect Windows WebView2, Linux GTK and macOS webviews independently.
-- Assess dataset scan/load/save, sample indexing, async labeling and preprocessing,\n  LoRA/LoKr start/stop, and server-global dataset race behavior.\n- Assess GPU memory, queue saturation, long-running jobs and file cleanup.
-- Record exact platform, Node/npm/Rust/Python versions and command exits.
-- Restore any source regressions before considering merge eligibility.
-
-## Exit criteria
-
-The draft PR can be promoted only after functional scope completion,
-independent contradictions resolved, unit and integration build/test evidence,
-native packaging checks and explicit user authorization. Do not treat the code
-written so far as a substitute for that evidence.
-
-
+**This is a continuing-source handoff, not a claim that the PR has passed CI.**
+Only the user can authorize promoting/merging the completed and accepted work.
 
