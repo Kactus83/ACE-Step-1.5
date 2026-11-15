@@ -5,7 +5,6 @@
  */
 import { Component, input } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
-import { TaskType } from "../../core/api.types";
 import { createGenerationForm } from "./create.form";
 
 /** @public Advanced source transformation controls bound to the shared typed form. */
@@ -17,6 +16,7 @@ import { createGenerationForm } from "./create.form";
 })
 export class CreateSourceEditComponent {
   readonly form = input.required<ReturnType<typeof createGenerationForm>>();
-  readonly mode = input.required<TaskType>();
+  readonly mode = input.required<string>();
 }
+
 

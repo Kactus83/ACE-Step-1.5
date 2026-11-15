@@ -45,6 +45,7 @@ export interface ModelInventory {
   readonly models: readonly AceModel[];
   readonly default_model?: string | null;
   readonly lm_models?: readonly AceModel[];
+  readonly loaded_lm_model?: string | null;
   readonly llm_initialized?: boolean;
 }
 
@@ -152,6 +153,7 @@ export interface StudioJob {
   /** @public Reference audio upload needed, but never persisted on the client. */
   readonly hasReferenceAudio?: boolean;
 }
+
 
 
 

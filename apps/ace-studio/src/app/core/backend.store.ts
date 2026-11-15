@@ -60,13 +60,14 @@ export class BackendStore {
   }
 
   /** @public Request explicit model loading, then refresh observed status. */
-  async load(name: string): Promise<void> {
+  async load(name: string, languageModel?: string): Promise<void> {
+    if (this.busy()) return;
     const revision = this.connection.revision();
     let success = false;
     this.busy.set(true);
     this.error.set(null);
     try {
-      await this.api.initializeModel(name);
+      await this.api.initializeModel(name, languageModel);
       success = true;
     } catch (error: unknown) {
       if (revision === this.connection.revision()) {
@@ -78,5 +79,6 @@ export class BackendStore {
     if (success && revision === this.connection.revision()) await this.refresh();
   }
 }
+
 
 

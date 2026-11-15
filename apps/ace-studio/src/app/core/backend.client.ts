@@ -46,10 +46,11 @@ export class BackendClient {
   }
 
   /** @public Explicitly request model loading. Never called automatically. */
-  async initializeModel(name: string): Promise<ModelInventory> {
+  async initializeModel(name: string, lmModel?: string): Promise<ModelInventory> {
     const data = await firstValueFrom(this.http.post<unknown>(
       this.connection.endpoint() + "/v1/init",
-      { model: name }, { headers: this.headers() }));
+      { model: name, ...(lmModel ? { init_llm: true, lm_model_path: lmModel } : {}) },
+      { headers: this.headers() }));
     const result = unwrap<ModelInventory>(data);
     return result;
   }
@@ -107,5 +108,6 @@ export class BackendClient {
     }));
   }
 }
+
 
 

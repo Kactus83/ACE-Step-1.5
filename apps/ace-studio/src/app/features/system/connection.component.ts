@@ -12,11 +12,13 @@ import { WorkflowStore } from "../../core/workflow.store";
 import { DatasetStore } from "../datasets/dataset.store";
 import { DatasetTasksStore } from "../datasets/dataset.tasks.store";
 import { TrainingStore } from "../training/training.store";
+import { ModelManagerComponent } from "./model-manager.component";
 
 /** @public Backend connection, session token and explicit model loading UI. */
 @Component({
   selector: "ace-connection",
   standalone: true,
+  imports: [ModelManagerComponent],
   templateUrl: "./connection.component.html"
 })
 export class ConnectionComponent {
@@ -74,10 +76,7 @@ export class ConnectionComponent {
     }
   }
 
-  /** @public Explicit model init; may load checkpoints and consume GPU resources. */
-  async loadModel(name: string): Promise<void> {
-    await this.backend.load(name);
-  }
 }
+
 
 

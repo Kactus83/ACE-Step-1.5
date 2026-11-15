@@ -54,21 +54,8 @@
     } @else {
       <p class="small-note">Queue statistics are unavailable from this connection.</p>
     }
-    <h3>Available DiT models</h3>
-    @for (model of backend.inventory()?.models || []; track model.name) {
-      <div class="model-entry">
-        <div><strong>{{ model.name }}</strong>
-          <small>{{ model.is_loaded ? 'Loaded' : 'Available' }} · {{ model.supported_task_types?.length || 0 }} advertised tasks</small>
-        </div>
-        @if (!model.is_loaded) {
-          <button type="button" class="secondary-action" (click)="loadModel(model.name)"
-            [disabled]="backend.busy()">Load model</button>
-        } @else { <span class="small-note">Ready</span> }
-      </div>
-    } @empty {
-      <p class="muted">No models reported. Start the ACE-Step backend, then refresh.</p>
-    }
-    <p class="small-note">Loading a model may allocate GPU memory or download a checkpoint. It is always an explicit action.</p>
+    <ace-model-manager />
   </section>
 </div>
+
 

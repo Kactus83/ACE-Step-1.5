@@ -419,3 +419,9 @@ h3 { font-size: 15px; font-weight: 600; }
   border-radius: 10px; font-weight: 650; text-decoration: none; }
 .skip-link:focus { top: 12px; }
 
+
+.model-lm { margin-top: 25px; border-top: 1px solid var(--line);
+  padding-top: 18px; }
+.model-lm .field { margin: 13px 0; }
+.model-manager .notice { margin: 12px 0; }
+
