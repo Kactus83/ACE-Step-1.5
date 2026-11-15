@@ -10,16 +10,14 @@ from acestep.inference import create_sample
 from acestep.ui.gradio.i18n import t
 from acestep.ui.gradio.events.generation.validation import clamp_duration_to_gpu_limit
 from acestep.ui.gradio.events.results.batch_management_helpers import _apply_param_defaults
-from acestep.ui.gradio.events.results.generation_progress import generate_with_progress
 from acestep.ui.gradio.interfaces.simple_ui_markup import _step_indicator_html
 from .simple_ui_helpers import (
     _generation_failure_updates,
-    _ignore_progress,
     _resolve_simple_lyrics,
 )
 from .simple_ui_generation_results import _finish_simple_generation
+from .simple_ui_generation_dispatch import _dispatch_existing_generation
 from .simple_ui_contracts import PROGRESS_STATUS_INDEX
-
 
 def _simple_generate_wrapper(
     dit_handler: Any,
@@ -83,7 +81,7 @@ def _simple_generate_wrapper(
                 audio_duration_val = clamped if clamped and clamped > 0 else -1
             else:
                 logger.warning(f"Sample creation failed: {result.status_message}")
-    
+
         except Exception:
             logger.exception("Simple UI optional sample drafting failed")
 
@@ -133,42 +131,7 @@ def _simple_generate_wrapper(
         f"task_type={params['task_type']}"
     )
 
-    gen = generate_with_progress(
-        dit_handler, llm_handler,
-        params["captions"], params["lyrics"], params["bpm"],
-        params["key_scale"], params["time_signature"], params["vocal_language"],
-        params["inference_steps"], params["guidance_scale"],
-        params["random_seed_checkbox"], params["seed"],
-        params["reference_audio"], params["audio_duration"],
-        params["batch_size_input"], params["src_audio"],
-        params["text2music_audio_code_string"],
-        params["repainting_start"], params["repainting_end"],
-        params["instruction_display_gen"],
-        params["audio_cover_strength"], params["cover_noise_strength"],
-        params["task_type"],
-        params["no_fsq"], params["use_adg"],
-        params["cfg_interval_start"], params["cfg_interval_end"],
-        params["shift"], params["infer_method"], params["sampler_mode"],
-        params["velocity_norm_threshold"], params["velocity_ema_factor"],
-        params["dcw_enabled"], params["dcw_mode"],
-        params["dcw_scaler"], params["dcw_high_scaler"], params["dcw_wavelet"],
-        params["custom_timesteps"],
-        params["audio_format"], params["mp3_bitrate"], params["mp3_sample_rate"],
-        params["lm_temperature"],
-        params["think_checkbox"], params["lm_cfg_scale"],
-        params["lm_top_k"], params["lm_top_p"], params["lm_negative_prompt"],
-        params["use_cot_metas"], params["use_cot_caption"], params["use_cot_language"],
-        False,  # is_format_caption
-        params["constrained_decoding_debug"],
-        params["allow_lm_batch"], params["auto_score"], params["auto_lrc"],
-        params["score_scale"], params["lm_batch_chunk_size"],
-        params["enable_normalization"], params["normalization_db"],
-        params["fade_in_duration"], params["fade_out_duration"],
-        params["latent_shift"], params["latent_rescale"],
-        params["repaint_mode"], params["repaint_strength"],
-        params["retake_variance"], params["retake_seed"],
-        progress=_ignore_progress,
-    )
+    gen = _dispatch_existing_generation(dit_handler, llm_handler, params)
 
     final_result = None
     iterator = iter(gen)
@@ -185,28 +148,27 @@ def _simple_generate_wrapper(
             )
             return
         final_result = partial
-            yield (
-                partial[0] if len(partial) > 0 else gr.skip(),   # 0: audio_1
-                partial[1] if len(partial) > 1 else gr.skip(),   # 1: audio_2
-                gr.skip(),                                         # 2: step indicator
-                gr.skip(),                                         # 3: step 3
-                gr.skip(),                                         # 4: step 4
-                gr.skip(),                                         # 5: step 5
-                gr.update(
-                    value='<div class="simple-progress-status">'
-                    + html.escape(str(
-                        partial[PROGRESS_STATUS_INDEX]
-                        if len(partial) > PROGRESS_STATUS_INDEX
-                        else "Creating..."
-                    ))
-                    + '</div>'
-                ),                                # 6: progress
-                gr.skip(),                                         # 7: gen info
-                gr.skip(),                                         # 8: metadata 1
-                gr.skip(),                                         # 9: metadata 2
-                gr.skip(), gr.skip(), gr.skip(), gr.skip(),        # 10-13: batch state
-            )
-    
+        yield (
+            partial[0] if len(partial) > 0 else gr.skip(),   # 0: audio_1
+            partial[1] if len(partial) > 1 else gr.skip(),   # 1: audio_2
+            gr.skip(),                                         # 2: step indicator
+            gr.skip(),                                         # 3: step 3
+            gr.skip(),                                         # 4: step 4
+            gr.skip(),                                         # 5: step 5
+            gr.update(
+                value='<div class="simple-progress-status">'
+                + html.escape(str(
+                    partial[PROGRESS_STATUS_INDEX]
+                    if len(partial) > PROGRESS_STATUS_INDEX
+                    else "Creating..."
+                ))
+                + '</div>'
+            ),                                # 6: progress
+            gr.skip(),                                         # 7: gen info
+            gr.skip(),                                         # 8: metadata 1
+            gr.skip(),                                         # 9: metadata 2
+            gr.skip(), gr.skip(), gr.skip(), gr.skip(),        # 10-13: batch state
+        )
 
     if final_result is None:
         yield _generation_failure_updates(
@@ -219,4 +181,3 @@ def _simple_generate_wrapper(
         final_result, params, current_batch_index, total_batches, batch_queue,
         generation_params_state,
     )
-
