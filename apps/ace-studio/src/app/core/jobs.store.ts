@@ -66,7 +66,8 @@ export class JobsStore implements OnDestroy {
       const job: StudioJob = {
         id: accepted.task_id, title: displayTitle || request.prompt.slice(0, 72) || "New track",
         createdAt: Date.now(), phase: "queued", progressText: "Queued",
-        results: [], request
+        results: [], request,
+        hasSourceAudio: Boolean(source), hasReferenceAudio: Boolean(reference)
       };
       this.jobs.update(items => [job, ...items.filter(item => item.id !== job.id)]);
       this.persist();
@@ -151,5 +152,6 @@ export class JobsStore implements OnDestroy {
     if (this.timer) clearTimeout(this.timer);
   }
 }
+
 
 

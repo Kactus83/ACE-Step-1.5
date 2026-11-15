@@ -139,7 +139,12 @@ export interface StudioJob {
   readonly error?: string;
   readonly results: readonly GeneratedAudio[];
   readonly request?: GenerateRequest;
+  /** @public Source audio upload needed, but never persisted on the client. */
+  readonly hasSourceAudio?: boolean;
+  /** @public Reference audio upload needed, but never persisted on the client. */
+  readonly hasReferenceAudio?: boolean;
 }
+
 
 
 
