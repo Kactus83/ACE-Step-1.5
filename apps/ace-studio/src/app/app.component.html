@@ -1,3 +1,4 @@
+<a class="skip-link" href="#main-content">Skip to workspace</a>
 <div class="shell">
   <aside class="sidebar" aria-label="Studio navigation">
     <div class="brand" aria-label="ACE Studio">
@@ -71,7 +72,7 @@
         </button>
       </div>
     </header>
-    <main class="content" id="main-content">
+    <main class="content" id="main-content" tabindex="-1">
       @switch (section()) {
         @case ("create") { <ace-create (showJobs)="navigate('jobs')" /> }
         @case ("jobs") { <ace-jobs (reuse)="navigate('create')" /> }
@@ -83,6 +84,7 @@
     </main>
   </div>
 </div>
+
 
 
 
