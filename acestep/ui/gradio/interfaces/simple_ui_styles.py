@@ -29,7 +29,12 @@ SIMPLE_UI_CSS = """
 }
 #simple-ui-column .simple-header-icon svg { width: 2.5rem; height: 2.5rem; }
 #simple-ui-column .simple-step { display: contents; }
-#simple-ui-column .simple-step-indicator { margin: 0 auto 1.5rem; }
+#simple-ui-column .simple-step-indicator {
+    margin: 0 auto 1.5rem;
+    max-width: 100%;
+    overflow-x: auto;
+}
+#simple-ui-column .simple-step-indicator svg { min-width: 520px; }
 #simple-ui-column .simple-nav-row,
 #simple-ui-column .simple-footer-row {
     display: flex;
@@ -72,8 +77,13 @@ SIMPLE_UI_CSS = """
 }
 #simple-ui-column .simple-progress-bar {
     height: 100%;
-    width: 50%;
+    width: 35%;
     background: #6f63ce;
+    animation: simple-indeterminate 1.4s ease-in-out infinite alternate;
+}
+@keyframes simple-indeterminate {
+    from { transform: translateX(0); }
+    to { transform: translateX(185%); }
 }
 #simple-ui-column .simple-gen-status {
     border-inline-start: 4px solid #7a72c0;
@@ -87,6 +97,24 @@ SIMPLE_UI_CSS = """
     border-radius: 0.8rem;
     padding: 1rem;
 }
+#simple-ui-column .simple-about-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100001;
+    overflow-y: auto;
+    padding: min(8vh, 4rem) 1rem;
+    background: rgba(15, 16, 32, 0.74);
+}
+#simple-ui-column .simple-about-modal {
+    position: relative;
+    width: min(100%, 38rem);
+    margin: 0 auto;
+    padding: 2rem;
+    background: var(--background-fill-primary);
+    color: var(--body-text-color);
+    box-shadow: 0 18px 55px rgba(0, 0, 0, 0.32);
+}
+#simple-ui-column .simple-about-close { margin-left: auto; }
 #simple-ui-column :is(button, input, textarea, select):focus-visible {
     outline: 3px solid #7164c8 !important;
     outline-offset: 2px;

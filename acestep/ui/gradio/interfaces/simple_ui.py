@@ -51,7 +51,7 @@ def build_simple_ui() -> dict[str, Any]:
         ) as simple_about_overlay:
             with gr.Column(elem_classes=["simple-about-modal"]):
                 simple_about_close_btn = gr.Button(
-                    "×", elem_classes=["simple-about-close"], size="sm"
+                    t("simple_flow.close"), elem_classes=["simple-about-close"], size="sm"
                 )
                 gr.HTML(value=_about_overlay_html())
 
