@@ -53,3 +53,18 @@ documentation. This is not a static analyzer or runtime compilation.
 proven**. Continue implementation; do not merge or declare 100% completion.
 
 
+
+## Contradictory review C — expert API forwarding
+
+- **Identified:** Pydantic declared DCW fields, but the HTTP request builder did
+  not forward them. Simply adding client controls would silently do nothing.
+- **Corrected:** forwarded optional dcw_enabled as None/False/True alongside
+  mode/scalers/wavelet, with Python regression tests. This retains the server's
+  policy resolution and minimizes changes outside the new Studio branch.
+- **Validated at source:** scheduler, CoT and sampling controls map through the
+  request builder to the generation setup or LM input-preparation modules.
+- **Guard:** forced DCW on non-turbo is warned and explicitly re-confirmed; no
+  model-name-based turbo heuristic is introduced.
+- **Remaining:** real GPU/codec behavior, Angular/Rust compilation, backend
+  API compatibility and effect of settings on generated audio are untested.
+

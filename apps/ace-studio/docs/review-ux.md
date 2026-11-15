@@ -37,3 +37,16 @@ No screenshots or real keyboard/screen-reader execution were available.
 advanced-product scope is unfinished. No UI acceptance claim before local QA.
 
 
+
+## Contradictory review D — advanced controls
+
+The existing beginner form remains the default surface. ODE/SDE, custom
+timesteps, CFG, DCW policy and 5Hz LM controls are in the previously collapsed
+Advanced section via a focused child component. This avoids burdening first
+time users. Explicit model-default DCW is the default, while forced-on
+requires two matching submission actions to prevent accidental distortion.
+
+Still required: actual keyboard/screen-reader interaction, mobile/zoom
+inspection, clear invalid-form diagnostics, GPU resource/load warnings and
+visual QA across supported systems.
+

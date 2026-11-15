@@ -16,8 +16,8 @@ establish that the feature actually works. `Partial` marks a real functional gap
 | Remix/Cover with uploaded source | Written | Unexecuted | Multipart; backend controls quality/semantics |
 | Repaint with uploaded source | Partial | Unexecuted | Accessible numeric inputs plus opt-in decoded waveform and synchronized range sliders |
 | Reference audio | Written | Unexecuted | Multipart reference upload |
-| Advanced inference controls | Partial | Unexecuted | Steps/guidance/seed/batch/format; not DCW, custom timesteps etc |
-| Model/LM thinking | Partial | Unexecuted | Boolean thinking; no full LM control panel |
+| Advanced inference controls | Partial | Unexecuted | DCW tri-state, ODE/SDE, shift, custom timesteps, ADG, CFG windows and existing steps/guidance/seed; broader code-control still pending |
+| Model/LM thinking | Partial | Unexecuted | Thinking, CoT toggles, temperature, CFG, top-k/p now mapped; LM model/backend lifecycle UI still pending |
 | Batches / variants | Partial | Unexecuted | Batch parameter and result cards; no A/B synchronized comparison |
 | Job queue / progress | Written | Unexecuted | Polling, status, backend text, backoff; no invented percentages |
 | Failure/reconnection | Written | Unexecuted | Session task IDs; needs outage scenario |
@@ -40,6 +40,7 @@ establish that the feature actually works. `Partial` marks a real functional gap
 | Python original CLI/Gradio | Untouched except optional CORS | Unexecuted | Full nonregression tests required |
 
 The project is **not** at 100% source coverage. A polished shell and API request mapping do not prove GPU correctness for advanced modes or a persistent server-side library.
+
 
 
 

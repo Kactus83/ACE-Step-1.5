@@ -23,13 +23,18 @@ blocked by unavailable local compilation/GPU.
 - Optional Repaint waveform with accessible numeric fallback.
 - Stale-response invalidation when URL or API credentials change.
 - Pure API/data contract and waveform unit tests plus mocked E2E source.
+- Expert generation controls (ODE/SDE, shift, custom timesteps, ADG, CFG
+  interval, DCW auto/off/on with forced-on confirmation, LM CoT and sampling).
+- Fixed the API builder's omitted DCW mapping while preserving the core's
+  model-specific None default; added Python/TypeScript/mock regression tests.
 
 ## Next implementation increments (work even without local compilation)
 
 1. Extend training API UI for adapter export, sample metadata navigation,
    label/preprocess task diagnostics, and complete retry policies.
-2. Add model/LM advanced generation controls from actual request contracts:
-   DCW, custom timesteps, scheduler, CoT, reference/cover tuning and validation.
+2. Extend expert creation beyond the now-written DCW, custom schedule, CoT
+   and sampling controls: audited code-control, optional sample mode, reference/
+   cover fine tuning and 5Hz model/backend lifecycle where genuine API support exists.
 3. Implement A/B result comparison, batches, metadata/seed browsing and repeat
    generation with reproducibility controls.
 4. Build local projects and catalog with versioned storage, safe import/export
@@ -57,6 +62,7 @@ Mark source as written/unexecuted. Do not invent success or call the mission
 The only legitimate final environmental handoff is after the fully authored
 target scope can be compiled/tested by the local team, with all incomplete
 items explicitly identified and independent approvals pending.
+
 
 
 
