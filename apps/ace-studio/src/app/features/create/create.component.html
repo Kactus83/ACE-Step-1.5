@@ -1,0 +1,181 @@
+<div class="page-heading">
+  <div>
+    <p class="eyebrow">CREATIVE WORKSPACE / GENERATION</p>
+    <h1>Create something new.</h1>
+    <p class="lead">Describe the music you want to hear. ACE-Step does the heavy lifting on your existing engine.</p>
+  </div>
+  <div class="header-note">LOCAL INFERENCE <span aria-hidden="true">✳</span> YOUR CONTROL</div>
+</div>
+
+@if (error()) { <p class="notice danger" role="alert">{{ error() }}</p> }
+@if (backend.error()) { <p class="notice warning" role="status">Connection: {{ backend.error() }}</p> }
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="create-layout">
+  <div class="main-panel">
+    <section class="panel" aria-labelledby="composition-heading">
+      <div class="section-heading">
+        <div><p class="eyebrow">01 / FOUNDATION</p><h2 id="composition-heading">Your sound</h2></div>
+        <span class="section-mark" aria-hidden="true">◈</span>
+      </div>
+      <label class="field" for="track-title"><span>Track name <small>optional</small></span>
+        <input id="track-title" formControlName="track_name" placeholder="e.g. Midnight frequencies" />
+      </label>
+      <label class="field" for="prompt"><span>Music description <small>required</small></span>
+        <textarea id="prompt" formControlName="prompt" rows="5"
+          placeholder="A textured, hypnotic downtempo track with warm analog synths, polyrhythmic percussion and an evolving bassline..."></textarea>
+      </label>
+      @if (form.controls.prompt.invalid && form.controls.prompt.touched) {
+        <p class="field-error" role="alert">A description is required (maximum 5,000 characters).</p>
+      }
+
+      <div class="field-row">
+        <label class="field" for="model"><span>Model</span>
+          <select id="model" formControlName="model">
+            <option value="">Backend default</option>
+            @for (model of backend.inventory()?.models || []; track model.name) {
+              <option [value]="model.name">{{ model.name }} {{ model.is_loaded ? '· loaded' : '· available' }}</option>
+            }
+          </select>
+        </label>
+        <label class="field" for="mode"><span>Creation mode</span>
+          <select id="mode" formControlName="task_type">
+            @for (mode of supportedModes(); track mode) {
+              <option [value]="mode">{{ mode === 'text2music' ? 'Text to music' : mode }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <label class="checkbox-label"><input type="checkbox" formControlName="instrumental" />
+          <span><strong>Instrumental</strong><small>No vocal lyrics</small></span>
+        </label>
+        <label class="checkbox-label"><input type="checkbox" formControlName="thinking" />
+          <span><strong>LM thinking</strong><small>Advanced language model assistance</small></span>
+        </label>
+      </div>
+
+      @if (!form.controls.instrumental.value) {
+        <label class="field" for="lyrics"><span>Lyrics</span>
+          <textarea id="lyrics" formControlName="lyrics" rows="7"
+            placeholder="[Verse]\nWrite the words for your composition..."></textarea>
+        </label>
+      }
+    </section>
+
+    <section class="panel" aria-labelledby="conditioning-heading">
+      <div class="section-heading"><div>
+        <p class="eyebrow">02 / TRANSFORMATION</p>
+        <h2 id="conditioning-heading">Audio conditioning</h2>
+      </div><span class="section-mark" aria-hidden="true">♫</span></div>
+      @if (selectedMode() !== "text2music") {
+        <p class="muted">A source track is required for {{ selectedMode() }}. Only the backend processes audio.</p>
+        @if (workflow.draft()) {
+          <div class="imported-asset">
+            <span>↗ Imported from results: {{ importName() }}</span>
+            <button type="button" class="quiet" (click)="workflow.clear()">Remove</button>
+          </div>
+        }
+      } @else { <p class="muted">Use a reference track to influence the style of your generation.</p> }
+
+      @if (selectedMode() !== "text2music") {
+        <label class="file-picker" for="source-audio">
+          <span class="file-icon" aria-hidden="true">♫</span>
+          <span><strong>{{ source()?.name || 'Choose source audio' }}</strong>
+            <small>WAV · MP3 · FLAC · OGG · M4A / up to 120 MB</small></span>
+        </label>
+        <input id="source-audio" type="file" accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a"
+          (change)="pickAudio($event, 'source')" class="visually-hidden" />
+      }
+      <label class="file-picker" for="reference-audio">
+        <span class="file-icon" aria-hidden="true">⊛</span>
+        <span><strong>{{ reference()?.name || 'Optional reference audio' }}</strong>
+          <small>Style, texture and musical character</small></span>
+      </label>
+      <input id="reference-audio" type="file" accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a"
+        (change)="pickAudio($event, 'reference')" class="visually-hidden" />
+    </section>
+  </div>
+
+  <aside class="configuration-panel">
+    <section class="panel" aria-labelledby="settings-heading">
+      <div class="section-heading"><div><p class="eyebrow">03 / PARAMETERS</p>
+        <h2 id="settings-heading">Fine-tune</h2></div>
+        <span class="section-mark" aria-hidden="true">⚙</span>
+      </div>
+      <label class="field" for="duration"><span>Duration <small>seconds</small></span>
+        <input id="duration" type="number" formControlName="duration" min="10" max="600" step="1" />
+      </label>
+      <div class="field-row">
+        <label class="field" for="bpm"><span>BPM <small>0 = auto</small></span>
+          <input id="bpm" type="number" formControlName="bpm" min="0" max="300" />
+        </label>
+        <label class="field" for="batch-size"><span>Variations</span>
+          <input id="batch-size" type="number" formControlName="batch_size" min="1" max="8" />
+        </label>
+      </div>
+      <label class="field" for="key-scale"><span>Key / scale</span>
+        <input id="key-scale" formControlName="key_scale" placeholder="Auto" />
+      </label>
+
+      <details class="advanced">
+        <summary>Advanced controls <span aria-hidden="true">⌄</span></summary>
+        <label class="field" for="inference-steps"><span>Inference steps</span>
+          <input id="inference-steps" type="number" formControlName="inference_steps" min="1" max="200" />
+        </label>
+        <label class="field" for="guidance"><span>Guidance scale</span>
+          <input id="guidance" type="number" step="0.1" formControlName="guidance_scale" min="0" max="30" />
+        </label>
+        <label class="checkbox-label"><input type="checkbox" formControlName="use_random_seed" />
+          <span>Random seed</span>
+        </label>
+        @if (!form.controls.use_random_seed.value) {
+          <label class="field" for="seed"><span>Seed</span>
+            <input id="seed" type="number" formControlName="seed" />
+          </label>
+        }
+        <label class="checkbox-label"><input type="checkbox" formControlName="use_format" />
+          <span>Format prompt with language model</span>
+        </label>
+        <label class="field" for="vocal-language"><span>Vocal language</span>
+          <input id="vocal-language" formControlName="vocal_language" placeholder="en" />
+        </label>
+        <label class="field" for="audio-format"><span>Audio format</span>
+          <select id="audio-format" formControlName="audio_format">
+            <option value="mp3">MP3</option><option value="wav">WAV</option>
+            <option value="flac">FLAC</option><option value="opus">Opus</option>
+            <option value="aac">AAC</option><option value="wav32">WAV 32-bit</option>
+          </select>
+        </label>
+        @if (selectedMode() === 'cover') {
+          <label class="field" for="cover-strength"><span>Cover strength (0–1)</span>
+            <input id="cover-strength" type="number" min="0" max="1" step=".05"
+              formControlName="audio_cover_strength" />
+          </label>
+        }
+        @if (selectedMode() === 'repaint') {
+          <label class="field" for="repaint-start"><span>Repaint from (sec)</span>
+            <input id="repaint-start" type="number" min="0" formControlName="repainting_start" />
+          </label>
+          <label class="field" for="repaint-end"><span>Repaint until (sec)</span>
+            <input id="repaint-end" type="number" min="0" formControlName="repainting_end" />
+          </label>
+        }
+      </details>
+    </section>
+
+    <section class="submit-card">
+      <div class="submit-decor" aria-hidden="true">✳</div>
+      <h2>Ready to create?</h2>
+      <p>Generation runs on your existing ACE-Step backend. Track progress in your queue.</p>
+      <button class="primary-action" type="submit"
+        [disabled]="form.invalid || jobs.submitting() || backend.health()?.status !== 'ok'">
+        {{ jobs.submitting() ? 'Submitting…' : 'Generate music' }}
+        <span aria-hidden="true">→</span>
+      </button>
+      @if (backend.health()?.status !== "ok") {
+        <p class="small-note">Connect a running backend to enable generation.</p>
+      }
+    </section>
+  </aside>
+</form>
