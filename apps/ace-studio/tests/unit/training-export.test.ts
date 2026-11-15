@@ -11,6 +11,8 @@ describe("training adapter export safety checks", () => {
     expect(validateTrainingExport("/models/lora_output", "/models/exports/session-1"))
       .toEqual({ lora_output_dir: "/models/lora_output",
         export_path: "/models/exports/session-1" });
+    expect(validateTrainingExport("C:\\models\\lora_output", "C:\\exports"))
+      .toEqual({ lora_output_dir: "C:\\models\\lora_output", export_path: "C:\\exports" });
   });
   it("rejects identical and nested output directories", () => {
     expect(() => validateTrainingExport("/models/lora", "/models/lora"))

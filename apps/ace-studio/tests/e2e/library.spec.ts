@@ -29,7 +29,8 @@ test("bookmark a real job reference and edit local project metadata", async ({ p
 
   await page.getByRole("button", { name: "Library" }).click();
   await page.getByRole("button", { name: /Experimental textures.*1 saved references/ }).click();
-  await expect(page.getByText("Dark textured percussion", { exact: true })).toBeVisible();
+  await expect(page.getByRole("strong").filter({ hasText: "Dark textured percussion" }))
+    .toBeVisible();
 
   await page.getByRole("button", { name: "Edit track tags & notes" }).click();
   await page.getByLabel("Track notes").fill("Use in soundtrack");

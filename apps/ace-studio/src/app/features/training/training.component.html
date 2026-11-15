@@ -163,7 +163,7 @@
         <p class="small-note">Starting training can occupy the GPU for hours and temporarily move/unload models.</p>
         <button type="submit" class="primary-action"
           [disabled]="form.invalid || training.status()?.is_training || backend.health()?.status !== 'ok'">
-          {{ confirming() ? 'Confirm start ' + mode().toUpperCase() : 'Review training impact' }}
+          {{ confirming() ? 'Confirm start ' + mode().toUpperCase() + ' training' : 'Review training impact' }}
           <span aria-hidden="true">→</span>
         </button>
       </form>

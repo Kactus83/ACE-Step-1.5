@@ -19,7 +19,7 @@ test("requires explicit acknowledgement and refuses legacy destructive fallback"
   await page.getByRole("button", { name: "Review adapter export" }).click();
   await expect(page.getByRole("button", { name: "Confirm safe adapter export" }))
     .toBeVisible();
-  await page.getByRole("button", { name: "Confirm destructive export" }).click();
+  await page.getByRole("button", { name: "Confirm safe adapter export" }).click();
   await expect(page.getByText("Mock adapter exported without overwrite")).toBeVisible();
 
   const response = await page.request.get("http://127.0.0.1:18081/__mock__/last_export");

@@ -21,7 +21,7 @@ test("use actual variant seed to restore settings without another queued task", 
   await page.getByRole("button", { name: /Use settings.*seed/ }).click();
   await expect(page.getByLabel("Music description")).toHaveValue("Low-band analog synth textures");
   await page.getByText("Advanced controls", { exact: false }).click();
-  await expect(page.getByLabel("Seed")).toHaveValue("42");
+  await expect(page.getByRole("spinbutton", { name: "Seed", exact: true })).toHaveValue("42");
   await expect(page.getByLabel("Random seed")).not.toBeChecked();
 
   const after = await page.request.get("http://127.0.0.1:18081/__mock__/last_submission");
