@@ -8,6 +8,7 @@ import { Injectable, inject } from "@angular/core";
 import { firstValueFrom } from "rxjs";
 import { isObject, unwrap } from "../../core/api-decoder";
 import { ConnectionStore } from "../../core/connection.store";
+import { TrainingExportRequest } from "./training-export.request";
 import {
   StartLoKrRequest, StartLoRARequest,
   TensorDirectoryInfo, TrainingActionResult, TrainingStatus
@@ -56,6 +57,14 @@ export class TrainingClient {
     });
   }
 
+  /**
+   * @public Export a trained LoRA/LoKr adapter after destructive UI confirmation.
+   * @remarks Existing backend route overwrites an existing destination folder.
+   */
+  async exportAdapter(request: TrainingExportRequest): Promise<TrainingActionResult> {
+    return this.post<TrainingActionResult>("/v1/training/export", request);
+  }
+
   /** @public Start LoRA training only after an explicit user confirmation. */
   async startLoRA(request: StartLoRARequest): Promise<TrainingActionResult> {
     return this.post<TrainingActionResult>("/v1/training/start", request);
@@ -74,4 +83,5 @@ export class TrainingClient {
     return this.post<TrainingActionResult>("/v1/training/stop", {});
   }
 }
+
 

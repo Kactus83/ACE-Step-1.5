@@ -11,6 +11,7 @@ let sequence = 0;
 const jobs = new Map();
 let lastSubmittedRequest = null;
 let trainingActive = false;
+let lastTrainingExport = null;
 const datasetSimulator = createDatasetSimulator();
 const wrap = data => ({ code: 200, error: null, timestamp: Date.now(), data, extra: null });
 
@@ -70,6 +71,17 @@ const server = http.createServer(async (req, res) => {
     trainingActive = true;
     respond(wrap({ message: "Training started" })); return;
   }
+  if (url.pathname === "/__mock__/last_export" && req.method === "GET") {
+    respond(wrap(lastTrainingExport)); return;
+  }
+  if (url.pathname === "/v1/training/export" && req.method === "POST") {
+    const chunks = [];
+    for await (const chunk of req) chunks.push(chunk);
+    const body = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+    lastTrainingExport = body;
+    respond(wrap({ message: "Mock adapter exported", source: body.lora_output_dir,
+      export_path: body.export_path })); return;
+  }
   if (url.pathname === "/v1/training/stop" && req.method === "POST") {
     trainingActive = false;
     respond(wrap({ message: "Stopping training..." })); return;
@@ -122,5 +134,6 @@ const server = http.createServer(async (req, res) => {
 server.listen(port, "127.0.0.1", () => {
   process.stdout.write("ACE Studio mock backend on http://127.0.0.1:" + port + "\n");
 });
+
 
 

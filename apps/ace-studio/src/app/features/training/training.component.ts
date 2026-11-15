@@ -8,6 +8,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { BackendStore } from "../../core/backend.store";
 import { TrainingStore } from "./training.store";
 import { mapTrainingRequest } from "./training.request";
+import { TrainingExportComponent } from "./training-export.component";
 import { DatasetTasksStore } from "../datasets/dataset.tasks.store";
 import { isObject } from "../../core/api-decoder";
 
@@ -15,7 +16,7 @@ import { isObject } from "../../core/api-decoder";
 @Component({
   selector: "ace-training",
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TrainingExportComponent],
   templateUrl: "./training.component.html"
 })
 export class TrainingComponent implements OnInit, OnDestroy {
@@ -131,4 +132,5 @@ export class TrainingComponent implements OnInit, OnDestroy {
     await this.training.requestStop();
   }
 }
+
 
