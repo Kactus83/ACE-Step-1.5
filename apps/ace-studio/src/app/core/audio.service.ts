@@ -45,7 +45,11 @@ export class AudioService implements OnDestroy {
    * @remarks Uses a browser blob anchor; native file dialog is not yet exposed.
    */
   async download(raw: string, name: string): Promise<void> {
+    const revision = this.connection.revision();
     const blob = await this.backend.audio(raw);
+    if (revision !== this.connection.revision()) {
+      throw new Error("Backend changed during download.");
+    }
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -72,4 +76,5 @@ export class AudioService implements OnDestroy {
     this.clear();
   }
 }
+
 

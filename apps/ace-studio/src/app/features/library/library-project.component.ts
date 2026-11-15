@@ -21,8 +21,8 @@ export class LibraryProjectComponent {
   readonly removed = output<string>();
   readonly catalog = inject(LibraryStore);
   readonly filter = signal("");
-  readonly editing = signal(false);
-  readonly confirmingDelete = signal(false);
+  readonly editingId = signal<string | null>(null);
+  readonly confirmingDeleteId = signal<string | null>(null);
   readonly projectName = signal("");
   readonly description = signal("");
   readonly visible = computed(() => {
@@ -37,7 +37,7 @@ export class LibraryProjectComponent {
   beginEdit(): void {
     this.projectName.set(this.project().name);
     this.description.set(this.project().description);
-    this.editing.set(true);
+    this.editingId.set(this.project().id);
   }
 
   /** @public Capture a form field while preserving the typed signal API. */
@@ -51,16 +51,21 @@ export class LibraryProjectComponent {
 
   /** @public Persist explicit project renaming and notes, if valid. */
   save(): void {
+    if (this.editingId() !== this.project().id) return;
     if (this.catalog.editProject(this.project().id, this.projectName(),
-      this.description())) this.editing.set(false);
+      this.description())) this.editingId.set(null);
   }
 
   /** @public Two-click local deletion; does not touch ACE-Step output files. */
   remove(): void {
-    if (!this.confirmingDelete()) { this.confirmingDelete.set(true); return; }
     const id = this.project().id;
+    if (this.confirmingDeleteId() !== id) {
+      this.confirmingDeleteId.set(id);
+      return;
+    }
     if (this.catalog.removeProject(id)) this.removed.emit(id);
-    this.confirmingDelete.set(false);
+    this.confirmingDeleteId.set(null);
   }
 }
+
 

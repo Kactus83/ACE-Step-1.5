@@ -2,7 +2,7 @@
   <div class="section-heading"><div><p class="eyebrow">02 / COLLECTION</p>
     <h2>{{ project().name }}</h2>
   </div><span class="section-mark" aria-hidden="true">♫</span></div>
-  @if (editing()) {
+  @if (editingId() === project().id) {
     <form (submit)="$event.preventDefault(); save()">
       <label class="field" for="project-edit-name"><span>Project name</span>
         <input id="project-edit-name" [value]="projectName()"
@@ -15,14 +15,14 @@
       <button class="secondary-action" type="submit" [disabled]="!projectName().trim()">
         Save project details
       </button>
-      <button type="button" class="quiet" (click)="editing.set(false)">Cancel</button>
+      <button type="button" class="quiet" (click)="editingId.set(null)">Cancel</button>
     </form>
   } @else {
     <p class="muted">{{ project().description || 'No project notes yet.' }}</p>
     <button type="button" class="quiet" (click)="beginEdit()">Edit project details</button>
   }
   <button type="button" class="quiet danger-text" (click)="remove()">
-    {{ confirmingDelete() ? 'Confirm permanent local project removal' : 'Delete local project' }}
+    {{ confirmingDeleteId() === project().id ? 'Confirm permanent local project removal' : 'Delete local project' }}
   </button>
 </div>
 <section class="panel" aria-labelledby="library-track-list">
@@ -42,4 +42,5 @@
     }
   </div>
 </section>
+
 

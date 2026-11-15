@@ -42,7 +42,7 @@ function decodeResult(value: unknown, backend: string): GeneratedAudio | null {
     || value["file"].length > 4096) return null;
   try { normalizeAudioUrl(value["file"], backend); }
   catch { return null; }
-  const source = isObject(value["metas"]) ? value["metas"] : {};
+  const source: Record<string, unknown> = isObject(value["metas"]) ? value["metas"] : {};
   const metas: Record<string, string | number | boolean> = {};
   for (const key of ["bpm", "keyscale", "timesignature", "duration", "language"]) {
     const item = source[key];
@@ -154,4 +154,5 @@ export function importLibraryJson(text: string): readonly LibraryProject[] {
   catch { throw new Error("Project archive is not valid JSON."); }
   return decodeLibraryCatalog(parsed);
 }
+
 

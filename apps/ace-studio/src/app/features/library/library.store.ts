@@ -12,7 +12,7 @@ import {
   decodeLibraryCatalog, decodeLibraryTrack, encodeLibraryCatalog,
   importLibraryJson, MAX_PROJECTS, MAX_TRACKS, normalizeTags
 } from "./library.codec";
-import { LibraryProject, LibraryTrack } from "./library.types";
+import { LibraryProject } from "./library.types";
 
 const KEY = "ace-studio:library:v1";
 
@@ -180,4 +180,5 @@ export class LibraryStore {
     setTimeout(() => URL.revokeObjectURL(url), 3000);
   }
 }
+
 
