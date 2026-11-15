@@ -8,7 +8,6 @@ from loguru import logger
 
 from acestep.inference import create_sample
 from acestep.ui.gradio.i18n import t
-from acestep.ui.gradio.events.generation.validation import clamp_duration_to_gpu_limit
 from acestep.ui.gradio.events.results.batch_management_helpers import _apply_param_defaults
 from acestep.ui.gradio.interfaces.simple_ui_markup import _step_indicator_html
 from .simple_ui_helpers import (
@@ -82,8 +81,9 @@ def _simple_generate_wrapper(
             if result.success:
                 captions = result.caption or song_style
                 final_lyrics = result.lyrics or ""
-                clamped = clamp_duration_to_gpu_limit(result.duration, llm_handler)
-                audio_duration_val = clamped if clamped and clamped > 0 else -1
+                # The LM may suggest arbitrary durations (or no duration).
+                # This UI has a fixed 30-second text-generation contract;
+                # the existing progress generator applies hardware limits.
             else:
                 logger.warning(f"Sample creation failed: {result.status_message}")
 

@@ -1,5 +1,7 @@
 # ACE-Step 1.5 — Functional coverage matrix, 2026-11-15
 
+> **Historical coverage snapshot.** This matrix records the pre-acceptance source review, not the final QA outcome. The [local acceptance report](2026-11-15-local-acceptance-report.md) documents subsequent Python/Gradio/CUDA tests and the merged PR #1. Do not interpret the "Non exécutée" cells below as the current acceptance state.
+
 Baseline: `docs/en/UI_SUPPORT.md` on upstream `ca1e85fe9430179831e6bc6be790c332190a3866`.
 
 **Interpretation:** `Préservée` means historical component paths and wiring are retained by the source structure, **not** that a runtime test has passed. `Améliorée` means code was changed in this candidate, pending runtime validation. `Non testée` explicitly marks a path for which neither an independent source-preservation finding nor execution validation is sufficient. No production-quality guarantee follows from this table.
