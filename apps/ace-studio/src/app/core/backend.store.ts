@@ -6,11 +6,14 @@
 import { Injectable, inject, signal } from "@angular/core";
 import { BackendClient } from "./backend.client";
 import { BackendHealth, ModelInventory } from "./api.types";
+import { ConnectionStore } from "./connection.store";
 
 /** @public Shared connection status for studio UI. */
 @Injectable({ providedIn: "root" })
 export class BackendStore {
   private readonly api = inject(BackendClient);
+  private readonly connection = inject(ConnectionStore);
+  private requestSequence = 0;
   /** @public Active connection test state. */
   readonly busy = signal(false);
   /** @public Last successful service info, or null if unavailable. */
@@ -24,27 +27,32 @@ export class BackendStore {
    * @public Read service status without implicitly triggering model downloads.
    */
   async refresh(): Promise<void> {
+    const sequence = ++this.requestSequence;
+    const revision = this.connection.revision();
+    const current = () => sequence === this.requestSequence
+      && revision === this.connection.revision();
     this.busy.set(true);
     this.error.set(null);
     try {
-      const health = await this.api.health();
+      const [health, inventory] = await Promise.all([
+        this.api.health(), this.api.models()
+      ]);
+      if (!current()) return;
       this.health.set(health);
-      try {
-        this.inventory.set(await this.api.models());
-      } catch (error: unknown) {
-        this.inventory.set(null);
-        throw error;
-      }
+      this.inventory.set(inventory);
     } catch (error: unknown) {
+      if (!current()) return;
       this.health.set(null);
+      this.inventory.set(null);
       this.error.set(error instanceof Error ? error.message : "Backend unavailable.");
     } finally {
-      this.busy.set(false);
+      if (sequence === this.requestSequence) this.busy.set(false);
     }
   }
 
   /** @public Request explicit model loading, then refresh observed status. */
   async load(name: string): Promise<void> {
+    const revision = this.connection.revision();
     let success = false;
     this.busy.set(true);
     this.error.set(null);
@@ -52,10 +60,13 @@ export class BackendStore {
       await this.api.initializeModel(name);
       success = true;
     } catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Model initialization failed.");
+      if (revision === this.connection.revision()) {
+        this.error.set(error instanceof Error ? error.message : "Model initialization failed.");
+      }
     } finally {
       this.busy.set(false);
     }
-    if (success) await this.refresh();
+    if (success && revision === this.connection.revision()) await this.refresh();
   }
 }
+

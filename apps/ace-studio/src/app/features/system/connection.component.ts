@@ -8,6 +8,10 @@ import { BackendStore } from "../../core/backend.store";
 import { ConnectionStore } from "../../core/connection.store";
 import { JobsStore } from "../../core/jobs.store";
 import { AudioService } from "../../core/audio.service";
+import { WorkflowStore } from "../../core/workflow.store";
+import { DatasetStore } from "../datasets/dataset.store";
+import { DatasetTasksStore } from "../datasets/dataset.tasks.store";
+import { TrainingStore } from "../training/training.store";
 
 /** @public Backend connection, session token and explicit model loading UI. */
 @Component({
@@ -18,6 +22,10 @@ import { AudioService } from "../../core/audio.service";
 export class ConnectionComponent {
   private readonly connection = inject(ConnectionStore);
   private readonly audio = inject(AudioService);
+  private readonly workflow = inject(WorkflowStore);
+  private readonly dataset = inject(DatasetStore);
+  private readonly datasetTasks = inject(DatasetTasksStore);
+  private readonly training = inject(TrainingStore);
   readonly backend = inject(BackendStore);
   readonly jobs = inject(JobsStore);
   readonly endpoint = signal(this.connection.endpoint());
@@ -46,11 +54,18 @@ export class ConnectionComponent {
       const previousKey = this.connection.apiKey();
       this.connection.setEndpoint(this.endpoint());
       this.connection.setApiKey(this.token());
+      const changed = previousEndpoint !== this.connection.endpoint()
+        || previousKey !== this.connection.apiKey();
       if (previousEndpoint !== this.connection.endpoint()) {
         this.jobs.resetSession();
+        this.workflow.clear();
       }
-      if (previousEndpoint !== this.connection.endpoint()
-        || previousKey !== this.connection.apiKey()) this.audio.clear();
+      if (changed) {
+        this.dataset.clear();
+        this.datasetTasks.clear();
+        this.training.clear();
+      }
+      if (changed) this.audio.clear();
       await this.backend.refresh();
       this.jobs.resume();
       this.saved.set(this.backend.health()?.status === "ok" && !this.backend.error());
@@ -64,3 +79,4 @@ export class ConnectionComponent {
     await this.backend.load(name);
   }
 }
+

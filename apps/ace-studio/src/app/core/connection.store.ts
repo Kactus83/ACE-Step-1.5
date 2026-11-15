@@ -14,6 +14,8 @@ export class ConnectionStore {
   readonly endpoint = signal("http://127.0.0.1:8001");
   /** @public Session-only API key, never written to browser storage. */
   readonly apiKey = signal("");
+  /** @public Monotonically increasing generation of backend identity and credentials. */
+  readonly revision = signal(0);
   /** @public Distinguishes a selected standalone FastAPI profile. */
   readonly profile = signal<"standalone">("standalone");
 
@@ -32,11 +34,19 @@ export class ConnectionStore {
    */
   setEndpoint(value: string): void {
     const normalized = normalizeEndpoint(value);
-    if (normalized !== this.endpoint()) this.apiKey.set("");
+    if (normalized !== this.endpoint()) {
+      this.apiKey.set("");
+      this.revision.update(value => value + 1);
+    }
     this.endpoint.set(normalized);
     try { localStorage.setItem(ConnectionStore.key, normalized); } catch { /* optional */ }
   }
 
   /** @public Replace session credential, explicitly without persistence. */
-  setApiKey(value: string): void { this.apiKey.set(value.trim()); }
+  setApiKey(value: string): void {
+    const key = value.trim();
+    if (key !== this.apiKey()) this.revision.update(current => current + 1);
+    this.apiKey.set(key);
+  }
 }
+

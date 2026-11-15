@@ -16,6 +16,7 @@ export class TrainingStore implements OnDestroy {
   private readonly client = inject(TrainingClient);
   private timer: ReturnType<typeof setTimeout> | undefined;
   private active = false;
+  private generation = 0;
   readonly status = signal<TrainingStatus | null>(null);
   readonly tensorInfo = signal<TensorDirectoryInfo | null>(null);
   readonly dataset = signal<DatasetScanResult | null>(null);
@@ -39,16 +40,21 @@ export class TrainingStore implements OnDestroy {
   /** @public Inspect live status without initiating a job. */
   async refresh(): Promise<void> {
     if (this.busy()) return;
+    const generation = this.generation;
     if (this.timer) clearTimeout(this.timer);
     this.busy.set(true);
     try {
-      this.status.set(await this.client.status());
+      const status = await this.client.status();
+      if (generation !== this.generation) return;
+      this.status.set(status);
       this.error.set(null);
     } catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Training status unavailable.");
+      if (generation === this.generation) {
+        this.error.set(error instanceof Error ? error.message : "Training status unavailable.");
+      }
     } finally {
-      this.busy.set(false);
-      if (this.active) this.timer = setTimeout(() => { void this.refresh(); }, 5000);
+      if (generation === this.generation) this.busy.set(false);
+      if (this.active && generation === this.generation) this.timer = setTimeout(() => { void this.refresh(); }, 5000);
     }
   }
 
@@ -103,6 +109,19 @@ export class TrainingStore implements OnDestroy {
     }
   }
 
+  /** @public Erase prior server status and validations on connection changes. */
+  clear(): void {
+    this.pause();
+    this.generation++;
+    this.status.set(null);
+    this.tensorInfo.set(null);
+    this.dataset.set(null);
+    this.error.set(null);
+    this.message.set(null);
+    this.busy.set(false);
+  }
+
   /** @public Release observation timers. */
   ngOnDestroy(): void { this.pause(); }
 }
+

@@ -7,11 +7,13 @@ import { Injectable, OnDestroy, inject, signal } from "@angular/core";
 import { BackendClient } from "./backend.client";
 import { decodeTask } from "./api-decoder";
 import { GenerateRequest, StudioJob } from "./api.types";
+import { ConnectionStore } from "./connection.store";
 
 /** @public Asynchronous generation orchestration without counterfeit progress. */
 @Injectable({ providedIn: "root" })
 export class JobsStore implements OnDestroy {
   private readonly api = inject(BackendClient);
+  private readonly connection = inject(ConnectionStore);
   private readonly storageKey = "ace-studio:tasks:v1";
   private timer: ReturnType<typeof setTimeout> | undefined;
   private disposed = false;
@@ -56,8 +58,10 @@ export class JobsStore implements OnDestroy {
     if (this.submitting()) return;
     this.submitting.set(true);
     this.error.set(null);
+    const revision = this.connection.revision();
     try {
       const accepted = await this.api.submit(request, source, reference);
+      if (revision !== this.connection.revision()) return;
       const job: StudioJob = {
         id: accepted.task_id, title: request.track_name || request.prompt.slice(0, 72) || "New track",
         createdAt: Date.now(), phase: "queued", progressText: "Queued",
@@ -67,7 +71,9 @@ export class JobsStore implements OnDestroy {
       this.persist();
       this.schedule(0);
     } catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Generation submission failed.");
+      if (revision === this.connection.revision()) {
+        this.error.set(error instanceof Error ? error.message : "Generation submission failed.");
+      }
     } finally { this.submitting.set(false); }
   }
 
@@ -86,8 +92,10 @@ export class JobsStore implements OnDestroy {
       job.phase === "queued" || job.phase === "running" || job.phase === "unknown");
     if (!active.length) return;
     this.pollInFlight = true;
+    const revision = this.connection.revision();
     try {
       const received = await this.api.tasks(active.map(job => job.id));
+      if (revision !== this.connection.revision()) return;
       const byId = new Map(received.map(result => [result.task_id, result]));
       this.jobs.update(items => items.map(job => {
         const raw = byId.get(job.id);
@@ -105,8 +113,10 @@ export class JobsStore implements OnDestroy {
       this.failureCount = 0;
       this.error.set(null);
     } catch (error: unknown) {
-      this.failureCount++;
-      this.error.set(error instanceof Error ? error.message : "Job polling unavailable.");
+      if (revision === this.connection.revision()) {
+        this.failureCount++;
+        this.error.set(error instanceof Error ? error.message : "Job polling unavailable.");
+      }
     } finally {
       this.pollInFlight = false;
       const hasActive = this.jobs().some(job =>
@@ -140,3 +150,4 @@ export class JobsStore implements OnDestroy {
     if (this.timer) clearTimeout(this.timer);
   }
 }
+
