@@ -1,0 +1,22 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "ACE Studio",
+  "version": "0.1.0",
+  "identifier": "studio.acestep.desktop",
+  "build": {
+    "beforeDevCommand": "npm run start",
+    "devUrl": "http://127.0.0.1:4200",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist/ace-studio/browser"
+  },
+  "app": {
+    "windows": [
+      { "label": "main", "title": "ACE Studio", "width": 1440, "height": 900,
+        "minWidth": 900, "minHeight": 620, "backgroundColor": "#11131b" }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; connect-src 'self' ipc: http://ipc.localhost http://127.0.0.1:* http://localhost:* https:; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:"
+    }
+  },
+  "bundle": { "active": true, "targets": "all" }
+}
