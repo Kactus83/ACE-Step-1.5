@@ -1,0 +1,61 @@
+<div class="page-heading">
+  <div><p class="eyebrow">ENGINE / CONFIGURATION</p>
+    <h1>Stay connected.</h1>
+    <p class="lead">Connect ACE Studio to a running standalone ACE-Step FastAPI instance. Nothing starts automatically.</p>
+  </div>
+</div>
+<div class="settings-layout">
+  <section class="panel" aria-labelledby="api-heading">
+    <div class="section-heading">
+      <div><p class="eyebrow">01 / CONNECTIVITY</p><h2 id="api-heading">Backend connection</h2></div>
+      <span class="section-mark" aria-hidden="true">⌁</span>
+    </div>
+    <form (submit)="$event.preventDefault(); save()">
+      <label class="field" for="server-url"><span>API server address</span>
+        <input id="server-url" type="url" [value]="endpoint()"
+          (input)="setField($event,'endpoint')" spellcheck="false" required />
+      </label>
+      <p class="small-note">Loopback HTTP is allowed. A remote backend must use HTTPS. Port 8001 is the usual local API port.</p>
+      <label class="field" for="server-key"><span>API token <small>optional</small></span>
+        <input id="server-key" type="password" [value]="token()"
+          (input)="setField($event,'token')" autocomplete="off" />
+      </label>
+      <p class="small-note">The token is held in memory only, never saved in localStorage or the repository.</p>
+      <p class="small-note">Changing the server clears this session’s job list, but never cancels tasks on the old backend.</p>
+      <button class="primary-action" type="submit" [disabled]="backend.busy()">
+        {{ backend.busy() ? 'Connecting…' : 'Save & connect' }}
+        <span aria-hidden="true">→</span>
+      </button>
+    </form>
+    @if (error()) { <p class="notice danger" role="alert">{{ error() }}</p> }
+    @if (backend.error()) { <p class="notice danger" role="alert">{{ backend.error() }}</p> }
+    @if (saved()) { <p class="notice success" role="status">Connected to ACE-Step API.</p> }
+  </section>
+  <section class="panel" aria-labelledby="server-heading">
+    <div class="section-heading"><div><p class="eyebrow">02 / ENGINE STATUS</p>
+      <h2 id="server-heading">Server & models</h2></div>
+      <span class="section-mark" aria-hidden="true">◉</span>
+    </div>
+    <dl class="status-details">
+      <div><dt>Service</dt><dd>{{ backend.health()?.service || 'Unavailable' }}</dd></div>
+      <div><dt>API version</dt><dd>{{ backend.health()?.version || '—' }}</dd></div>
+      <div><dt>Model ready</dt><dd>{{ backend.health()?.models_initialized ? 'Yes' : 'Not reported ready' }}</dd></div>
+      <div><dt>Language model</dt><dd>{{ backend.inventory()?.llm_initialized ? 'Ready' : 'Not initialized' }}</dd></div>
+    </dl>
+    <h3>Available DiT models</h3>
+    @for (model of backend.inventory()?.models || []; track model.name) {
+      <div class="model-entry">
+        <div><strong>{{ model.name }}</strong>
+          <small>{{ model.is_loaded ? 'Loaded' : 'Available' }} · {{ model.supported_task_types?.length || 0 }} advertised tasks</small>
+        </div>
+        @if (!model.is_loaded) {
+          <button type="button" class="secondary-action" (click)="loadModel(model.name)"
+            [disabled]="backend.busy()">Load model</button>
+        } @else { <span class="small-note">Ready</span> }
+      </div>
+    } @empty {
+      <p class="muted">No models reported. Start the ACE-Step backend, then refresh.</p>
+    }
+    <p class="small-note">Loading a model may allocate GPU memory or download a checkpoint. It is always an explicit action.</p>
+  </section>
+</div>

@@ -1,0 +1,66 @@
+<div class="page-heading">
+  <div><p class="eyebrow">STUDIO MONITOR / OUTPUT</p>
+    <h1>Queue & results.</h1>
+    <p class="lead">Follow actual server jobs, listen to finished tracks, and reuse audio for new ideas.</p>
+  </div>
+  <button type="button" class="secondary-action" (click)="jobs.resume()">Check jobs now</button>
+</div>
+@if (jobs.error()) {
+  <div class="notice warning" role="alert">
+    Connection interrupted: {{ jobs.error() }}. Pending jobs will be checked again automatically.
+  </div>
+}
+@if (!jobs.jobs().length) {
+  <section class="empty-state panel">
+    <span class="empty-icon" aria-hidden="true">♫</span>
+    <h2>Your next masterpiece begins in Create.</h2>
+    <p>As soon as you submit a job, it appears here. Progress is always reported by ACE-Step.</p>
+  </section>
+} @else {
+  <div class="job-list">
+    @for (job of jobs.jobs(); track job.id) {
+      <article class="panel job-card" [attr.aria-label]="'Generation job ' + job.title">
+        <div class="job-heading">
+          <div>
+            <p class="eyebrow">JOB / {{ job.id.slice(0, 12) }}</p>
+            <h2>{{ job.title }}</h2>
+            <p class="muted"><time>{{ job.createdAt | date:'medium' }}</time></p>
+          </div>
+          <span class="job-status" [class.success]="job.phase === 'succeeded'"
+            [class.failed]="job.phase === 'failed'">{{ job.phase }}</span>
+        </div>
+        @if (job.phase === "running" || job.phase === "queued" || job.phase === "unknown") {
+          <div class="indeterminate-progress" aria-label="Generation in progress">
+            <span></span>
+          </div>
+          <p role="status" class="progress-note">{{ job.progressText || "Waiting for the backend…" }}</p>
+          <p class="small-note">The engine has not supplied reliable percentage progress.</p>
+        }
+        @if (job.phase === "failed") {
+          <p class="notice danger" role="alert">
+            {{ job.error || job.progressText || "Generation failed. Inspect backend diagnostics." }}
+          </p>
+        }
+        @if (job.phase === "succeeded" && !job.results.some) {
+          <p class="muted">Generation completed.</p>
+        }
+        @if (job.results.length) {
+          <div class="audio-results">
+            @for (result of job.results; track $index) {
+              @if (result.file) {
+                <ace-audio-card [result]="result" [index]="$index + 1"
+                  (reuseRequested)="edit(result, $event)" />
+              }
+            }
+          </div>
+        }
+        <div class="job-actions">
+          <button type="button" class="quiet" (click)="jobs.forget(job.id)">
+            Remove from this session
+          </button>
+          <span class="small-note">Does not cancel inference on the backend</span>
+        </div>
+      </article>
+    }
+  </div>
+}

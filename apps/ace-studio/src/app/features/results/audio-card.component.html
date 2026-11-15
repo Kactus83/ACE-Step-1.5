@@ -1,0 +1,25 @@
+<section class="audio-card" [attr.aria-label]="'Generated track variant ' + index()">
+  <div class="audio-art" aria-hidden="true"><span>♫</span></div>
+  <div class="audio-detail">
+    <div class="audio-title">
+      <strong>Variant {{ index() }}</strong>
+      @if (result().metas?.["bpm"]) { <small>{{ result().metas?.["bpm"] }} BPM</small> }
+    </div>
+    @if (!previewUrl()) {
+      <button type="button" class="secondary-action" [disabled]="loading()" (click)="loadPreview()">
+        {{ loading() ? 'Loading audio…' : 'Load audio preview' }}
+      </button>
+    } @else {
+      <audio [src]="previewUrl()" controls preload="none" aria-label="Audio preview"></audio>
+    }
+    @if (error()) { <p class="field-error" role="alert">{{ error() }}</p> }
+    @if (result().seed_value) {
+      <p class="small-note">Seed: {{ result().seed_value }}</p>
+    }
+    <div class="audio-actions">
+      <button type="button" class="quiet" (click)="download()">Download</button>
+      <button type="button" class="quiet" (click)="reuseRequested.emit('cover')">Remix ↗</button>
+      <button type="button" class="quiet" (click)="reuseRequested.emit('repaint')">Repaint ↗</button>
+    </div>
+  </div>
+</section>
