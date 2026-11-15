@@ -18,6 +18,7 @@ export interface CreateFormSnapshot extends ExpertSnapshot, SourceEditSnapshot {
   readonly task_type: string;
   readonly model: string;
   readonly thinking: boolean;
+  readonly sample_mode: boolean;
   readonly use_format: boolean;
   readonly duration: number;
   readonly bpm: number;
@@ -48,6 +49,7 @@ export const TRACK_NAMES = [
 export function mapGenerateRequest(value: CreateFormSnapshot): GenerateRequest {
   const mode = value.task_type as TaskType;
   const needsStem = mode === "extract" || mode === "lego";
+  const sample = mode === "text2music" && value.sample_mode;
   if (needsStem && !TRACK_NAMES.some(name => name === value.target_stem)) {
     throw new Error("Choose a supported instrument stem.");
   }
@@ -58,8 +60,10 @@ export function mapGenerateRequest(value: CreateFormSnapshot): GenerateRequest {
     throw new Error("Completion classes must use supported ACE-Step track names.");
   }
   return {
-    prompt: value.prompt.trim(),
-    lyrics: value.instrumental ? "[inst]" : value.lyrics,
+    prompt: sample ? "" : value.prompt.trim(),
+    lyrics: sample ? "" : value.instrumental ? "[inst]" : value.lyrics,
+    sample_mode: sample,
+    sample_query: sample ? value.prompt.trim() : undefined,
     task_type: mode,
     model: value.model || undefined,
     thinking: value.thinking,
@@ -84,6 +88,7 @@ export function mapGenerateRequest(value: CreateFormSnapshot): GenerateRequest {
     audio_format: value.audio_format as GenerateRequest["audio_format"]
   };
 }
+
 
 
 

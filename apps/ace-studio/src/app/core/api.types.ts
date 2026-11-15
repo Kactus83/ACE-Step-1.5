@@ -62,6 +62,8 @@ export interface GenerateRequest {
   readonly task_type: TaskType;
   readonly model?: string;
   readonly thinking: boolean;
+  readonly sample_mode?: boolean;
+  readonly sample_query?: string;
   readonly audio_duration?: number;
   readonly bpm?: number;
   readonly key_scale?: string;
@@ -153,6 +155,7 @@ export interface StudioJob {
   /** @public Reference audio upload needed, but never persisted on the client. */
   readonly hasReferenceAudio?: boolean;
 }
+
 
 
 

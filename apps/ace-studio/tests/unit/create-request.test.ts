@@ -14,7 +14,7 @@ const values: CreateFormSnapshot = {
   use_tiled_decode: true,
   prompt: " Deep ambient music ", lyrics: "",
   instrumental: true, task_type: "text2music", model: "",
-  thinking: false, use_format: false, duration: 180, bpm: 0,
+  thinking: false, sample_mode: false, use_format: false, duration: 180, bpm: 0,
   key_scale: "", time_signature: "", vocal_language: "en",
   inference_steps: 8, guidance_scale: 7, batch_size: 2,
   seed: 12345, use_random_seed: true, audio_cover_strength: 1,
@@ -62,6 +62,23 @@ describe("generation request mapping", () => {
       ...values, task_type: "complete", track_classes: "alien_laser"
     })).toThrow("supported");
   });
+  it("maps idea-only sample generation to the real 5Hz LM sample contract", () => {
+    const request = mapGenerateRequest({
+      ...values, task_type: "text2music", sample_mode: true,
+      prompt: "polyrhythmic acoustic ensemble", instrumental: true
+    });
+    expect(request.sample_mode).toBe(true);
+    expect(request.sample_query).toBe("polyrhythmic acoustic ensemble");
+    expect(request.prompt).toBe("");
+    expect(request.lyrics).toBe("");
+  });
+  it("does not accidentally enable sample mode for Cover or Repaint", () => {
+    const request = mapGenerateRequest({ ...values, task_type: "cover", sample_mode: true });
+    expect(request.sample_mode).toBe(false);
+    expect(request.sample_query).toBeUndefined();
+  });
+
 });
+
 
 

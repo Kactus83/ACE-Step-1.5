@@ -20,7 +20,10 @@
       <label class="field" for="track-title"><span>Track name <small>optional</small></span>
         <input id="track-title" formControlName="track_name" placeholder="e.g. Midnight frequencies" />
       </label>
-      <label class="field" for="prompt"><span>Music description <small>required</small></span>
+      <label class="field" for="prompt"><span>
+        {{ changes().sample_mode && selectedMode() === 'text2music'
+          ? 'Idea / query for the 5Hz language model' : 'Music description' }}
+        <small>required</small></span>
         <textarea id="prompt" formControlName="prompt" rows="5"
           placeholder="A textured, hypnotic downtempo track with warm analog synths, polyrhythmic percussion and an evolving bassline..."></textarea>
       </label>
@@ -46,16 +49,25 @@
         </label>
       </div>
 
+      @if (selectedMode() === 'text2music') {
+        <label class="checkbox-label"><input type="checkbox" formControlName="sample_mode" />
+          <span><strong>Generate music concept with 5Hz LM</strong>
+            <small>The language model writes the detailed caption, lyrics and musical metadata from your idea.
+              It may initialize the LM and use additional GPU memory.</small></span>
+        </label>
+      }
       <div class="toggle-row">
+        @if (!changes().sample_mode || selectedMode() !== 'text2music') {
         <label class="checkbox-label"><input type="checkbox" formControlName="instrumental" />
           <span><strong>Instrumental</strong><small>No vocal lyrics</small></span>
         </label>
+        }
         <label class="checkbox-label"><input type="checkbox" formControlName="thinking" />
           <span><strong>LM thinking</strong><small>Advanced language model assistance</small></span>
         </label>
       </div>
 
-      @if (!form.controls.instrumental.value) {
+      @if (!form.controls.instrumental.value && (!changes().sample_mode || selectedMode() !== "text2music")) {
         <label class="field" for="lyrics"><span>Lyrics</span>
           <textarea id="lyrics" formControlName="lyrics" rows="7"
             placeholder="[Verse]\nWrite the words for your composition..."></textarea>
@@ -208,6 +220,7 @@
     </section>
   </aside>
 </form>
+
 
 
 

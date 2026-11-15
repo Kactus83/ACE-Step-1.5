@@ -42,6 +42,7 @@ export class CreateComponent implements OnInit {
   readonly reference = signal<File | null>(null);
   readonly error = signal<string | null>(null);
   readonly pendingDcwConfirmation = signal<string | null>(null);
+  readonly pendingSampleConfirmation = signal<string | null>(null);
   readonly importName = computed(() => this.workflow.draft()?.source.prompt || "Generated track");
 
   readonly form = createGenerationForm(this.fb);
@@ -163,6 +164,15 @@ export class CreateComponent implements OnInit {
       }
     }
     this.pendingDcwConfirmation.set(null);
+    if (request.sample_mode && !this.backend.inventory()?.llm_initialized) {
+      const fingerprint = JSON.stringify({ revision: this.connection.revision(), value });
+      if (this.pendingSampleConfirmation() !== fingerprint) {
+        this.pendingSampleConfirmation.set(fingerprint);
+        this.error.set("Sample mode may initialize the 5Hz language model and consume GPU memory. Submit again to confirm.");
+        return;
+      }
+    }
+    this.pendingSampleConfirmation.set(null);
     this.error.set(null);
     try {
       const draft = this.workflow.draft();
@@ -179,6 +189,7 @@ export class CreateComponent implements OnInit {
     }
   }
 }
+
 
 
 

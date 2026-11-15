@@ -29,12 +29,13 @@ export function restoreGenerateRequest(
     repaint_latent_crossfade_frames: request.repaint_latent_crossfade_frames ?? 10,
     repaint_wav_crossfade_sec: request.repaint_wav_crossfade_sec ?? 0,
     use_tiled_decode: request.use_tiled_decode ?? true,
-    prompt: request.prompt,
+    prompt: request.sample_mode ? request.sample_query || "" : request.prompt,
     lyrics: request.lyrics === "[inst]" ? "" : request.lyrics,
     instrumental: request.lyrics === "[inst]" || request.lyrics === "[Instrumental]",
     task_type: request.task_type,
     model: request.model || "",
     thinking: request.thinking,
+    sample_mode: request.sample_mode ?? false,
     use_format: request.use_format ?? false,
     duration: request.audio_duration ?? 180,
     bpm: request.bpm ?? 0,
@@ -83,5 +84,6 @@ export function withResultSeed(
   return Number.isSafeInteger(seed) && seed >= 0
     ? { ...request, seed, use_random_seed: false } : request;
 }
+
 
 

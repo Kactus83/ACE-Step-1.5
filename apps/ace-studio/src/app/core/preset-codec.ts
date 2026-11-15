@@ -27,7 +27,7 @@ const NUMBER_KEYS = new Set([
   "repaint_wav_crossfade_sec"
 ]);
 const BOOLEAN_KEYS = new Set([
-  "instrumental", "thinking", "use_format", "use_random_seed",
+  "instrumental", "thinking", "sample_mode", "use_format", "use_random_seed",
   "use_adg", "use_cot_caption", "use_cot_language", "use_tiled_decode"
 ]);
 
@@ -73,6 +73,7 @@ export function decodePresets(raw: unknown): readonly StudioPreset[] {
   }
   return result;
 }
+
 
 
 

@@ -25,6 +25,7 @@ export function createGenerationForm(fb: FormBuilder) {
     task_type: ["text2music"],
     model: [""],
     thinking: [false],
+    sample_mode: [false],
     use_format: [false],
     duration: [180, [Validators.min(10), Validators.max(600)]],
     bpm: [0, [Validators.min(0), Validators.max(300)]],
@@ -59,6 +60,7 @@ export function createGenerationForm(fb: FormBuilder) {
     lm_top_p: [0.9, [Validators.min(0.01), Validators.max(0.99)]]
   });
 }
+
 
 
 
