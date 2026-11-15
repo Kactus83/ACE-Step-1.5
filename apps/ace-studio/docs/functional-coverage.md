@@ -30,8 +30,8 @@ establish that the feature actually works. `Partial` marks a real functional gap
 | Lego | Unavailable | Not applicable | Needs track conditioning UX/API validation |
 | Complete | Unavailable | Not applicable | Needs own form and source-data contracts |
 | GPU/runtime stats | Unavailable | Not applicable | /v1/stats could be exposed read-only |
-| Dataset preparation | Unavailable | Not applicable | Training API audit and UI not yet done |
-| LoRA/LoKr training | Unavailable | Not applicable | Server workflow exists; no Studio workflow yet |
+| Dataset preparation | Partial | Unexecuted | Server directory scanning only; preprocessing/labeling still missing |
+| LoRA/LoKr training | Partial | Unexecuted | Server status, tensor validation, explicit start/stop authored; needs runtime and extended controls |
 | Desktop integration | Partial | Unexecuted | Tauri 2 host and icons, no native capabilities |
 | Native process supervision | Voluntarily excluded | Not applicable | Do not duplicate existing Python inference instance |
 | Dark responsive UI | Written | Unexecuted | Contrast, mobile, keyboard, screen-reader QA pending |
@@ -41,4 +41,5 @@ establish that the feature actually works. `Partial` marks a real functional gap
 
 The project is **not** at 100% source coverage. A polished shell must not be
 counted as API-backed Extract/Lego/Complete, training, or persistent library.
+
 

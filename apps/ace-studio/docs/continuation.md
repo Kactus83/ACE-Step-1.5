@@ -18,8 +18,8 @@ blocked by unavailable local compilation/GPU.
 
 ## Next implementation increments (work even without local compilation)
 
-1. Audit the **real** training and dataset API definitions; build complete
-   typed clients plus contract fixtures before exposing actions.
+1. Extend audited training/dataset routes: sample editing, dataset persistence,
+   async preprocessing, auto-label, task progress, export, model adapter load.
 2. Implement Extract, Lego and Complete with task-specific validation,
    file upload, mode-aware configuration and precise capabilities.
 3. Improve Repaint with a real waveform + accessible numeric range syncing,
@@ -49,4 +49,5 @@ Mark source as written/unexecuted. Do not invent success or call the mission
 The only legitimate final environmental handoff is after the fully authored
 target scope can be compiled/tested by the local team, with all incomplete
 items explicitly identified and independent approvals pending.
+
 

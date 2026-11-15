@@ -8,6 +8,7 @@ import http from "node:http";
 const port = Number(process.env.ACE_STUDIO_MOCK_PORT || 18081);
 let sequence = 0;
 const jobs = new Map();
+let trainingActive = false;
 const wrap = data => ({ code: 200, error: null, timestamp: Date.now(), data, extra: null });
 
 const riff = (() => {
@@ -43,6 +44,35 @@ const server = http.createServer(async (req, res) => {
     respond(wrap({ models: [{ name: "acestep-v15-turbo", is_loaded: true, is_default: true,
       supported_task_types: ["text2music", "cover", "repaint"] }],
       default_model: "acestep-v15-turbo", lm_models: [], llm_initialized: false })); return;
+  }
+  if (url.pathname === "/v1/training/status" && req.method === "GET") {
+    respond(wrap({ is_training: trainingActive, should_stop: false,
+      current_step: trainingActive ? 2 : 0, current_epoch: trainingActive ? 1 : 0,
+      current_loss: trainingActive ? 0.12 : null,
+      status: trainingActive ? "Training" : "Idle", tensor_dir: "/mock/tensors",
+      config: {}, loss_history: [], training_log: "" })); return;
+  }
+  if (url.pathname === "/v1/training/load_tensor_info" && req.method === "POST") {
+    const chunks = [];
+    for await (const chunk of req) chunks.push(chunk);
+    const body = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+    if (body.tensor_dir !== "/mock/tensors") {
+      respond({ detail: "Directory not found" }, 400); return;
+    }
+    respond(wrap({ dataset_name: "mock", num_samples: 3, custom_tag: "",
+      tensor_dir: body.tensor_dir, message: "3 tensors available" })); return;
+  }
+  if ((url.pathname === "/v1/training/start" ||
+       url.pathname === "/v1/training/start_lokr") && req.method === "POST") {
+    trainingActive = true;
+    respond(wrap({ message: "Training started" })); return;
+  }
+  if (url.pathname === "/v1/training/stop" && req.method === "POST") {
+    trainingActive = false;
+    respond(wrap({ message: "Stopping training..." })); return;
+  }
+  if (url.pathname === "/v1/dataset/scan" && req.method === "POST") {
+    respond(wrap({ message: "Mock dataset scanned", num_samples: 3, samples: [] })); return;
   }
   if (url.pathname === "/release_task" && req.method === "POST") {
     const chunks = [];
@@ -82,4 +112,5 @@ const server = http.createServer(async (req, res) => {
 server.listen(port, "127.0.0.1", () => {
   process.stdout.write("ACE Studio mock backend on http://127.0.0.1:" + port + "\n");
 });
+
 
