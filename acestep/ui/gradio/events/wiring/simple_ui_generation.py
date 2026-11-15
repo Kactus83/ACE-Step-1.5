@@ -38,7 +38,7 @@ def _simple_generate_wrapper(
     final_lyrics = _resolve_simple_lyrics(lyrics, instrumental)
     audio_duration_val = -1
 
-    if song_style and not final_lyrics and llm_handler and llm_handler.llm_initialized:
+    if song_style and not final_lyrics and not src_audio and llm_handler and llm_handler.llm_initialized:
         yield (
             gr.skip(),  # 0: audio_1
             gr.skip(),  # 1: audio_2
@@ -53,7 +53,7 @@ def _simple_generate_wrapper(
         result = create_sample(
             llm_handler=llm_handler,
             query=song_style,
-            instrumental=instrumental or ("instrumental" in song_style.lower()),
+            instrumental=instrumental,
             vocal_language="unknown",
             temperature=0.85,
             top_k=0,

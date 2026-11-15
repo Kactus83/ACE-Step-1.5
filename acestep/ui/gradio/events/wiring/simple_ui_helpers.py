@@ -129,11 +129,16 @@ def _save_audio_js() -> str:
             filename = audio;
         }
         if (!target) return;
+        if (/^(javascript|data|file):/i.test(target)) return;
         if (target.startsWith('/tmp/') || target.startsWith('/home/')) {
             target = '/gradio_api/file=' + encodeURI(target);
         }
+        let resolved;
+        try { resolved = new URL(target, window.location.origin); }
+        catch (error) { return; }
+        if (resolved.origin !== window.location.origin) return;
         let a = document.createElement('a');
-        a.href = target;
+        a.href = resolved.href;
         a.download = filename.split(/[\\/]/).pop().split('?')[0] || 'audio';
         a.style.display = 'none';
         document.body.appendChild(a);

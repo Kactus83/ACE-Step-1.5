@@ -83,6 +83,16 @@ def _finish_simple_generation(
         retake_seed=params["retake_seed"],
     )
 
+    # Preserve the effective seed for replay rather than a fresh random input.
+    resolved_seed = (
+        final_result[SEED_VALUE_INDEX]
+        if len(final_result) > SEED_VALUE_INDEX
+        else None
+    )
+    if isinstance(resolved_seed, (str, int)) and str(resolved_seed).strip():
+        saved_params["seed"] = str(resolved_seed)
+        saved_params["random_seed_checkbox"] = False
+
     batch_queue = store_batch_in_queue(
         batch_queue, current_batch_index,
         all_audio_paths, generation_info_text,

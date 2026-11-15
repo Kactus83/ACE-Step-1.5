@@ -80,6 +80,42 @@ class SimpleFoundationTests(unittest.TestCase):
         )
         self.assertEqual(len(_start_generation()), 14)
 
+    @patch("acestep.ui.gradio.events.wiring.simple_ui_generation_results.store_batch_in_queue")
+    @patch("acestep.ui.gradio.events.wiring.simple_ui_generation_results._build_saved_params")
+    def test_success_result_preserves_resolved_seed(self, build_params, store_batch):
+        """The replay snapshot uses actual sample seed instead of random -1."""
+        build_params.return_value = {"seed": "-1", "random_seed_checkbox": True}
+        store_batch.return_value = {}
+        data = {key: None for key in (
+            "captions", "lyrics", "bpm", "key_scale", "time_signature", "vocal_language",
+            "inference_steps", "guidance_scale", "random_seed_checkbox", "seed",
+            "reference_audio", "audio_duration", "batch_size_input", "src_audio",
+            "text2music_audio_code_string", "repainting_start", "repainting_end",
+            "instruction_display_gen", "audio_cover_strength", "cover_noise_strength",
+            "task_type", "no_fsq", "use_adg", "cfg_interval_start", "cfg_interval_end",
+            "shift", "infer_method", "sampler_mode", "velocity_norm_threshold",
+            "velocity_ema_factor", "dcw_enabled", "dcw_mode", "dcw_scaler",
+            "dcw_high_scaler", "dcw_wavelet", "audio_format", "mp3_bitrate",
+            "mp3_sample_rate", "lm_temperature", "think_checkbox", "lm_cfg_scale",
+            "lm_top_k", "lm_top_p", "lm_negative_prompt", "use_cot_metas",
+            "use_cot_caption", "use_cot_language", "constrained_decoding_debug",
+            "allow_lm_batch", "auto_score", "auto_lrc", "score_scale",
+            "lm_batch_chunk_size", "track_name", "complete_track_classes",
+            "enable_normalization", "normalization_db", "fade_in_duration",
+            "fade_out_duration", "latent_shift", "latent_rescale", "repaint_mode",
+            "repaint_strength", "retake_variance", "retake_seed"
+        )}
+        data["audio_format"] = "wav"
+        payload = tuple([None] * 8 + [
+            ["first.wav", "first.json", "second.wav", "second.json"],
+            "info", "Generation Complete", "1234,5678",
+        ])
+        output = list(_finish_simple_generation(payload, data, 0, 1, {}, {}))
+        self.assertEqual(len(output[0]), 14)
+        replay = store_batch.call_args.kwargs["generation_params"]
+        self.assertEqual(replay["seed"], "1234,5678")
+        self.assertFalse(replay["random_seed_checkbox"])
+
     def test_empty_final_result_is_reported_as_failure(self):
         """An empty path list must not masquerade as a successful generation."""
         payload = tuple([None] * 8 + [[], "info", "Generation failed", ""])
