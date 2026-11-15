@@ -1,0 +1,25 @@
+<details class="result-metadata advanced">
+  <summary>View generation details <span aria-hidden="true">⌄</span></summary>
+  <dl class="result-metadata-list">
+    @if (result().seed_value) {
+      <div><dt>Server seed</dt><dd>{{ result().seed_value }}</dd></div>
+    }
+    @if (result().stage) { <div><dt>Stage</dt><dd>{{ result().stage }}</dd></div> }
+    @for (property of properties(); track property.name) {
+      <div><dt>{{ property.name }}</dt><dd>{{ property.text }}</dd></div>
+    }
+  </dl>
+  @if (result().prompt) {
+    <p class="small-note">Generated description</p><p class="muted">{{ result().prompt }}</p>
+  }
+  @if (result().lyrics) {
+    <p class="small-note">Lyrics</p><pre class="metadata-lyrics">{{ result().lyrics }}</pre>
+  }
+  @if (result().generation_info) {
+    <p class="small-note">Backend generation details</p>
+    <pre class="metadata-lyrics">{{ result().generation_info }}</pre>
+  }
+  <p class="small-note">Values above are directly reported by ACE-Step.
+    Deterministic output depends on model, backend, platform and inference implementation.</p>
+</details>
+
