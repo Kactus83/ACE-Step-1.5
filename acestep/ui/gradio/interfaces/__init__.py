@@ -331,7 +331,7 @@ def create_gradio_interface(dit_handler, llm_handler, dataset_handler, init_para
 
         with (gr.Column(visible=False) if enable_simple_ui else nullcontext()) as advanced_column:
             if enable_simple_ui:
-                advanced_mode_switch = gr.Button("Simple interface", size="sm")
+                advanced_mode_switch = gr.Button(t("simple_flow.simple_mode"), size="sm")
 
             gr.HTML(f"""
             <div class="main-header">

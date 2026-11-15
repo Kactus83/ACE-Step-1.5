@@ -1,8 +1,11 @@
 """Focused builder for two audio result players."""
 
+import html
 from typing import Any
 
 import gradio as gr
+
+from acestep.ui.gradio.i18n import t
 
 def _build_step_results() -> tuple[gr.Column, dict[str, Any]]:
     """Build Step 5: Results."""
@@ -12,7 +15,7 @@ def _build_step_results() -> tuple[gr.Column, dict[str, Any]]:
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">'
             '<path d="M12 3l1.91 5.87L20 9.73l-4.88 4.12 1.38 6.15L12 16.5l-4.5 3.5 1.38-6.15L4 9.73l6.09-.86L12 3z"/>'
             '</svg>'
-            '<span>Your Music</span>'
+            f'<span>{html.escape(t("simple_flow.your_music"))}</span>'
             '</div>',
             elem_classes=["simple-divider-wrap"],
         )
@@ -22,11 +25,11 @@ def _build_step_results() -> tuple[gr.Column, dict[str, Any]]:
                     '<div class="simple-best-badge">'
                     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" width="12" height="12">'
                     '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'
-                    '</svg> Version 1'
+                    f'</svg> {html.escape(t("simple_flow.result_one"))}'
                     '</div>'
                 )
                 simple_generated_audio_1 = gr.Audio(
-                    label="",
+                    label=t("simple_flow.result_one"),
                     type="filepath",
                     interactive=False,
                     editable=False,
@@ -41,17 +44,17 @@ def _build_step_results() -> tuple[gr.Column, dict[str, Any]]:
                         elem_classes=["simple-metadata"],
                     )
                     simple_save_btn_1 = gr.Button(
-                        "",
+                        t("simple_flow.download"),
                         size="sm",
                         elem_classes=["simple-save-btn"],
                     )
             with gr.Column(scale=1, elem_classes="simple-result-col") as simple_result_col_2:
                 gr.HTML(
                     '<div class="simple-best-badge simple-best-badge-placeholder">'
-                    'Version 2</div>'
+                    f'{html.escape(t("simple_flow.result_two"))}</div>'
                 )
                 simple_generated_audio_2 = gr.Audio(
-                    label="",
+                    label=t("simple_flow.result_two"),
                     type="filepath",
                     interactive=False,
                     editable=False,
@@ -66,7 +69,7 @@ def _build_step_results() -> tuple[gr.Column, dict[str, Any]]:
                         elem_classes=["simple-metadata"],
                     )
                     simple_save_btn_2 = gr.Button(
-                        "",
+                        t("simple_flow.download"),
                         size="sm",
                         elem_classes=["simple-save-btn"],
                     )
@@ -76,13 +79,13 @@ def _build_step_results() -> tuple[gr.Column, dict[str, Any]]:
         )
         with gr.Row(elem_classes="simple-footer-row"):
             simple_retry_btn = gr.Button(
-                " Try Different Style",
+                t("simple_flow.retry"),
                 variant="secondary",
                 size="sm",
                 elem_classes=["simple-retry-btn"],
             )
             simple_new_btn = gr.Button(
-                " Create New Song",
+                t("simple_flow.new_song"),
                 variant="secondary",
                 size="sm",
                 elem_classes=["simple-new-btn"],

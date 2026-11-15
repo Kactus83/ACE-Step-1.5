@@ -4,6 +4,8 @@ from typing import Any
 
 import gradio as gr
 
+from acestep.ui.gradio.i18n import t
+
 from .simple_ui_markup import _about_overlay_html, _build_header, _step_indicator_html
 from .simple_ui_steps import (_build_step_describe, _build_step_lyrics, _build_step_remix, _build_step_creating)
 from .simple_ui_results import _build_step_results
@@ -20,22 +22,22 @@ def build_simple_ui() -> dict[str, Any]:
 
         # ── Hamburger toggle button ──
         simple_hamburger_btn = gr.Button(
-            "Menu",
+            t("simple_flow.menu"),
             elem_classes=["simple-hamburger-btn"],
         )
 
         # ── Dropdown menu (hidden by default) ──
         with gr.Group(visible=False, elem_classes="simple-hamburger-menu") as simple_hamburger_menu:
             simple_about_btn = gr.Button(
-                "About",
+                t("simple_flow.about"),
                 elem_classes=["simple-menu-item", "simple-menu-about"],
             )
             simple_help_btn = gr.Button(
-                "Help",
+                t("simple_flow.help"),
                 elem_classes=["simple-menu-item", "simple-menu-help"],
             )
             simple_advanced_btn = gr.Button(
-                "Advanced Mode",
+                t("simple_flow.advanced_mode"),
                 elem_classes=["simple-menu-item", "simple-menu-advanced"],
             )
 

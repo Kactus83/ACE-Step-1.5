@@ -7,6 +7,7 @@ import gradio as gr
 from loguru import logger
 
 from acestep.inference import create_sample
+from acestep.ui.gradio.i18n import t
 from acestep.ui.gradio.events.generation.validation import clamp_duration_to_gpu_limit
 from acestep.ui.gradio.events.results.batch_management_helpers import _apply_param_defaults
 from acestep.ui.gradio.events.results.generation_progress import generate_with_progress
@@ -29,9 +30,8 @@ def _simple_generate_wrapper(
     generation_params_state: dict,
 ):
     """Generate music and stream progress through steps 4 and 5."""
-    # Never reinitialize a service silently from a generation callback.
     if dit_handler is None or getattr(dit_handler, "model", None) is None:
-        raise gr.Error("No DiT model loaded. Open Advanced settings to load one.")
+        raise gr.Error(t("simple_flow.models_unavailable"))
 
     task_type = "cover" if src_audio else "text2music"
     captions = song_style or ""
@@ -100,7 +100,6 @@ def _simple_generate_wrapper(
     if src_audio:
         params["audio_cover_strength"] = 1.0
 
-    # If LLM is not initialized, disable all LM-dependent features
     if not llm_handler or not llm_handler.llm_initialized:
         params["think_checkbox"] = False
         params["use_cot_metas"] = False
@@ -153,7 +152,6 @@ def _simple_generate_wrapper(
         progress=_ignore_progress,
     )
 
-    # Forward intermediate yields so Gradio 6 streams audio updates live
     final_result = None
     for partial in gen:
         final_result = partial

@@ -1,11 +1,20 @@
 """5-step simplified UI component builder with SVG icons and hamburger menu."""
 
-_STEP_LABELS = ["Describe Song", "Lyrics", "Remix", "Creating", "Done"]
+def _step_labels() -> list[str]:
+    """Resolve step names from the active Gradio locale."""
+    return [
+        t("simple_flow.step_describe"),
+        t("simple_flow.step_lyrics"),
+        t("simple_flow.step_remix"),
+        t("simple_flow.step_creating"),
+        t("simple_flow.step_done"),
+    ]
 
 
 def _step_indicator_html(current: int) -> str:
     """Generate inline SVG step indicator with connected dots and labels."""
-    total = len(_STEP_LABELS)
+    labels = _step_labels()
+    total = len(labels)
     spacing = 120
     padding = 40
     width = padding * 2 + (total - 1) * spacing
@@ -31,7 +40,7 @@ def _step_indicator_html(current: int) -> str:
         color = "#667eea" if i <= current - 1 else "#999"
         weight = "600" if i == current - 1 else "400"
         circles.append(
-            f'<text x="{cx}" y="56" text-anchor="middle" font-size="11" font-weight="{weight}" fill="{color}">{_STEP_LABELS[i]}</text>'
+            f'<text x="{cx}" y="56" text-anchor="middle" font-size="11" font-weight="{weight}" fill="{color}">{html.escape(labels[i])}</text>'
         )
 
     for i in range(total - 1):
@@ -61,8 +70,8 @@ def _build_header() -> str:
                 </svg>
             </div>
             <div class="simple-header-text">
-                <h2>Quick Music Generator</h2>
-                <p>Turn your ideas into music in seconds</p>
+                <h2>{html.escape(t("simple_flow.header_title"))}</h2>
+                <p>{html.escape(t("simple_flow.header_subtitle"))}</p>
             </div>
         </div>
     </div>
@@ -73,11 +82,10 @@ def _about_overlay_html() -> str:
     """Return the About modal content."""
     return f'''
     <div class="simple-about-icon">🎛️</div>
-    <h2>ACE-Step V1.5 Playground 💡</h2>
-    <p class="simple-about-subtitle">Pushing the Boundaries of Open-Source Music Generation</p>
+    <h2>{html.escape(t("simple_flow.about_title"))}</h2>
+    <p class="simple-about-subtitle">{html.escape(t("simple_flow.about_subtitle"))}</p>
     <p class="simple-about-desc">
-        Generate high-quality music from text descriptions, remix existing tracks,
-        and explore the future of AI-powered music creation.
+        {html.escape(t("simple_flow.about_description"))}
     </p>
     '''
 

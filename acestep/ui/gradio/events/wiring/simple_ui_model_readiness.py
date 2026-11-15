@@ -4,6 +4,8 @@ from typing import Any
 
 import gradio as gr
 
+from acestep.ui.gradio.i18n import t
+
 
 def _initialize_simple_ui_models(
     llm_handler: Any = None,
@@ -18,5 +20,5 @@ def _initialize_simple_ui_models(
     ready = bool(dit_handler is not None and getattr(dit_handler, "model", None) is not None)
     return gr.update(
         interactive=ready,
-        value="Create Music" if ready else "Load a model in Advanced settings",
+        value=t("simple_flow.create_music") if ready else t("simple_flow.models_unavailable"),
     )

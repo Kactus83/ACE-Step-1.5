@@ -1,27 +1,30 @@
 """Focused component builders for simple creation, lyrics and source audio."""
 
+import html
 from typing import Any
 
 import gradio as gr
+
+from acestep.ui.gradio.i18n import t
 
 def _build_step_describe() -> tuple[gr.Column, dict[str, Any]]:
     """Build Step 1: Describe your song."""
     with gr.Column(visible=True, elem_id="simple-step-1", elem_classes="simple-step") as col:
         simple_song_style = gr.Textbox(
-            label="What kind of music would you like to create?",
-            placeholder="e.g. A happy pop song with piano and drums",
+            label=t("simple_flow.describe_label"),
+            placeholder=t("simple_flow.describe_placeholder"),
             lines=3,
             elem_classes=["simple-input"],
         )
         with gr.Row(elem_classes="simple-nav-row"):
             simple_random_btn = gr.Button(
-                " Surprise Me",
+                t("simple_flow.surprise"),
                 variant="secondary",
                 size="sm",
                 elem_classes=["simple-random-btn"],
             )
             simple_step1_continue_btn = gr.Button(
-                "Continue  ",
+                t("simple_flow.continue"),
                 variant="primary",
                 size="sm",
                 elem_classes=["simple-continue-btn"],
@@ -38,26 +41,26 @@ def _build_step_lyrics() -> tuple[gr.Column, dict[str, Any]]:
     """Build Step 2: Lyrics."""
     with gr.Column(visible=False, elem_id="simple-step-2", elem_classes="simple-step") as col:
         simple_lyrics = gr.Textbox(
-            label="Add your own lyrics (optional)",
-            placeholder="Enter your lyrics here, or leave blank for AI-generated lyrics",
+            label=t("simple_flow.lyrics_label"),
+            placeholder=t("simple_flow.lyrics_placeholder"),
             lines=8,
             elem_classes=["simple-input", "simple-lyrics"],
         )
         simple_instrumental = gr.Checkbox(
-            label="Instrumental only",
-            info="Create music without vocals or lyrics",
+            label=t("simple_flow.instrumental_only"),
+            info=t("simple_flow.instrumental_info"),
             value=False,
             elem_classes=["simple-instrumental"],
         )
         with gr.Row(elem_classes="simple-nav-row"):
             simple_step2_back_btn = gr.Button(
-                "  Back",
+                t("simple_flow.back"),
                 variant="secondary",
                 size="sm",
                 elem_classes=["simple-back-btn"],
             )
             simple_step2_continue_btn = gr.Button(
-                "Continue  ",
+                t("simple_flow.continue"),
                 variant="primary",
                 size="sm",
                 elem_classes=["simple-continue-btn"],
@@ -75,24 +78,24 @@ def _build_step_remix() -> tuple[gr.Column, dict[str, Any]]:
     """Build Step 3: Remix / Create."""
     with gr.Column(visible=False, elem_id="simple-step-3", elem_classes="simple-step") as col:
         gr.HTML(
-            '<div class="simple-upload-label">Upload a song to remix? (optional)</div>',
+            f'<div class="simple-upload-label">{html.escape(t("simple_flow.remix_prompt"))}</div>',
             elem_classes=["simple-upload-label-wrap"],
         )
         simple_src_audio = gr.Audio(
-            label="Click to upload, or drag a file here",
+            label=t("simple_flow.remix_upload"),
             type="filepath",
             sources=["upload"],
             elem_classes=["simple-upload-area"],
         )
         with gr.Row(elem_classes=["simple-nav-row", "simple-remix-nav"]):
             simple_step3_back_btn = gr.Button(
-                "  Back",
+                t("simple_flow.back"),
                 variant="secondary",
                 size="sm",
                 elem_classes=["simple-back-btn"],
             )
             simple_create_btn = gr.Button(
-                "Loading models…",
+                t("simple_flow.loading_models"),
                 variant="primary",
                 size="sm",
                 interactive=False,
