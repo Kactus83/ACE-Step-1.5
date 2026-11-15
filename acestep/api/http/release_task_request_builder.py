@@ -36,6 +36,11 @@ def build_generate_music_request(
     if track_classes is not None and isinstance(track_classes, str):
         track_classes = [track_classes]
 
+    # A missing DCW override MUST stay None. Passing False by default would
+    # inadvertently disable the model-specific automatic policy (#1259/#1273).
+    dcw_raw = parser.get("dcw_enabled")
+    dcw_enabled = None if dcw_raw is None or dcw_raw == "" else parser.bool("dcw_enabled")
+
     payload = dict(
         prompt=parser.str("prompt"),
         global_caption=parser.str("global_caption"),
@@ -82,6 +87,11 @@ def build_generate_music_request(
         infer_method=parser.str("infer_method", "ode"),
         shift=parser.float("shift", 3.0),
         timesteps=parser.str("timesteps") or None,
+        dcw_enabled=dcw_enabled,
+        dcw_mode=parser.str("dcw_mode", "double"),
+        dcw_scaler=parser.float("dcw_scaler", 0.05),
+        dcw_high_scaler=parser.float("dcw_high_scaler", 0.02),
+        dcw_wavelet=parser.str("dcw_wavelet", "haar"),
         audio_format=parser.str("audio_format", "mp3"),
         use_tiled_decode=parser.bool("use_tiled_decode", True),
         lm_model_path=parser.str("lm_model_path") or None,
