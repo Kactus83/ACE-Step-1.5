@@ -15,6 +15,7 @@ import { BackendStore } from "../../core/backend.store";
 import { TaskType } from "../../core/api.types";
 import { ConnectionStore } from "../../core/connection.store";
 import { mapGenerateRequest, TRACK_NAMES } from "./create.request";
+import { restoreGenerateRequest } from "./restore-request";
 import { JobsStore } from "../../core/jobs.store";
 import { WorkflowStore } from "../../core/workflow.store";
 import { CreatePresetsComponent } from "./create-presets.component";
@@ -59,6 +60,15 @@ export class CreateComponent implements OnInit {
 
   /** @public Apply a previously generated track as an editing source. */
   ngOnInit(): void {
+    const staged = this.workflow.takeSettings();
+    if (staged) {
+      this.resetMedia();
+      this.form.patchValue(restoreGenerateRequest(staged.request, staged.title));
+      this.error.set(staged.originalMediaRequired
+        ? "Original source/reference audio is not stored. Reattach media before generating."
+        : "Generation settings and reported seed restored. Review before generating.");
+      return;
+    }
     const draft = this.workflow.draft();
     if (!draft) return;
     this.form.patchValue({
@@ -168,6 +178,7 @@ export class CreateComponent implements OnInit {
     }
   }
 }
+
 
 
 

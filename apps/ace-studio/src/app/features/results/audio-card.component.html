@@ -20,6 +20,12 @@
       <button type="button" class="quiet" (click)="download()">Download</button>
       <button type="button" class="quiet" (click)="reuseRequested.emit('cover')">Remix ↗</button>
       <button type="button" class="quiet" (click)="reuseRequested.emit('repaint')">Repaint ↗</button>
+      @if (canRestore()) {
+        <button type="button" class="quiet" (click)="restoreRequested.emit()">
+          Use settings &amp; seed ↗
+        </button>
+      }
     </div>
   </div>
 </section>
+

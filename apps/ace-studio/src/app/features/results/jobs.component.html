@@ -53,7 +53,9 @@
             @for (result of job.results; track $index) {
               @if (result.file) {
                 <ace-audio-card [result]="result" [index]="$index + 1"
-                  (reuseRequested)="edit(result, $event)" />
+                  [canRestore]="!!job.request"
+                  (reuseRequested)="edit(result, $event)"
+                  (restoreRequested)="restore(job, result)" />
                 @if (job.phase === "succeeded") {
                   <ace-library-save [job]="job" [result]="result" [variant]="$index + 1" />
                 }
@@ -71,5 +73,6 @@
     }
   </div>
 }
+
 
 

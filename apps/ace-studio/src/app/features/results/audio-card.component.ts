@@ -17,6 +17,10 @@ export class AudioCardComponent {
   private readonly audio = inject(AudioService);
   readonly result = input.required<GeneratedAudio>();
   readonly index = input<number>(1);
+  /** @public Only jobs with memory-resident requests can restore settings. */
+  readonly canRestore = input(false);
+  /** @public Request user-controlled settings restoration, not a GPU launch. */
+  readonly restoreRequested = output<void>();
   /** @public Selected backend edit mode emitted only after a real audio result exists. */
   readonly reuseRequested = output<"cover" | "repaint">();
   readonly previewUrl = signal<string | null>(null);
@@ -44,3 +48,4 @@ export class AudioCardComponent {
     }
   }
 }
+

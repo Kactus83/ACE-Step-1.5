@@ -9,6 +9,7 @@ import { JobsStore } from "../../core/jobs.store";
 import { GeneratedAudio, StudioJob } from "../../core/api.types";
 import { WorkflowStore } from "../../core/workflow.store";
 import { AudioCardComponent } from "./audio-card.component";
+import { withResultSeed } from "../create/restore-request";
 import { LibrarySaveComponent } from "../library/library-save.component";
 import { ComparisonComponent } from "./comparison.component";
 
@@ -30,11 +31,20 @@ export class JobsComponent {
     return job.results.some(result => Boolean(result.file));
   }
 
+  /** @public Stage the submitted settings plus reported variant seed without GPU work. */
+  restore(job: StudioJob, audio: GeneratedAudio): void {
+    if (!job.request) return;
+    this.workflow.useSettings(withResultSeed(job.request, audio.seed_value),
+      job.title, Boolean(job.hasSourceAudio || job.hasReferenceAudio));
+    this.reuse.emit();
+  }
+
   /** @public Move a real generated audio artifact into a new edit intent. */
   edit(audio: GeneratedAudio, mode: "cover" | "repaint"): void {
     this.workflow.useAudio(audio, mode);
     this.reuse.emit();
   }
 }
+
 
 
