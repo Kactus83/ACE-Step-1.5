@@ -27,7 +27,7 @@ Consequences:
 - Continue using the existing `generate_with_progress` path, which already clamps against GPU duration limits before calling inference.
 - Keep `audio_duration=-1` for Remix.
 - Remove the now-unused UI-level duration clamp import; do not modify global inference defaults, Advanced, or API.
-- Add `simple_ui_duration_test.py` with mocked tests for LM duration `None`, negative, shorter, longer, NaN; LM draft failure; user-provided lyrics; and source-audio Remix.
+- Add `simple_ui_duration_test.py` with six mocked tests covering LM duration `None`, negative, shorter, longer, NaN; LM exceptions and explicit unsuccessful responses; manual lyrics; source-audio Remix; and saving the 30-second duration in batch metadata.
 
 ## Local CI acceptance — mandatory before merge
 
@@ -44,6 +44,8 @@ uv run python -m unittest discover -s . -p "*_test.py" -q
 git diff --check origin/main...HEAD
 ```
 
+Also verify that a successful completion stores `audio_duration=30.0` in the Simple session batch metadata (not only in the generator dispatch dictionary). An explicitly unsuccessful LM result must retain both the prompt and default duration.
+
 Run the optional UI with the flag on and an LM actually initialized. Generate a text song with no manually supplied lyrics and verify the exported audio, generation metadata and visible result report a 30-second target or a documented **shorter** hardware cap. Run one Remix with source audio to ensure source-based duration remains unchanged. Do not download heavy models or repeatedly consume GPU time if existing checkpoints suffice.
 
 Record command exits, environment versions and real audio evidence. Retain the PR as draft until the independent team runs the tests; this audit **has not run Python compilation, the test suites, Gradio or CUDA**.
@@ -56,3 +58,7 @@ Record command exits, environment versions and real audio evidence. Retain the P
 - Remaining uncertainty: real LM metadata extraction, low-memory behavior and Gradio display require local execution.
 
 **Verdict: Narrow post-merge fix committed to a separate branch; validation pending; do not merge automatically.**
+
+## Final source-side double check (after test expansion)
+
+Six focused test functions are committed (some with multiple subcases) in `simple_ui_duration_test.py`. Source inspection confirms the fixed duration constant, absence of the old LM-clamp override, persisted request duration assertion, and unchanged shared dispatch. The changed-line diff shows no trailing whitespace in added lines. This inspection is not a Python compilation or an executed test. See [independent double check](2026-11-15-postmerge-double-check.md).
