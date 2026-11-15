@@ -14,7 +14,12 @@ const values: CreateFormSnapshot = {
   key_scale: "", time_signature: "", vocal_language: "en",
   inference_steps: 8, guidance_scale: 7, batch_size: 2,
   seed: 12345, use_random_seed: true, audio_cover_strength: 1,
-  repainting_start: 0, repainting_end: 30, audio_format: "mp3"
+  repainting_start: 0, repainting_end: 30, audio_format: "mp3",
+  infer_method: "ode", shift: 3, timesteps: "", use_adg: false,
+  cfg_interval_start: 0, cfg_interval_end: 1, dcw_override: "auto",
+  dcw_mode: "double", dcw_scaler: 0.05, dcw_high_scaler: 0.02,
+  dcw_wavelet: "haar", use_cot_caption: false, use_cot_language: false,
+  lm_temperature: 0.85, lm_cfg_scale: 2.5, lm_top_k: 0, lm_top_p: 0.9
 };
 
 describe("generation request mapping", () => {
