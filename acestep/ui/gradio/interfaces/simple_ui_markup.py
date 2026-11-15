@@ -1,5 +1,10 @@
 """5-step simplified UI component builder with SVG icons and hamburger menu."""
 
+import html
+
+from acestep.ui.gradio.i18n import t
+
+
 def _step_labels() -> list[str]:
     """Resolve step names from the active Gradio locale."""
     return [
