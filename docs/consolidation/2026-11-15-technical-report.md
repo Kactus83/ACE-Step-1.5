@@ -56,3 +56,9 @@ Review 1: `2026-11-15-review-code-integration.md` documents technical defects an
 **Status: Implémentation préparée — validation locale finale requise — merge non autorisé.**
 
 No claim of fully successful CI, GPU generation or production readiness is made.
+
+## Additional final hardening (same consolidation branch)
+
+A subsequent independent source review corrected Simple Help targeting the hidden Advanced modal, preserved existing audio and metadata on null/empty/error streams, added synchronous/partial-stream error coverage, clarified About overlay/close controls and responsive step sizing, and made the Creating bar visibly indeterminate rather than implying a measured 50% completion. The changed-line diff was checked for trailing whitespace and found clean after one whitespace correction. All added Simple Python modules remain at or below the 200-line cap by source inspection. These changes are **not a substitute** for Python compilation, unit execution or browser/GPU acceptance.
+
+Source review details: [Final hardening review](2026-11-15-final-hardening-review.md). Executable local agent instructions: [CI team prompt](2026-11-15-ci-team-prompt.md).

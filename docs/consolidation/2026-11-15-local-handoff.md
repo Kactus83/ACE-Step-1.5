@@ -47,7 +47,8 @@ uv run python -m unittest \
   acestep.api.http.release_task_request_parser_test \
   acestep.api.http.release_task_route_http_test \
   acestep.ui.gradio.events.wiring.simple_ui_foundation_test \
-  acestep.ui.gradio.events.wiring.simple_ui_contracts_test
+  acestep.ui.gradio.events.wiring.simple_ui_contracts_test \
+  acestep.ui.gradio.events.wiring.simple_ui_streaming_test
 
 uv run python -m unittest discover -s . -p "*_test.py"
 uv run python -m unittest discover -s . -p "test_*.py"
@@ -98,7 +99,7 @@ Initially no DiT loaded: verify Create remains disabled and communicates the nee
 | 9. Set MP3 and simulate missing ffmpeg in targeted test | Preserved WAV path and truthful format in metadata; explicit degraded status |
 | 10. Run fixed/random/partial seeds and batch clamp cases | Effective seeds and emitted count saved; JSON sidecar matches audio |
 | 11. Switch modes during and after a queued generation | No unrequested generation/initialization, no advanced-state corruption |
-| 12. Open viewport 375px, 768px, 1440px; keyboard Tab/Shift+Tab/Enter/Escape | No clipping or invisible controls; logical focus, contrast and readable errors |
+| 12. Open viewport 375px, 768px, 1440px; keyboard Tab/Shift+Tab/Enter/Escape | No clipping or invisible controls; readable step labels, About dismissal, logical focus, contrast and readable errors |
 | 13. Launch with `--language it` and flag | Italian legacy UI loads; new untranslated keys fall back to English |
 | 14. Launch `--service_mode true` with flag set | Optional Simple UI absent; original service behavior and mounted API preserved |
 | 15. Launch `uv run acestep-api`, exercise `/release_task` timesteps | API accepts supplied timesteps; absent/empty uses legacy defaults |
@@ -114,3 +115,12 @@ Record each discrepancy; implement minimal fixes **on this branch**, commit/push
 Only after all blocking checks pass may the user authorize the **separate** local team to merge the draft PR to **fork main**. Never automatically target upstream. Until then status must remain:
 
 **Implémentation préparée — validation locale finale requise — merge non autorisé.**
+
+## 8. Additional hardening checks (post review 3)
+
+- Confirm Simple hamburger Help opens **the Simple-owned visible** help modal rather than the hidden Advanced help button.
+- Confirm an empty generation, a synchronous dispatcher exception, and a failure after the first streamed audio produce a recoverable Done/error screen without erasing previously playable audio or its metadata.
+- Confirm the About overlay is legible in light/dark themes, the close button has a readable label, and 375px layouts do not reduce step labels to unreadable dimensions.
+- Confirm the Creating progress bar is indeterminate (no fabricated percentage); honor reduced-motion preferences.
+- Run the additional `simple_ui_streaming_test.py` tests, plus existing contract/foundation tests; note the tests are **not yet executed** by the authoring environment.
+- Use the companion [CI execution prompt](2026-11-15-ci-team-prompt.md) and record real command results in the acceptance report.
