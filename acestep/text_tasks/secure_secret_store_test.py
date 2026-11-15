@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import tempfile
@@ -118,7 +119,8 @@ class SecureSecretStoreTests(unittest.TestCase):
                 )
 
         self.assertEqual(result.returncode, 0)
-        self.assertEqual(captured["mode"], 0o600)
+        if os.name != "nt":
+            self.assertEqual(captured["mode"], 0o600)
         self.assertFalse(captured["path"].exists())
 
     def test_run_openssl_raises_clear_error_when_process_times_out(self) -> None:

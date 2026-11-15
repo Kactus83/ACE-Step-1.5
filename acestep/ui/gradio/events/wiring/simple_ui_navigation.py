@@ -28,7 +28,6 @@ def register_simple_ui_navigation(
         inputs=[gs["simple_state_current_step"]],
         outputs=_nav_outputs,
     )
-
     # ── Step 2 Back ──
     gs["simple_step2_back_btn"].click(
         fn=lambda state: _navigate_to(1, state),

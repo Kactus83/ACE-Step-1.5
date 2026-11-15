@@ -78,12 +78,15 @@ class SimpleUiContractTests(unittest.TestCase):
                 self.assertEqual(actual.value.id, "params")
                 self.assertIsInstance(actual.slice, ast.Constant)
                 self.assertEqual(actual.slice.value, expected.arg)
-        self.assertEqual([arg.arg for arg in adapter.keywords], ["progress"])
+        self.assertEqual(
+            [arg.arg for arg in adapter.keywords],
+            ["retake_variance", "retake_seed", "progress"],
+        )
 
     def test_saved_parameter_snapshot_matches_upstream(self) -> None:
         """Simple-session saved params must retain the advanced replay schema."""
         upstream = _definition(
-            _module(_WIRING_DIR + "batch_management_helpers.py"),
+            _module("acestep/ui/gradio/events/results/batch_management_helpers.py"),
             "_build_saved_params",
         )
         call = _call(

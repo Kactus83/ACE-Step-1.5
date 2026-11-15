@@ -84,7 +84,6 @@ def _finish_simple_generation(
         retake_variance=params["retake_variance"],
         retake_seed=params["retake_seed"],
     )
-
     # Preserve the effective seed for replay rather than a fresh random input.
     resolved_seed = (
         final_result[SEED_VALUE_INDEX]

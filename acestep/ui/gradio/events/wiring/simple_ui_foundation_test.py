@@ -28,6 +28,9 @@ from acestep.ui.gradio.events.wiring.simple_ui_model_readiness import (
 from acestep.ui.gradio.events.wiring.simple_ui_generation_results import (
     _finish_simple_generation,
 )
+from acestep.ui.gradio.events.wiring.simple_ui_generation import (
+    _simple_generate_wrapper,
+)
 
 
 class SimpleFoundationTests(unittest.TestCase):
@@ -80,6 +83,28 @@ class SimpleFoundationTests(unittest.TestCase):
             (8, 9, 10, 11),
         )
         self.assertEqual(len(_start_generation()), 14)
+
+    @patch("acestep.ui.gradio.events.wiring.simple_ui_generation._finish_simple_generation")
+    @patch("acestep.ui.gradio.events.wiring.simple_ui_generation._dispatch_existing_generation")
+    def test_text_generation_forwards_simple_default_duration(self, dispatch, finish):
+        """Simple text generation must not fall back to the 120-second backend default."""
+        dispatch.return_value = iter([tuple([None] * 12)])
+        finish.return_value = iter(())
+        list(
+            _simple_generate_wrapper(
+                SimpleNamespace(model=object()),
+                SimpleNamespace(llm_initialized=False),
+                "ambient piano",
+                "",
+                True,
+                None,
+                0,
+                1,
+                {},
+                {},
+            )
+        )
+        self.assertEqual(dispatch.call_args.args[2]["audio_duration"], 30.0)
 
     @patch("acestep.ui.gradio.events.wiring.simple_ui_generation_results.store_batch_in_queue")
     @patch("acestep.ui.gradio.events.wiring.simple_ui_generation_results._build_saved_params")

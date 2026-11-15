@@ -54,7 +54,12 @@ class TestEnforceEagerWhenFlashAttnMissing(unittest.TestCase):
 
         captured = {}
 
-        def fake_init_vllm(model_path: str, enforce_eager: bool = False) -> str:
+        def fake_init_vllm(
+            model_path: str,
+            enforce_eager: bool = False,
+            has_triton: bool = True,
+        ) -> str:
+            _ = model_path, has_triton
             captured["enforce_eager"] = enforce_eager
             return "✅ ok"
 
@@ -63,7 +68,11 @@ class TestEnforceEagerWhenFlashAttnMissing(unittest.TestCase):
              patch("acestep.llm_inference.AutoTokenizer") as mock_tok, \
              patch("acestep.llm_inference.get_global_gpu_config", return_value=_mock_gpu_config()), \
              patch("acestep.llm_inference.MetadataConstrainedLogitsProcessor"), \
+             patch("acestep.llm_inference.get_vllm_preflight_warning", return_value=None), \
+             patch("acestep.llm_inference.get_gpu_memory_gb", return_value=24.0), \
+             patch.dict("sys.modules", {"triton": MagicMock()}), \
              patch("torch.cuda.is_available", return_value=True), \
+             patch("torch.cuda.mem_get_info", return_value=(16 * 1024**3, 24 * 1024**3)), \
              patch("torch.cuda.empty_cache"), \
              patch("torch.cuda.synchronize"), \
              patch("torch.cuda.get_device_name", return_value=device_name), \

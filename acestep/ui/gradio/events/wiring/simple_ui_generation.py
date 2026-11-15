@@ -21,6 +21,9 @@ from .simple_ui_generation_results import _finish_simple_generation
 from .simple_ui_generation_dispatch import _dispatch_existing_generation
 from .simple_ui_contracts import PROGRESS_STATUS_INDEX
 
+SIMPLE_DEFAULT_DURATION_SECONDS = 30.0
+
+
 def _simple_generate_wrapper(
     dit_handler: Any,
     llm_handler: Any,
@@ -50,7 +53,7 @@ def _simple_generate_wrapper(
     task_type = "cover" if src_audio else "text2music"
     captions = song_style or ""
     final_lyrics = _resolve_simple_lyrics(lyrics, instrumental)
-    audio_duration_val = -1
+    audio_duration_val = -1 if src_audio else SIMPLE_DEFAULT_DURATION_SECONDS
 
     if song_style and not final_lyrics and not src_audio and llm_handler and llm_handler.llm_initialized:
         yield (

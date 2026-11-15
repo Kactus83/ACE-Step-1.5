@@ -112,7 +112,7 @@ class GenerateMusicRequestMixinTests(unittest.TestCase):
             src_audio=None,
             audio_code_string="",
             actual_batch_size=1,
-            task_type="cover",
+            task_type="text2music",
             seed=7123,
         )
         self.assertIsNone(error)

@@ -37,7 +37,7 @@ def native_path(path: str) -> str:
 
     On Windows, replaces forward slashes with backslashes so that path
     defaults shown in wizard prompts look natural to the user
-    (e.g. ``.\checkpoints`` instead of ``./checkpoints``).
+    (e.g. ``.\\checkpoints`` instead of ``./checkpoints``).
 
     On Linux/macOS, returns the path unchanged.
     """

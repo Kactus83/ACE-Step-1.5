@@ -32,6 +32,18 @@ class PipelineStartupBackendTests(unittest.TestCase):
             quantization_default=False,
         )
 
+    def test_configure_utf8_stdio_reconfigures_windows_streams(self) -> None:
+        """Windows CLI streams should support Unicode help and status text."""
+        stdout = MagicMock()
+        stderr = MagicMock()
+        with patch.object(acestep_v15_pipeline.os, "name", "nt"), patch.object(
+            acestep_v15_pipeline.sys, "stdout", stdout
+        ), patch.object(acestep_v15_pipeline.sys, "stderr", stderr):
+            acestep_v15_pipeline._configure_utf8_stdio()
+
+        stdout.reconfigure.assert_called_once_with(encoding="utf-8", errors="replace")
+        stderr.reconfigure.assert_called_once_with(encoding="utf-8", errors="replace")
+
     def _run_main(
         self,
         argv: list[str],

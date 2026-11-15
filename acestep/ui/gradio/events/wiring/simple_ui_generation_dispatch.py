@@ -49,6 +49,7 @@ def _dispatch_existing_generation(
         params["fade_in_duration"], params["fade_out_duration"],
         params["latent_shift"], params["latent_rescale"],
         params["repaint_mode"], params["repaint_strength"],
-        params["retake_variance"], params["retake_seed"],
+        retake_variance=params["retake_variance"],
+        retake_seed=params["retake_seed"],
         progress=_ignore_progress,
     )

@@ -90,6 +90,9 @@ class _Host(InitServiceMixin):
         """Stub MLX VAE init hook and always report unavailable in tests."""
         return False
 
+    def _sync_alignment_config(self) -> None:
+        """Stub the alignment mixin hook composed by the production handler."""
+
 
 class InitServiceMixinTests(unittest.TestCase):
     """Behavioral tests for InitServiceMixin helpers and initialization flow."""

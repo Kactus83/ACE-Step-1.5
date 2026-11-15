@@ -60,7 +60,6 @@ def _step_indicator_html(current: int) -> str:
         '<feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>'
         '</filter></defs>'
     )
-
     aria = html.escape(t("simple_flow.progress_label", current=current, total=total), quote=True)
     return (
         f'<svg role="img" aria-label="{aria}" width="{width}" height="{height}" '
