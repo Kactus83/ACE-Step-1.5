@@ -50,6 +50,9 @@
               @if (result.file) {
                 <ace-audio-card [result]="result" [index]="$index + 1"
                   (reuseRequested)="edit(result, $event)" />
+                @if (job.phase === "succeeded") {
+                  <ace-library-save [job]="job" [result]="result" [variant]="$index + 1" />
+                }
               }
             }
           </div>
@@ -64,3 +67,4 @@
     }
   </div>
 }
+

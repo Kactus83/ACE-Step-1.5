@@ -15,6 +15,10 @@
         <span class="nav-icon" aria-hidden="true">◷</span> Queue & results
         @if (jobs.jobs().length) { <span class="nav-count">{{ jobs.jobs().length }}</span> }
       </button>
+      <button type="button" [class.active]="section() === 'library'" (click)="navigate('library')"
+        [attr.aria-current]="section() === 'library' ? 'page' : null">
+        <span class="nav-icon" aria-hidden="true">▦</span> Library
+      </button>
       <button type="button" [class.active]="section() === 'datasets'" (click)="navigate('datasets')"
         [attr.aria-current]="section() === 'datasets' ? 'page' : null">
         <span class="nav-icon" aria-hidden="true">▧</span> Datasets
@@ -47,6 +51,7 @@
         <strong>@switch (section()) {
           @case ("create") { Creation }
           @case ("jobs") { Queue & results }
+          @case ("library") { Library }
           @case ("datasets") { Datasets }
           @case ("training") { Training }
           @case ("system") { Connection }
@@ -66,6 +71,7 @@
       @switch (section()) {
         @case ("create") { <ace-create (showJobs)="navigate('jobs')" /> }
         @case ("jobs") { <ace-jobs (reuse)="navigate('create')" /> }
+        @case ("library") { <ace-library (navigateCreate)="navigate('create')" /> }
         @case ("datasets") { <ace-datasets /> }
         @case ("training") { <ace-training (openDatasets)="navigate('datasets')" /> }
         @case ("system") { <ace-connection /> }
@@ -73,5 +79,6 @@
     </main>
   </div>
 </div>
+
 
 

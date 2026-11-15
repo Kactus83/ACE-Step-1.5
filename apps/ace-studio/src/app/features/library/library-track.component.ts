@@ -4,6 +4,7 @@
  * @public
  */
 import { Component, computed, inject, input, output, signal } from "@angular/core";
+import { DatePipe } from "@angular/common";
 import { ConnectionStore } from "../../core/connection.store";
 import { WorkflowStore } from "../../core/workflow.store";
 import { LibraryStore } from "./library.store";
@@ -14,7 +15,7 @@ import { AudioCardComponent } from "../results/audio-card.component";
 @Component({
   selector: "ace-library-track",
   standalone: true,
-  imports: [AudioCardComponent],
+  imports: [AudioCardComponent, DatePipe],
   templateUrl: "./library-track.component.html"
 })
 export class LibraryTrackComponent {
@@ -76,4 +77,5 @@ export class LibraryTrackComponent {
     this.confirmingRemove.set(false);
   }
 }
+
 

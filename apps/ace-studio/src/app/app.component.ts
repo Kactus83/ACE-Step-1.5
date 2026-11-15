@@ -11,14 +11,15 @@ import { JobsComponent } from "./features/results/jobs.component";
 import { ConnectionComponent } from "./features/system/connection.component";
 import { TrainingComponent } from "./features/training/training.component";
 import { DatasetComponent } from "./features/datasets/dataset.component";
+import { LibraryComponent } from "./features/library/library.component";
 
-type Section = "create" | "jobs" | "datasets" | "training" | "system";
+type Section = "create" | "jobs" | "library" | "datasets" | "training" | "system";
 
 /** @public Main accessible, responsive shell. */
 @Component({
   selector: "ace-root",
   standalone: true,
-  imports: [CreateComponent, JobsComponent, DatasetComponent, TrainingComponent, ConnectionComponent],
+  imports: [CreateComponent, JobsComponent, LibraryComponent, DatasetComponent, TrainingComponent, ConnectionComponent],
   templateUrl: "./app.component.html"
 })
 export class AppComponent implements OnInit {
@@ -32,4 +33,5 @@ export class AppComponent implements OnInit {
   /** @public Navigate between always-shared Angular features. */
   navigate(destination: Section): void { this.section.set(destination); }
 }
+
 

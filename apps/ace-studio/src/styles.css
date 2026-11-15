@@ -250,3 +250,32 @@ h3 { font-size: 15px; font-weight: 600; }
 .expert-controls h3 { margin: 24px 0 14px; border-top: 1px solid var(--line-soft); padding-top: 20px; }
 .expert-controls .small-note { margin: -2px 0 15px; }
 
+
+/* Projects: local reference collections, not a backend media archive. */
+.library-layout { display: grid; grid-template-columns: minmax(260px,330px) minmax(0,1fr);
+  align-items: start; gap: 22px; }
+.library-index { position: sticky; top: 20px; }
+.library-project-list { border: 1px solid var(--line); border-radius: 9px;
+  max-height: 340px; overflow-y: auto; margin-bottom: 20px; }
+.library-details { display: grid; gap: 22px; min-width: 0; }
+.library-track-list { display: grid; gap: 16px; }
+.library-track { background: #161920; border: 1px solid var(--line-soft);
+  border-radius: 11px; padding: 16px; min-width: 0; }
+.library-track-heading { display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 12px; }
+.library-track-heading strong { overflow-wrap: anywhere; }
+.library-track-heading p { margin: 5px 0; }
+.library-track .audio-card { margin: 14px 0; }
+.library-track .audio-art { min-width: 65px; min-height: 80px; }
+.library-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.library-tags span { font-size: 10px; background: #2c3831; color: var(--accent);
+  border: 1px solid #445647; border-radius: 16px; padding: 4px 9px; }
+.library-save { background: #20232b; padding: 12px; border: 1px solid var(--line);
+  border-radius: 9px; margin: 9px 0; }
+.library-save .field { margin-bottom: 10px; }
+.library-save .field select { padding: 9px; }
+.library-import { margin-top: 25px; border-top: 1px solid var(--line-soft); padding-top: 20px; }
+.danger-text { color: var(--danger); }
+@media (max-width: 1150px) { .library-layout { grid-template-columns: 1fr; }
+  .library-index { position: static; } }
+
