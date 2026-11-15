@@ -12,6 +12,7 @@ import {
 } from "./api.types";
 import { ConnectionStore } from "./connection.store";
 import { normalizeAudioUrl, unwrap } from "./api-decoder";
+import { decodeBackendStats, decodeModelInventory, decodeTaskRecords } from "./api-contracts";
 
 /** @public ACE-Step network transport with explicit per-request authentication. */
 @Injectable({ providedIn: "root" })
@@ -35,14 +36,14 @@ export class BackendClient {
   async stats(): Promise<BackendStats> {
     const data = await firstValueFrom(this.http.get<unknown>(
       this.connection.endpoint() + "/v1/stats", { headers: this.headers() }));
-    return unwrap<BackendStats>(data);
+    return decodeBackendStats(unwrap<unknown>(data));
   }
 
   /** @public Enumerate available server models. */
   async models(): Promise<ModelInventory> {
     const data = await firstValueFrom(this.http.get<unknown>(
       this.connection.endpoint() + "/v1/models", { headers: this.headers() }));
-    return unwrap<ModelInventory>(data);
+    return decodeModelInventory(unwrap<unknown>(data));
   }
 
   /** @public Explicitly request model loading. Never called automatically. */
@@ -51,7 +52,7 @@ export class BackendClient {
       this.connection.endpoint() + "/v1/init",
       { model: name, ...(lmModel ? { init_llm: true, lm_model_path: lmModel } : {}) },
       { headers: this.headers() }));
-    const result = unwrap<ModelInventory>(data);
+    const result = decodeModelInventory(unwrap<unknown>(data));
     return result;
   }
 
@@ -92,9 +93,7 @@ export class BackendClient {
     const data = await firstValueFrom(this.http.post<unknown>(
       this.connection.endpoint() + "/query_result",
       { task_id_list: ids }, { headers: this.headers() }));
-    const result = unwrap<unknown>(data);
-    if (!Array.isArray(result)) throw new Error("Task lookup did not return an array.");
-    return result as readonly TaskRecordDto[];
+    return decodeTaskRecords(unwrap<unknown>(data), ids);
   }
 
   /**
@@ -108,6 +107,7 @@ export class BackendClient {
     }));
   }
 }
+
 
 
 
