@@ -1,52 +1,42 @@
-# Contradictory review B — workflows / UX / accessibility
+# Contradictory UX and accessibility review
 
-Review performed against authored view templates, stores, and API contracts.
-No screenshots or real keyboard/screen-reader execution were available.
+**Evidence:** static Angular templates, signals, CSS and authored tests only.
+No user-session recording, browser screenshot inspection, screen-reader test,
+mobile zoom check or real media playback has been performed.
 
-## Observable source improvements
+## Implemented in source
 
-- Distinct Create, Queue & Results, Datasets, Training and Connection views with a persistent
-  backend-readiness indicator.
-- Advanced generation parameters are progressively disclosed; the beginner's
-  prompt and instrumental choice remain prominent.
-- Jobs show actual backend text and an indeterminate animation, never an
-  invented numeric completion percentage.
-- Result playback is loaded on user action rather than eagerly prefetching
-  multiple large audio files.
-- The editor accepts both local uploads and generated results as editable
-  source audio for Remix/Repaint.
-- Dark tokens, focus-visible treatment, responsive panels, reduced-motion
-  media query, semantic buttons and labels are authored.
+- A dedicated responsive app shell with Create, Queue & Results, Library,
+  Datasets, Training, and Connection navigation.
+- Contextual expert controls behind progressive disclosure; explicit high-risk
+  prompts for forced DCW, training start and destructive training export.
+- Backend-reported queue states, errors and measured training loss; no invented
+  percentage or fake hardware telemetry.
+- Safe audio preview/download, metadata, server seed restoration and explicit
+  remix/repaint with optional decoded waveform/time sliders.
+- A/B comparison with separate listening and near-concurrent HTML media starts,
+  clearly marked as **not phase-aligned** or sample-accurate.
+- Local projects for intentional track bookmarks, favorites, tags, notes and
+  bounded JSON import/export. Audio files themselves are **not saved**.
+- Dark and light semantic theme tokens, focus-visible styles, skip-to-main
+  keyboard link, labeled forms, responsive layouts and reduced-motion CSS.
+- Planned Playwright mock flows include dataset editing, export warnings,
+  library save, local theme persistence and viewport checks.
 
-## Defects / missing user journeys
+## Remaining experience work
 
-- Opt-in browser-decoded Repaint waveform and synchronized start/end sliders\n  now exist; the waveform and actual codec behavior still require browser QA.
-- No A/B synchronized audition, favourites, tagging, batch navigation across
-  sessions, or persistent remote project library.
-- Dataset scan/load/save, sample editing, auto-label and preprocessing controls\n  now exist. Dataset collaboration conflicts, training export and runtime QA\n  are still outstanding.
-- Source audio remains volatile; restoring a preset will never restore files.
-- No true multi-panel rearrangement or keyboard hotkey map yet.
-- Browser contrast, screen-reader output, 320px width, zoom, Tauri native
-  keyboard behavior and audio control rendering require actual inspection.
-- Backend outages are communicated but there is no one-click diagnosis panel.
-- The visible source currently presents English labels; translation architecture
-  and French localization have not been implemented.
-- No light theme is authored; users may request it after design review.
+- Actual Windows/macOS/Linux WebView/codec/contrast verification; mobile
+  viewport and 200% zoom, voice and keyboard/screen-reader acceptance.
+- Full localization (including French), shortcut map and accessible keyboard
+  operations for all specialized audio and dataset interactions.
+- A/B is approximate; synchronized phase-accurate audition is not supplied.
+- Preserve creative output across backend cleanup through an explicitly
+  designed local binary archive rather than implying bookmarks are backups.
+- Better multi-batch result grouping, reproducibility panel and dangerous-path
+  error handling, including storage quota and concurrent browser tabs.
+- Data ownership/conflict warnings: Python's active dataset is server-global
+  and a separate user's overwrite can invalidate visible edits.
 
-**Review verdict:** credible working-generation studio source, but the entire
-advanced-product scope is unfinished. No UI acceptance claim before local QA.
-
-
-
-## Contradictory review D — advanced controls
-
-The existing beginner form remains the default surface. ODE/SDE, custom
-timesteps, CFG, DCW policy and 5Hz LM controls are in the previously collapsed
-Advanced section via a focused child component. This avoids burdening first
-time users. Explicit model-default DCW is the default, while forced-on
-requires two matching submission actions to prevent accidental distortion.
-
-Still required: actual keyboard/screen-reader interaction, mobile/zoom
-inspection, clear invalid-form diagnostics, GPU resource/load warnings and
-visual QA across supported systems.
+**Verdict:** product workflows are broader than initial shell, but actual
+browser/native visual QA and remaining flows are still mandatory.
 
