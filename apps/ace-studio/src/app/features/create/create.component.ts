@@ -6,6 +6,7 @@
 import { Component, OnInit, computed, inject, output, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { RepaintTimelineComponent } from "./repaint-timeline.component";
+import { audioBlobToSourceFile } from "./source-audio";
 import { createGenerationForm } from "./create.form";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { startWith } from "rxjs";
@@ -42,7 +43,7 @@ export class CreateComponent implements OnInit {
   readonly importName = computed(() => this.workflow.draft()?.source.prompt || "Generated track");
 
   readonly form = createGenerationForm(this.fb);
-  private readonly changes = toSignal(
+  readonly changes = toSignal(
     this.form.valueChanges.pipe(startWith(this.form.getRawValue())),
     { initialValue: this.form.getRawValue() }
   );
@@ -102,12 +103,7 @@ export class CreateComponent implements OnInit {
     this.error.set(null);
     try {
       const blob = await this.api.audio(draft.source.file);
-      const mime = blob.type.toLowerCase();
-      const extension = mime.includes("mpeg") ? "mp3" : mime.includes("flac") ? "flac"
-        : mime.includes("ogg") ? "ogg" : mime.includes("wav") ? "wav" : "audio";
-      this.source.set(new File([blob], "ace-result." + extension, {
-        type: blob.type || "application/octet-stream"
-      }));
+      this.source.set(audioBlobToSourceFile(blob));
       this.workflow.clear();
     } catch (error: unknown) {
       this.error.set(error instanceof Error ? error.message : "Unable to load generated source.");
@@ -195,12 +191,7 @@ export class CreateComponent implements OnInit {
       const draft = this.workflow.draft();
       if (mode !== "text2music" && !sourceFile && draft) {
         const blob = await this.api.audio(draft.source.file);
-        const mime = blob.type.toLowerCase();
-        const extension = mime.includes("mpeg") ? "mp3" : mime.includes("flac") ? "flac"
-          : mime.includes("ogg") ? "ogg" : mime.includes("wav") ? "wav" : "audio";
-        sourceFile = new File([blob], "ace-result." + extension, {
-          type: blob.type || "application/octet-stream"
-        });
+        sourceFile = audioBlobToSourceFile(blob);
       }
       await this.jobs.submit(request, sourceFile || undefined, this.reference() || undefined);
       if (this.jobs.error()) { this.error.set(this.jobs.error()); return; }
@@ -210,6 +201,7 @@ export class CreateComponent implements OnInit {
     }
   }
 }
+
 
 
 

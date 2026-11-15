@@ -4,12 +4,14 @@
  * @public
  */
 import { Component, computed, input, output, signal } from "@angular/core";
+import { DecimalPipe } from "@angular/common";
 import { clampRepaintRange, waveformPeaks } from "./waveform.peaks";
 
 /** @public User-triggered source waveform and bounded repaint interval controls. */
 @Component({
   selector: "ace-repaint-timeline",
   standalone: true,
+  imports: [DecimalPipe],
   templateUrl: "./repaint-timeline.component.html"
 })
 export class RepaintTimelineComponent {
@@ -68,4 +70,5 @@ export class RepaintTimelineComponent {
       this.start(), Number(target.value), this.duration()));
   }
 }
+
 
