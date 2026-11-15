@@ -43,6 +43,10 @@ const server = http.createServer(async (req, res) => {
     res.end(JSON.stringify(body));
   };
   const url = new URL(req.url || "/", "http://127.0.0.1");
+  if (url.pathname === "/__mock__/reset_lm" && req.method === "POST") {
+    lmInitialized = false;
+    respond(wrap({ llm_initialized: false })); return;
+  }
   if (url.pathname === "/health" && req.method === "GET") {
     respond(wrap({ status: "ok", service: "ACE-Step API (mock)", version: "1.0",
       models_initialized: true, llm_initialized: lmInitialized })); return;
@@ -163,6 +167,7 @@ const server = http.createServer(async (req, res) => {
 server.listen(port, "127.0.0.1", () => {
   process.stdout.write("ACE Studio mock backend on http://127.0.0.1:" + port + "\n");
 });
+
 
 
 

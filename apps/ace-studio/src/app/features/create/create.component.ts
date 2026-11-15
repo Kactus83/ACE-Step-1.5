@@ -181,7 +181,8 @@ export class CreateComponent implements OnInit {
         sourceFile = audioBlobToSourceFile(blob, draft.source.file);
       }
       await this.jobs.submit(request, sourceFile || undefined,
-        this.reference() || undefined, value.track_name.trim() || undefined);
+        this.reference() || undefined,
+        value.track_name.trim() || (request.sample_mode ? value.prompt.trim().slice(0, 72) : undefined));
       if (this.jobs.error()) { this.error.set(this.jobs.error()); return; }
       this.showJobs.emit();
     } catch (error: unknown) {
@@ -189,13 +190,4 @@ export class CreateComponent implements OnInit {
     }
   }
 }
-
-
-
-
-
-
-
-
-
 
