@@ -18,6 +18,8 @@ class StudioExportValidationError(ValueError):
 
 def select_trained_adapter(training_directory: str) -> Path:
     """Choose the final adapter, or the highest numbered epoch checkpoint."""
+    if not training_directory.strip():
+        raise StudioExportValidationError("A training output directory is required.")
     source_root = Path(training_directory.strip()).expanduser().resolve(strict=True)
     if not source_root.is_dir():
         raise StudioExportValidationError("Training output must be a directory.")
@@ -65,6 +67,11 @@ def export_adapter_without_overwrite(
 
     source_root = Path(training_directory.strip()).expanduser().resolve(strict=True)
     source = select_trained_adapter(training_directory)
+    for item in source.rglob("*"):
+        if item.is_symlink():
+            raise StudioExportValidationError(
+                "Adapter export refuses symbolic links inside trained weights."
+            )
     target = raw_target.resolve(strict=False)
     if len(target.parts) < 3:
         raise StudioExportValidationError("Cannot export to a filesystem root.")

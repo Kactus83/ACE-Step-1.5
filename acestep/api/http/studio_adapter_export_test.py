@@ -63,6 +63,26 @@ class StudioAdapterExportTests(unittest.TestCase):
                         str(self.training), str(target)
                     )
 
+    def test_empty_source_directory_is_rejected(self) -> None:
+        """Never treat the current working directory as the training source."""
+        destination = self.root / "export" / "empty-source"
+        with self.assertRaises(StudioExportValidationError):
+            export_adapter_without_overwrite("", str(destination))
+
+    def test_source_symlink_is_rejected_before_copy(self) -> None:
+        """Do not copy adapter symlinks pointing outside the trained weights."""
+        outside = self.root / "secret.txt"
+        outside.write_text("secret", encoding="utf-8")
+        link = self.adapter / "external.txt"
+        try:
+            link.symlink_to(outside)
+        except (OSError, NotImplementedError):
+            self.skipTest("Filesystem does not support creating symlinks")
+        destination = self.root / "export" / "adapter-with-link"
+        with self.assertRaises(StudioExportValidationError):
+            export_adapter_without_overwrite(str(self.training), str(destination))
+        self.assertFalse(destination.exists())
+
     def test_latest_epoch_is_selected_without_final(self) -> None:
         """Use the highest numbered existing checkpoint, not lexical order."""
         (self.adapter / "weights.safetensors").unlink()
