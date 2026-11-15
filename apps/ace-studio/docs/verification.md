@@ -17,6 +17,10 @@ Do not substitute the completed mock coverage for those remaining gates.
 - Rust `1.93.0`: `cargo check --locked` and `cargo test --locked` succeeded
   (the minimal shell currently contains no Rust unit tests).
 - `npm run desktop:build` produced an unsigned x64 MSI and NSIS installer.
+- The packaged release executable was launched in the real Windows WebView;
+  dark-theme layout, sidebar/panels, Create and Connection navigation, and the
+  truthful disconnected state were visually inspected. This caught and fixed
+  Angular critical-CSS loading being blocked by the strict Tauri CSP.
 - Python `3.13.7`: the three focused Studio/API unittest modules ran 16 tests
   successfully with one platform/symlink skip. The repository targets Python
   3.11–3.12, so this is additive evidence rather than the supported matrix.
@@ -25,8 +29,8 @@ Do not substitute the completed mock coverage for those remaining gates.
   an unqualified Angular CLI 22 major upgrade; these remain documented.
 
 Not executed: full Python discovery, real ACE-Step model/GPU generation or
-training, signed installer installation, WebView visual acceptance, macOS or
-Linux packaging, screen-reader and human contrast review.
+training, signed installer installation, comprehensive WebView interaction,
+macOS or Linux packaging, screen-reader and human contrast review.
 
 ## Local toolchain and dependency evidence
 

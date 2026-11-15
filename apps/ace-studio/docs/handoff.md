@@ -46,7 +46,8 @@ Consolidation PR #1 was already merged independently. Do not reapply it.
 - Run independent source, runtime and UX/security contradiction checks and
   update the PR scope matrix before requesting review.
 
-Windows local qualification is recorded in `docs/verification.md`. It does not
+Windows local qualification is recorded in `docs/verification.md`, including a
+real packaged-WebView startup and layout/navigation inspection. It does not
 cover real GPU/model execution, full Python regression, signed installation,
 visual assistive-technology acceptance or non-Windows packaging. Only the user
 can authorize promoting/merging the completed and accepted work.

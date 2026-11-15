@@ -30,8 +30,8 @@ The standalone FastAPI server is the only supported backend profile.
 | Accessibility | Partial | Semantic labels, focus-visible, skip link, responsive CSS, reduced motion; screen-reader/zoom checks pending |
 | Light and dark appearance | Written | Semantic color tokens and local preference; human contrast/visual QA pending |
 | Keyboard shortcuts / translations | Partial | Alt+1..6 navigation, help panel and field-focus guards pass browser tests; French translation architecture pending |
-| Optional Tauri native integration | Partial | Safe WebView shell only, intentionally no shell/filesystem commands; Windows MSI/NSIS built, installation and other OSes untested |
-| Tests | Verified locally | 78 Vitest, 20 Playwright mock and 16 focused Python tests passed; one symlink/platform test skipped; full Python/GPU suites pending |
+| Optional Tauri native integration | Partial | Safe WebView shell only; Windows MSI/NSIS built and release executable startup/layout/navigation inspected; installation and other OSes untested |
+| Tests | Verified locally | 79 Vitest, 20 Playwright mock and 16 focused Python tests passed; one symlink/platform test skipped; full Python/GPU suites pending |
 | Existing Python CLI and Gradio | Source isolated | Opt-in desktop CORS + PUT, DCW parser forwarding, additive no-overwrite export route; complete regression testing pending |
 
 Do not conflate local metadata persistence with permanent backend audio storage.
