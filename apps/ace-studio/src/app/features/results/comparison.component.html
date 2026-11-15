@@ -1,0 +1,59 @@
+<section class="panel comparison-panel" aria-labelledby="compare-title">
+  <div class="section-heading"><div>
+    <p class="eyebrow">A / B MONITOR</p><h2 id="compare-title">Compare two variants</h2>
+  </div><span class="section-mark" aria-hidden="true">↔</span></div>
+  <p class="muted">Select completed queue results or local bookmarks from the current backend.
+    Preview audio is downloaded through the authenticated API.</p>
+  @if (options().length < 2) {
+    <p class="small-note">Generate or bookmark at least two different audio files to compare.</p>
+  } @else {
+    <div class="comparison-selectors">
+      <label class="field" for="compare-a"><span>Track A</span>
+        <select id="compare-a" [value]="selectedA()" (change)="select($event,'A')">
+          <option value="">Select first audio</option>
+          @for (option of options(); track option.id) {
+            <option [value]="option.id">{{ option.label }}</option>
+          }
+        </select>
+      </label>
+      <label class="field" for="compare-b"><span>Track B</span>
+        <select id="compare-b" [value]="selectedB()" (change)="select($event,'B')">
+          <option value="">Select second audio</option>
+          @for (option of options(); track option.id) {
+            <option [value]="option.id">{{ option.label }}</option>
+          }
+        </select>
+      </label>
+    </div>
+    @if (a() && b()) {
+      <button type="button" class="secondary-action" [disabled]="loading()"
+        (click)="load()">{{ loading() ? 'Loading comparison…' : 'Load comparison audio' }}</button>
+    }
+    @if (urlA() && urlB()) {
+      <div class="comparison-players">
+        <div><strong>Track A</strong>
+          <audio #playerA [src]="urlA()" preload="none" controls
+            aria-label="A/B audio track A"></audio>
+          <p class="small-note">{{ a()?.label }} · Seed {{ a()?.seed || 'not reported' }}</p>
+          <button type="button" class="quiet" (click)="audition('A')">Listen A only</button>
+        </div>
+        <div><strong>Track B</strong>
+          <audio #playerB [src]="urlB()" preload="none" controls
+            aria-label="A/B audio track B"></audio>
+          <p class="small-note">{{ b()?.label }} · Seed {{ b()?.seed || 'not reported' }}</p>
+          <button type="button" class="quiet" (click)="audition('B')">Listen B only</button>
+        </div>
+      </div>
+      <div class="comparison-actions">
+        <button type="button" class="secondary-action" (click)="playTogether()">
+          Start both approximately together
+        </button>
+        <button type="button" class="quiet" (click)="stop()">Pause both</button>
+      </div>
+      <p class="small-note">Browser and WebView audio clocks are not sample-synchronized.
+        This is a listening comparison, not phase-accurate analysis.</p>
+    }
+  }
+  @if (error()) { <p class="field-error" role="alert">{{ error() }}</p> }
+</section>
+
