@@ -133,10 +133,18 @@ def _simple_generate_wrapper(
         f"task_type={params['task_type']}"
     )
 
-    gen = _dispatch_existing_generation(dit_handler, llm_handler, params)
+    try:
+        gen = _dispatch_existing_generation(dit_handler, llm_handler, params)
+        iterator = iter(gen)
+    except Exception:
+        logger.exception("Simple UI generation dispatch failed")
+        yield _generation_failure_updates(
+            t("simple_flow.failed"),
+            current_batch_index, total_batches, batch_queue, generation_params_state,
+        )
+        return
 
     final_result = None
-    iterator = iter(gen)
     while True:
         try:
             partial = next(iterator)
