@@ -52,10 +52,12 @@ def _resolve_allowed_path(value: str, roots: tuple[Path, ...], strict: bool) -> 
     """Resolve one request path and require containment in an approved root."""
     if not value.strip() or any(ord(char) < 32 for char in value):
         raise StudioExportValidationError("A valid server directory is required.")
-    raw = Path(value.strip()).expanduser()  # lgtm[py/path-injection]
+    # The canonical path is rejected below unless contained in an operator root.
+    # codeql[py/path-injection]
+    raw = Path(value.strip()).expanduser()
     if ".." in raw.parts:
         raise StudioExportValidationError("Parent-directory traversal is forbidden.")
-    resolved = raw.resolve(strict=strict)  # lgtm[py/path-injection]
+    resolved = raw.resolve(strict=strict)
     if not any(resolved == root or resolved.is_relative_to(root) for root in roots):
         raise StudioExportValidationError(
             "Server directory is outside configured Studio roots."
