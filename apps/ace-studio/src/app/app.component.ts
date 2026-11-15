@@ -12,6 +12,7 @@ import { ConnectionComponent } from "./features/system/connection.component";
 import { TrainingComponent } from "./features/training/training.component";
 import { DatasetComponent } from "./features/datasets/dataset.component";
 import { LibraryComponent } from "./features/library/library.component";
+import { ThemeStore } from "./core/theme.store";
 
 type Section = "create" | "jobs" | "library" | "datasets" | "training" | "system";
 
@@ -24,6 +25,7 @@ type Section = "create" | "jobs" | "library" | "datasets" | "training" | "system
 })
 export class AppComponent implements OnInit {
   readonly backend = inject(BackendStore);
+  readonly theme = inject(ThemeStore);
   readonly jobs = inject(JobsStore);
   readonly section = signal<Section>("create");
 

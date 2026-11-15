@@ -58,6 +58,10 @@
         }</strong>
       </div>
       <div class="topbar-actions">
+        <button type="button" class="theme-toggle" (click)="theme.toggle()"
+          [attr.aria-label]="theme.mode() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'">
+          {{ theme.mode() === 'dark' ? '☀ Light' : '☾ Dark' }}
+        </button>
         <span class="engine-pill" [class.connected]="backend.health()?.status === 'ok'">
           <span class="status-dot" [class.online]="backend.health()?.status === 'ok'"></span>
           {{ backend.health()?.status === 'ok' ? 'API online' : 'API offline' }}
