@@ -41,7 +41,7 @@
             {{ job.error || job.progressText || "Generation failed. Inspect backend diagnostics." }}
           </p>
         }
-        @if (job.phase === "succeeded" && job.results.length === 0) {
+        @if (job.phase === "succeeded" && !hasPlayableAudio(job)) {
           <p class="muted">Generation completed.</p>
         }
         @if (job.results.length) {

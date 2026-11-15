@@ -34,7 +34,11 @@ export class AudioService implements OnDestroy {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = name.replace(/[^\w. -]/g, "_").slice(0, 100) || "ace-step-audio.mp3";
+    const encodedPath = new URL(raw, "http://localhost").searchParams.get("path") || "";
+    const extension = encodedPath.match(/\.(mp3|wav|flac|ogg|opus|aac)$/i)?.[1] || "mp3";
+    const base = name.replace(/\.(mp3|wav|flac|ogg|opus|aac)$/i, "");
+    link.download = (base.replace(/[^\w. -]/g, "_").slice(0, 92) || "ace-step-audio")
+      + "." + extension.toLowerCase();
     document.body.append(link);
     link.click();
     link.remove();

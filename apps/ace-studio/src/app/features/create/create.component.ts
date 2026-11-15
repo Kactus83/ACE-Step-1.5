@@ -66,7 +66,7 @@ export class CreateComponent implements OnInit {
     const selected = this.selectedModel() || this.backend.inventory()?.default_model;
     const current = this.backend.inventory()?.models.find(item => item.name === selected);
     const tasks = current?.supported_task_types || ["text2music"];
-    return (["text2music", "cover", "repaint", "lego", "extract", "complete"] as TaskType[])
+    return (["text2music", "cover", "repaint"] as TaskType[])
       .filter(mode => tasks.includes(mode) || mode === "text2music");
   });
 
@@ -146,7 +146,12 @@ export class CreateComponent implements OnInit {
       const draft = this.workflow.draft();
       if (mode !== "text2music" && !sourceFile && draft) {
         const blob = await this.api.audio(draft.source.file);
-        sourceFile = new File([blob], "ace-result.wav", { type: blob.type || "audio/wav" });
+        const mime = blob.type.toLowerCase();
+        const extension = mime.includes("mpeg") ? "mp3" : mime.includes("flac") ? "flac"
+          : mime.includes("ogg") ? "ogg" : mime.includes("wav") ? "wav" : "audio";
+        sourceFile = new File([blob], "ace-result." + extension, {
+          type: blob.type || "application/octet-stream"
+        });
       }
       await this.jobs.submit(request, sourceFile || undefined, this.reference() || undefined);
       if (this.jobs.error()) { this.error.set(this.jobs.error()); return; }

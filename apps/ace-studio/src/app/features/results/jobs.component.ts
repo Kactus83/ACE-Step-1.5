@@ -6,7 +6,7 @@
 import { Component, inject, output } from "@angular/core";
 import { DatePipe } from "@angular/common";
 import { JobsStore } from "../../core/jobs.store";
-import { GeneratedAudio } from "../../core/api.types";
+import { GeneratedAudio, StudioJob } from "../../core/api.types";
 import { WorkflowStore } from "../../core/workflow.store";
 import { AudioCardComponent } from "./audio-card.component";
 
@@ -22,6 +22,11 @@ export class JobsComponent {
   private readonly workflow = inject(WorkflowStore);
   /** @public Request navigation to create editor. */
   readonly reuse = output<void>();
+
+  /** @public Distinguish successful analysis-only jobs from playable audio results. */
+  hasPlayableAudio(job: StudioJob): boolean {
+    return job.results.some(result => Boolean(result.file));
+  }
 
   /** @public Move a real generated audio artifact into a new edit intent. */
   edit(audio: GeneratedAudio, mode: "cover" | "repaint"): void {
