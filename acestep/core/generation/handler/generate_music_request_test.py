@@ -2,6 +2,7 @@
 
 import types
 import unittest
+from unittest.mock import MagicMock
 
 import torch
 
@@ -22,7 +23,7 @@ class _Host(GenerateMusicRequestMixin):
         self.text_encoder = object()
         self._vram_guard_reduce_batch = lambda bs, audio_duration=None: bs
         self.prepare_seeds = lambda bs, seed, use_random_seed: ([1] * bs, 1)
-        self.process_reference_audio = lambda _ref: torch.zeros(2, 100)
+        self.process_reference_audio = lambda _ref, seed=None: torch.zeros(2, 100)
         self.process_src_audio = lambda _src: torch.ones(2, 100)
         self.prepare_batch_data = lambda *args, **kwargs: (
             ["cap"], ["inst"], ["lyr"], ["en"], ["meta"]
@@ -90,7 +91,7 @@ class GenerateMusicRequestMixinTests(unittest.TestCase):
     def test_prepare_reference_and_source_audio_returns_error_for_invalid_reference(self):
         """Invalid reference audio should return a structured early error payload."""
         host = _Host()
-        host.process_reference_audio = lambda _ref: None
+        host.process_reference_audio = lambda _ref, seed=None: None
         _, _, error = host._prepare_reference_and_source_audio(
             reference_audio="bad.wav",
             src_audio=None,
@@ -101,6 +102,21 @@ class GenerateMusicRequestMixinTests(unittest.TestCase):
         self.assertIsNotNone(error)
         self.assertFalse(error["success"])
         self.assertEqual(error["error"], "Invalid reference audio")
+
+    def test_reference_audio_seed_is_forwarded(self):
+        """Reference audio crop uses the resolved seed, not ambient RNG."""
+        host = _Host()
+        host.process_reference_audio = MagicMock(return_value=torch.zeros(2, 100))
+        _, _, error = host._prepare_reference_and_source_audio(
+            reference_audio="reference.wav",
+            src_audio=None,
+            audio_code_string="",
+            actual_batch_size=1,
+            task_type="cover",
+            seed=7123,
+        )
+        self.assertIsNone(error)
+        host.process_reference_audio.assert_called_once_with("reference.wav", seed=7123)
 
     def test_prepare_reference_and_source_audio_ignores_src_audio_for_text2music(self):
         """Text2music should ignore src audio to preserve upstream behavior."""
