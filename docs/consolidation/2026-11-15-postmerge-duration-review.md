@@ -35,7 +35,9 @@ On the new branch, with the project's pinned dependencies and local models:
 
 ```powershell
 git fetch origin
-git switch integration/ace-simple-duration-postmerge
+# Existing local branch: git switch integration/ace-simple-duration-postmerge
+# New local checkout: track the remote branch instead.
+git switch --track origin/integration/ace-simple-duration-postmerge
 uv sync
 uv run python -m compileall -q acestep
 uv run python -m unittest acestep.ui.gradio.events.wiring.simple_ui_duration_test
@@ -45,6 +47,8 @@ git diff --check origin/main...HEAD
 ```
 
 Also verify that a successful completion stores `audio_duration=30.0` in the Simple session batch metadata (not only in the generator dispatch dictionary). An explicitly unsuccessful LM result must retain both the prompt and default duration.
+
+Use only one of the two `git switch` forms shown above: if the local branch already exists, switch to it instead of using `--track`. Keep any uncommitted work intact.
 
 Run the optional UI with the flag on and an LM actually initialized. Generate a text song with no manually supplied lyrics and verify the exported audio, generation metadata and visible result report a 30-second target or a documented **shorter** hardware cap. Run one Remix with source audio to ensure source-based duration remains unchanged. Do not download heavy models or repeatedly consume GPU time if existing checkpoints suffice.
 
