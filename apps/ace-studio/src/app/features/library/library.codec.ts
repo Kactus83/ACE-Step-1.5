@@ -42,26 +42,23 @@ function decodeResult(value: unknown, backend: string): GeneratedAudio | null {
     || value["file"].length > 4096) return null;
   try { normalizeAudioUrl(value["file"], backend); }
   catch { return null; }
-  const data: GeneratedAudio = {
+  const source = isObject(value["metas"]) ? value["metas"] : {};
+  const metas: Record<string, string | number | boolean> = {};
+  for (const key of ["bpm", "keyscale", "timesignature", "duration", "language"]) {
+    const item = source[key];
+    if (typeof item === "string") metas[key] = item.slice(0, 120);
+    else if (typeof item === "boolean" ||
+      typeof item === "number" && Number.isFinite(item)) metas[key] = item;
+  }
+  return {
     file: value["file"],
     prompt: bounded(value["prompt"], 5000) || undefined,
     lyrics: bounded(value["lyrics"], 10000) || undefined,
     seed_value: bounded(value["seed_value"], 120) || undefined,
     generation_info: bounded(value["generation_info"], 3000) || undefined,
-    status: 1
+    status: 1,
+    ...(Object.keys(metas).length ? { metas } : {})
   };
-  if (isObject(value["metas"])) {
-    const source = value["metas"];
-    const metas: Record<string, string | number | boolean> = {};
-    for (const key of ["bpm", "keyscale", "timesignature", "duration", "language"]) {
-      const item = source[key];
-      if (typeof item === "string") metas[key] = item.slice(0, 120);
-      else if (typeof item === "boolean" || typeof item === "number"
-        && Number.isFinite(item)) metas[key] = item;
-    }
-    if (Object.keys(metas).length) data.metas = metas;
-  }
-  return data;
 }
 
 /** @public Decode an untrusted saved track while preserving backend identity. */
