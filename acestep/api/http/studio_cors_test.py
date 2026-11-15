@@ -6,7 +6,7 @@ import os
 import unittest
 from unittest.mock import patch
 
-from acestep.api.http.studio_cors import optional_studio_origins
+from acestep.api.http.studio_cors import optional_studio_origins, studio_api_cors_methods
 
 
 class TestOptionalStudioOrigins(unittest.TestCase):
@@ -25,6 +25,13 @@ class TestOptionalStudioOrigins(unittest.TestCase):
                 ["tauri://localhost", "http://tauri.localhost"],
             )
 
+    def test_dataset_update_put_method_is_allowed(self) -> None:
+        """Browsers can preflight the real PUT sample metadata route."""
+        methods = studio_api_cors_methods()
+        self.assertIn("PUT", methods)
+        self.assertEqual(methods, ["GET", "POST", "PUT", "OPTIONS"])
+        self.assertNotIn("DELETE", methods)
+
     def test_arbitrary_values_cannot_set_origin(self) -> None:
         """Never transform arbitrary input into allowed origins."""
         with patch.dict(os.environ, {"ACESTEP_ENABLE_STUDIO_DESKTOP_CORS": "https://evil.test"}):
@@ -33,3 +40,4 @@ class TestOptionalStudioOrigins(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

@@ -10,7 +10,7 @@ export interface TrainingExportRequest {
   readonly export_path: string;
 }
 
-function normalizedPath(value: string): string {
+function normalizedPath(value: string, destination: boolean): string {
   const input = value.trim();
   if (!input || /[\u0000-\u001f]/.test(input) || /^([/\\]{2})/.test(input)) {
     throw new Error("A nonempty local backend path is required; UNC shares are unsupported.");
@@ -22,7 +22,7 @@ function normalizedPath(value: string): string {
   const parts = normalized.split("/").filter(Boolean).filter(part => part !== ".");
   if (parts.some(part => part === "..")) throw new Error("Parent directory traversal is forbidden.");
   const isDrive = /^[a-z]:/i.test(normalized);
-  if (parts.length < (isDrive ? 3 : 2)
+  if (parts.length < (destination ? isDrive ? 3 : 2 : 1)
     || normalized === "/" || /^[a-z]:\/?$/i.test(normalized)) {
     throw new Error("Choose a specific directory, never a filesystem root.");
   }
@@ -37,10 +37,11 @@ function normalizedPath(value: string): string {
 export function validateTrainingExport(
   source: string, destination: string
 ): TrainingExportRequest {
-  const a = normalizedPath(source), b = normalizedPath(destination);
+  const a = normalizedPath(source, false), b = normalizedPath(destination, true);
   if (a === b || a.startsWith(b + "/") || b.startsWith(a + "/")) {
     throw new Error("Export destination must not overlap the source directory.");
   }
   return { lora_output_dir: source.trim(), export_path: destination.trim() };
 }
+
 

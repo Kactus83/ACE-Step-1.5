@@ -26,3 +26,14 @@ def optional_studio_origins() -> list[str]:
         "tauri://localhost",  # Linux and macOS custom-protocol origin
         "http://tauri.localhost",  # Windows WebView2 production origin
     ]
+
+
+def studio_api_cors_methods() -> list[str]:
+    """Return API methods required by ACE Studio's audited REST contracts.
+
+    PUT is used by /v1/dataset/sample/{index}. The same-origin backend API
+    already handles PUT, but browser clients cannot send it without preflight.
+    Do not permit arbitrary methods or broaden allowed origins.
+    """
+    return ["GET", "POST", "PUT", "OPTIONS"]
+
