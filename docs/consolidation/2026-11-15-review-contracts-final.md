@@ -6,10 +6,10 @@ This is an independent static inspection of PR [#1](https://github.com/Kactus83/
 
 | Question | Check performed | Result |
 |---|---|---|
-| Are branch and fork main diverged? | GitHub compare base/head at feature-code commit `5bdc909d29956d8c54d929fbeb7ff71a701a190e` | 22 ahead, 0 behind |
-| Are source files whitespace-clean? | Read 43 GitHub PR diff sections and search newly-added lines for trailing spaces or CR | 0 flagged; **not** equivalent to `git diff --check` |
+| Are branch and fork main diverged? | GitHub compare base/head at feature-code commit `9de07522917e7d306520e001f8533f9461c5b71f` | 22 ahead, 0 behind |
+| Are source files whitespace-clean? | Read 45 GitHub PR diff sections and search newly-added lines for trailing spaces or CR | 0 flagged; **not** equivalent to `git diff --check` |
 | Does the extracted UI module import graph resolve? | Fetch 16 UI Python modules, check 18 relative imports against named symbols | 0 missing modules/symbols by lexical check |
-| Are Gradio component maps complete? | Compare builder exports with wiring `gs["..."]` references | 38 references, 0 missing |
+| Are Gradio component maps complete? | Compare builder exports with wiring `gs["..."]` references | 40 references, 0 missing |
 | Are Simple text keys available? | Compare `t("simple_flow.*")` references to `en.json` | 38 references, 0 missing |
 | Are newly introduced UI modules oversized? | Inspect module line counts | 0 exceeding 200 LOC |
 | Can Simple silently initialize the DiT/LM? | Inspect isolated readiness module | No initialization call found |

@@ -7,7 +7,7 @@
 - Base: `ca1e85fe9430179831e6bc6be790c332190a3866` (verified for both main branches).
 - Working branch: `integration/ace-ui-foundation`, created from base without force-push; final SHA is the branch HEAD shown on GitHub once documentation is committed.
 - Initial code head before documentation: `d7f16928a85e57737b56fd6ff2ed818f50fcfcec`.
-- Last feature-code commit after accessibility cleanup: `5bdc909d29956d8c54d929fbeb7ff71a701a190e`.
+- Last feature-code commit after i18n polish: `9de07522917e7d306520e001f8533f9461c5b71f`.
 - Draft consolidation PR: https://github.com/Kactus83/ACE-Step-1.5/pull/1 (base: fork `main`, head: dedicated consolidation branch).
 - Exhaustive changed-file inventory at code head: [`2026-11-15-changed-files.md`](2026-11-15-changed-files.md).
 - Merge: **not performed, not authorized**; target for any later PR is the fork's own `main`.
@@ -32,7 +32,7 @@ No service model is loaded automatically by the new UI. A missing DiT model prod
 
 ## Results obtained, with evidence boundaries
 
-**Actually performed through connected GitHub:** PR metadata/reviews/diffs inspection; verified main SHAs; branch creation; fast-forward commits via expected-SHA leases; per-file content examination; compare of branch to main; focused structural cross-checks (38 referenced UI keys resolved, 38 translation uses resolved, 12 new UI modules under 200 lines, no silent model initializer in readiness helper, native download in two audio cards, advanced batch state separated). The generation-progress call and saved-parameter positional lists were compared against upstream source.
+**Actually performed through connected GitHub:** PR metadata/reviews/diffs inspection; verified main SHAs; branch creation; fast-forward commits via expected-SHA leases; per-file content examination; compare of branch to main; focused structural cross-checks (38 referenced UI keys resolved, 40 translation uses resolved, 12 new UI modules under 200 lines, no silent model initializer in readiness helper, native download in two audio cards, advanced batch state separated). The generation-progress call and saved-parameter positional lists were compared against upstream source.
 
 **Not executed in this environment:** `git diff --check`, `python -m compileall`, `unittest` or `pytest`, Gradio server launch, browser keyboard/mobile/contrast inspection, GPU inference, CPU/MPS/XPU/MLX, multi-GPU stress, Windows offload soak. Remote Git is unavailable in the local shell (DNS/network unavailable); the connected GitHub API enabled authoring, not Python execution.
 
