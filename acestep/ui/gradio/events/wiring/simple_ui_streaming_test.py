@@ -39,6 +39,25 @@ class SimpleUiStreamingTests(unittest.TestCase):
         self.assertTrue(outputs[-1][5]["visible"])
         self.assertFalse(outputs[-1][4]["visible"])
 
+    def test_dispatch_start_exception_recovers_to_done(self):
+        """A synchronous adapter failure must not leave Creating visible."""
+        from acestep.ui.gradio.events.wiring.simple_ui_generation import (
+            _simple_generate_wrapper,
+        )
+
+        dit = SimpleNamespace(model=object())
+        llm = SimpleNamespace(llm_initialized=False)
+        with patch(
+            "acestep.ui.gradio.events.wiring.simple_ui_generation._dispatch_existing_generation",
+            side_effect=RuntimeError("synthetic adapter failure"),
+        ):
+            outputs = list(_simple_generate_wrapper(
+                dit, llm, "test style", "lyrics", False, None, 0, 0, {}, {},
+            ))
+        self.assertEqual(len(outputs), 2)
+        self.assertTrue(outputs[-1][5]["visible"])
+        self.assertFalse(outputs[-1][4]["visible"])
+
     def test_unloaded_model_generation_fails_without_dispatch(self):
         """Model absence should fail cleanly rather than attempting inference."""
         from acestep.ui.gradio.events.wiring.simple_ui_generation import (
