@@ -584,6 +584,7 @@
     "generating_lyrics": "Generating lyrics…",
     "creating_status": "Creating your music…",
     "failed": "Generation failed. Check model readiness and logs, then try again.",
-    "preparing": "Preparing generation…"
+    "preparing": "Preparing generation…",
+    "progress_label": "Creation step {current} of {total}"
   }
 }

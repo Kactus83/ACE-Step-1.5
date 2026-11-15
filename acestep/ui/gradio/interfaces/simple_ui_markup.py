@@ -42,7 +42,7 @@ def _step_indicator_html(current: int) -> str:
             circles.append(
                 f'<circle cx="{cx}" cy="28" r="9" fill="none" stroke="#d0d0d0" stroke-width="2"/>'
             )
-        color = "#667eea" if i <= current - 1 else "#999"
+        color = "#4536a8" if i <= current - 1 else "#4b5263"
         weight = "600" if i == current - 1 else "400"
         circles.append(
             f'<text x="{cx}" y="56" text-anchor="middle" font-size="11" font-weight="{weight}" fill="{color}">{html.escape(labels[i])}</text>'
@@ -61,7 +61,13 @@ def _step_indicator_html(current: int) -> str:
         '</filter></defs>'
     )
 
-    return f'<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}" style="display:block;margin:0 auto;max-width:100%">{glow}{"".join(lines)}{"".join(circles)}</svg>'
+    aria = html.escape(t("simple_flow.progress_label", current=current, total=total), quote=True)
+    return (
+        f'<svg role="img" aria-label="{aria}" width="{width}" height="{height}" '
+        f'viewBox="0 0 {width} {height}" '
+        f'style="display:block;margin:0 auto;max-width:100%">'
+        f'{glow}{"".join(lines)}{"".join(circles)}</svg>'
+    )
 
 
 def _build_header() -> str:

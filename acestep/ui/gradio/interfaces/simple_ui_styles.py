@@ -51,7 +51,7 @@ SIMPLE_UI_CSS = """
 }
 #simple-ui-column .simple-result-col audio,
 #simple-ui-column .simple-result-col .wrap { max-width: 100%; }
-#simple-ui-column .simple-best-badge {
+#simple-ui-column .simple-result-label {
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--body-text-color);

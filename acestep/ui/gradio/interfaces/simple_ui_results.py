@@ -22,18 +22,16 @@ def _build_step_results() -> tuple[gr.Column, dict[str, Any]]:
         with gr.Row(elem_classes="simple-results-row"):
             with gr.Column(scale=1, elem_classes="simple-result-col") as simple_result_col_1:
                 gr.HTML(
-                    '<div class="simple-best-badge">'
-                    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" width="12" height="12">'
-                    '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'
-                    f'</svg> {html.escape(t("simple_flow.result_one"))}'
-                    '</div>'
+                    '<div class="simple-result-label">'
+                    + html.escape(t("simple_flow.result_one"))
+                    + '</div>'
                 )
                 simple_generated_audio_1 = gr.Audio(
                     label=t("simple_flow.result_one"),
                     type="filepath",
                     interactive=False,
                     editable=False,
-                    show_label=False,
+                    show_label=True,
                     container=False,
                     buttons=["download"],
                     elem_classes=["simple-audio"],
@@ -45,7 +43,7 @@ def _build_step_results() -> tuple[gr.Column, dict[str, Any]]:
                     )
             with gr.Column(scale=1, elem_classes="simple-result-col") as simple_result_col_2:
                 gr.HTML(
-                    '<div class="simple-best-badge simple-best-badge-placeholder">'
+                    '<div class="simple-result-label">'
                     f'{html.escape(t("simple_flow.result_two"))}</div>'
                 )
                 simple_generated_audio_2 = gr.Audio(
@@ -53,7 +51,7 @@ def _build_step_results() -> tuple[gr.Column, dict[str, Any]]:
                     type="filepath",
                     interactive=False,
                     editable=False,
-                    show_label=False,
+                    show_label=True,
                     container=False,
                     buttons=["download"],
                     elem_classes=["simple-audio"],
