@@ -1,0 +1,66 @@
+<div class="page-heading">
+  <div><p class="eyebrow">LOCAL WORKSPACE / PROJECTS</p>
+    <h1>Organize your creations.</h1>
+    <p class="lead">Keep intentional bookmarks of your finished tracks and their creative metadata.</p>
+  </div>
+  <button type="button" class="secondary-action" (click)="export()">Export projects JSON</button>
+</div>
+<p class="notice warning">This catalog is stored only in this browser or Tauri profile.
+  It saves metadata and server references, <strong>not the audio files</strong>.
+  Audio may disappear when the Python server cleans up outputs. Download important tracks separately.
+</p>
+@if (error()) { <p role="alert" class="notice danger">{{ error() }}</p> }
+@if (catalog.error()) { <p role="alert" class="notice danger">{{ catalog.error() }}</p> }
+@if (catalog.message()) { <p role="status" class="notice success">{{ catalog.message() }}</p> }
+<div class="library-layout">
+  <aside class="panel library-index" aria-labelledby="library-index-title">
+    <div class="section-heading"><div>
+      <p class="eyebrow">01 / PROJECTS</p><h2 id="library-index-title">Your collections</h2>
+    </div><span class="section-mark" aria-hidden="true">▦</span></div>
+    <label class="field" for="library-project-search"><span>Search projects and track tags</span>
+      <input id="library-project-search" [value]="query()" (input)="setQuery($event)"
+        placeholder="Search…" />
+    </label>
+    <div class="library-project-list" role="group" aria-label="Local projects">
+      @for (project of visible(); track project.id) {
+        <button type="button" class="dataset-sample"
+          [class.active]="selectedId() === project.id"
+          (click)="select(project.id)">
+          <span>{{ project.name }}</span><small>{{ project.tracks.length }} saved references</small>
+        </button>
+      } @empty {
+        <p class="small-note">No projects match your search.</p>
+      }
+    </div>
+    <form (submit)="$event.preventDefault(); create()">
+      <label class="field" for="library-new-name"><span>New project</span>
+        <input id="library-new-name" maxlength="100" [value]="newName()"
+          (input)="setNewName($event)" placeholder="Name your new project" />
+      </label>
+      <button type="submit" class="secondary-action"
+        [disabled]="!newName().trim() || catalog.projects().length >= 30">
+        Create local project
+      </button>
+    </form>
+    <div class="library-import">
+      <label class="field" for="library-import-json"><span>Import project metadata</span>
+        <input id="library-import-json" type="file" accept=".json,application/json"
+          (change)="import($event)" />
+      </label>
+      <p class="small-note">Additive JSON import only; existing local projects are not overwritten.</p>
+    </div>
+  </aside>
+  <section class="library-details">
+    @if (selected(); as project) {
+      <ace-library-project [project]="project"
+        (navigateCreate)="navigateCreate.emit()" (removed)="removed($event)" />
+    } @else {
+      <div class="panel empty-state">
+        <span class="empty-icon" aria-hidden="true">▦</span>
+        <h2>Select a project to get started.</h2>
+        <p>Save references from Queue &amp; results, or create a project here.</p>
+      </div>
+    }
+  </section>
+</div>
+

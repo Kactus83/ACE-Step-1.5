@@ -1,0 +1,45 @@
+<div class="panel">
+  <div class="section-heading"><div><p class="eyebrow">02 / COLLECTION</p>
+    <h2>{{ project().name }}</h2>
+  </div><span class="section-mark" aria-hidden="true">♫</span></div>
+  @if (editing()) {
+    <form (submit)="$event.preventDefault(); save()">
+      <label class="field" for="project-edit-name"><span>Project name</span>
+        <input id="project-edit-name" [value]="projectName()"
+          (input)="changed($event,'name')" maxlength="100" required />
+      </label>
+      <label class="field" for="project-edit-description"><span>Description</span>
+        <textarea id="project-edit-description" rows="3" maxlength="3000"
+          [value]="description()" (input)="changed($event,'description')"></textarea>
+      </label>
+      <button class="secondary-action" type="submit" [disabled]="!projectName().trim()">
+        Save project details
+      </button>
+      <button type="button" class="quiet" (click)="editing.set(false)">Cancel</button>
+    </form>
+  } @else {
+    <p class="muted">{{ project().description || 'No project notes yet.' }}</p>
+    <button type="button" class="quiet" (click)="beginEdit()">Edit project details</button>
+  }
+  <button type="button" class="quiet danger-text" (click)="remove()">
+    {{ confirmingDelete() ? 'Confirm permanent local project removal' : 'Delete local project' }}
+  </button>
+</div>
+<section class="panel" aria-labelledby="library-track-list">
+  <div class="section-heading"><div><p class="eyebrow">03 / TRACKS</p>
+    <h2 id="library-track-list">Saved track references</h2>
+  </div><span class="section-mark" aria-hidden="true">◈</span></div>
+  <label class="field" for="library-track-filter"><span>Filter titles, tags and notes</span>
+    <input id="library-track-filter" [value]="filter()"
+      (input)="changed($event,'filter')" placeholder="Filter this project…" />
+  </label>
+  <div class="library-track-list">
+    @for (track of visible(); track track.id) {
+      <ace-library-track [track]="track" [projectId]="project().id"
+        (navigateCreate)="navigateCreate.emit()" />
+    } @empty {
+      <p class="muted">No matching references. Save a track from Queue &amp; results.</p>
+    }
+  </div>
+</section>
+

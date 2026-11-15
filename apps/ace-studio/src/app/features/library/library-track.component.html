@@ -1,0 +1,47 @@
+<article class="library-track">
+  <div class="library-track-heading">
+    <div><strong>{{ track().title }}</strong>
+      <p class="small-note">Variant {{ track().variant }} · {{ track().savedAt | date:'medium' }}</p>
+    </div>
+    <button type="button" class="quiet" [attr.aria-label]="track().favorite ? 'Remove favorite' : 'Add favorite'"
+      (click)="toggleFavorite()">{{ track().favorite ? '★ Saved favorite' : '☆ Mark favorite' }}</button>
+  </div>
+  @if (track().tags.length) {
+    <div class="library-tags">
+      @for (tag of track().tags; track tag) { <span>{{ tag }}</span> }
+    </div>
+  }
+  @if (track().note) { <p class="muted">{{ track().note }}</p> }
+  @if (track().result.seed_value) { <p class="small-note">Seed: {{ track().result.seed_value }}</p> }
+  @if (sameBackend()) {
+    <ace-audio-card [result]="track().result" [index]="track().variant"
+      (reuseRequested)="reuse($event)" />
+  } @else {
+    <div class="notice warning">
+      This reference belongs to {{ track().backend }}. Connect to that backend to
+      preview, download or remix. The original audio may already have expired.
+    </div>
+  }
+  @if (editing()) {
+    <form (submit)="$event.preventDefault(); save()">
+      <label class="field" [attr.for]="'track-note-' + track().id"><span>Track notes</span>
+        <textarea [id]="'track-note-' + track().id" rows="3" maxlength="3000"
+          [value]="note()" (input)="setField($event,'note')"></textarea>
+      </label>
+      <label class="field" [attr.for]="'track-tags-' + track().id"><span>Comma-separated tags</span>
+        <input [id]="'track-tags-' + track().id" maxlength="300"
+          [value]="tags()" (input)="setField($event,'tags')" />
+      </label>
+      <label class="checkbox-label"><input type="checkbox" [checked]="favorite()"
+        (change)="favorite.set(!favorite())" /> <span>Favorite</span></label>
+      <button type="submit" class="secondary-action">Save track details</button>
+      <button type="button" class="quiet" (click)="editing.set(false)">Cancel</button>
+    </form>
+  } @else {
+    <button type="button" class="quiet" (click)="beginEdit()">Edit track tags &amp; notes</button>
+  }
+  <button type="button" class="quiet danger-text" (click)="remove()">
+    {{ confirmingRemove() ? 'Confirm remove reference' : 'Remove reference' }}
+  </button>
+</article>
+

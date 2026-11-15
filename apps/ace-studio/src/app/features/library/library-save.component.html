@@ -1,0 +1,19 @@
+<div class="library-save">
+  @if (library.projects().length) {
+    <label class="field" [attr.for]="'project-for-' + job().id + '-' + variant()">
+      <span>Save reference to a local project</span>
+      <select [id]="'project-for-' + job().id + '-' + variant()"
+        [value]="selected()" (change)="choose($event)">
+        <option value="">Choose project</option>
+        @for (project of library.projects(); track project.id) {
+          <option [value]="project.id">{{ project.name }}</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="secondary-action" [disabled]="!selected() || saved()"
+      (click)="save()">{{ saved() ? 'Reference saved' : 'Save to project' }}</button>
+  } @else {
+    <p class="small-note">Create a project in Library to bookmark this track.</p>
+  }
+</div>
+
