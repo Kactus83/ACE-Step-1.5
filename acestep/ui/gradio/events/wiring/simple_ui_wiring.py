@@ -16,7 +16,6 @@ from .simple_ui_helpers import (
     _instrumental_lyrics_update,
     _navigate_to,
     _resolve_simple_lyrics,
-    _save_audio_js,
     _start_generation,
 )
 from .simple_ui_model_readiness import _initialize_simple_ui_models

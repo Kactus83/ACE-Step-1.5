@@ -117,6 +117,19 @@ class SimpleFoundationTests(unittest.TestCase):
         self.assertEqual(store_batch.call_args.args[1], 1)
         self.assertFalse(replay["random_seed_checkbox"])
 
+    def test_failure_returns_fourteen_updates_and_keeps_history(self):
+        """Failure moves to Done and preserves successful session batch state."""
+        from acestep.ui.gradio.events.wiring.simple_ui_helpers import (
+            _generation_failure_updates,
+        )
+
+        queue = {0: {"status": "completed"}}
+        outputs = _generation_failure_updates("failed", 0, 1, queue, {})
+        self.assertEqual(len(outputs), 14)
+        self.assertFalse(outputs[4]["visible"])
+        self.assertTrue(outputs[5]["visible"])
+        self.assertEqual(outputs[12], queue)
+
     def test_empty_final_result_is_reported_as_failure(self):
         """An empty path list must not masquerade as a successful generation."""
         payload = tuple([None] * 8 + [[], "info", "Generation failed", ""])

@@ -579,6 +579,11 @@
     "about": "About",
     "help": "Help",
     "advanced_mode": "Advanced Mode",
-    "simple_mode": "Simple interface"
+    "simple_mode": "Simple interface",
+    "describe_required": "Describe a song or provide a remix source before generating.",
+    "generating_lyrics": "Generating lyrics…",
+    "creating_status": "Creating your music…",
+    "failed": "Generation failed. Check model readiness and logs, then try again.",
+    "preparing": "Preparing generation…"
   }
 }

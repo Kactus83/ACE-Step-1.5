@@ -12,7 +12,11 @@ from acestep.ui.gradio.events.generation.validation import clamp_duration_to_gpu
 from acestep.ui.gradio.events.results.batch_management_helpers import _apply_param_defaults
 from acestep.ui.gradio.events.results.generation_progress import generate_with_progress
 from acestep.ui.gradio.interfaces.simple_ui_markup import _step_indicator_html
-from .simple_ui_helpers import _build_status_html, _ignore_progress, _resolve_simple_lyrics
+from .simple_ui_helpers import (
+    _generation_failure_updates,
+    _ignore_progress,
+    _resolve_simple_lyrics,
+)
 from .simple_ui_generation_results import _finish_simple_generation
 from .simple_ui_contracts import PROGRESS_STATUS_INDEX
 
@@ -31,7 +35,17 @@ def _simple_generate_wrapper(
 ):
     """Generate music and stream progress through steps 4 and 5."""
     if dit_handler is None or getattr(dit_handler, "model", None) is None:
-        raise gr.Error(t("simple_flow.models_unavailable"))
+        yield _generation_failure_updates(
+            t("simple_flow.models_unavailable"),
+            current_batch_index, total_batches, batch_queue, generation_params_state,
+        )
+        return
+    if not (song_style or "").strip() and not src_audio:
+        yield _generation_failure_updates(
+            t("simple_flow.describe_required"),
+            current_batch_index, total_batches, batch_queue, generation_params_state,
+        )
+        return
 
     task_type = "cover" if src_audio else "text2music"
     captions = song_style or ""
@@ -46,28 +60,32 @@ def _simple_generate_wrapper(
             gr.skip(),  # 3: step 3 (no change)
             gr.skip(),  # 4: step 4 (no change)
             gr.skip(),  # 5: step 5 (no change)
-            gr.update(value='<div class="simple-progress-status">Generating lyrics...</div>'),  # 6
+            gr.update(value='<div class="simple-progress-status">' + html.escape(t("simple_flow.generating_lyrics")) + '</div>'),  # 6
             gr.skip(), gr.skip(), gr.skip(),  # 7-9: gen_info, metadata_1, metadata_2
             gr.skip(), gr.skip(), gr.skip(), gr.skip(),  # 10-13: batch state
         )
-        result = create_sample(
-            llm_handler=llm_handler,
-            query=song_style,
-            instrumental=instrumental,
-            vocal_language="unknown",
-            temperature=0.85,
-            top_k=0,
-            top_p=0.9,
-            use_constrained_decoding=True,
-            constrained_decoding_debug=False,
-        )
-        if result.success:
-            captions = result.caption or song_style
-            final_lyrics = result.lyrics or ""
-            clamped = clamp_duration_to_gpu_limit(result.duration, llm_handler)
-            audio_duration_val = clamped if clamped and clamped > 0 else -1
-        else:
-            logger.warning(f"Sample creation failed: {result.status_message}")
+        try:
+            result = create_sample(
+                llm_handler=llm_handler,
+                query=song_style,
+                instrumental=instrumental,
+                vocal_language="unknown",
+                temperature=0.85,
+                top_k=0,
+                top_p=0.9,
+                use_constrained_decoding=True,
+                constrained_decoding_debug=False,
+            )
+            if result.success:
+                captions = result.caption or song_style
+                final_lyrics = result.lyrics or ""
+                clamped = clamp_duration_to_gpu_limit(result.duration, llm_handler)
+                audio_duration_val = clamped if clamped and clamped > 0 else -1
+            else:
+                logger.warning(f"Sample creation failed: {result.status_message}")
+    
+        except Exception:
+            logger.exception("Simple UI optional sample drafting failed")
 
     yield (
         gr.skip(),  # 0: audio_1
@@ -76,7 +94,7 @@ def _simple_generate_wrapper(
         gr.skip(),  # 3: step 3
         gr.skip(),  # 4: step 4
         gr.skip(),  # 5: step 5
-        gr.update(value='<div class="simple-progress-status">Creating your music...</div>'),  # 6
+        gr.update(value='<div class="simple-progress-status">' + html.escape(t("simple_flow.creating_status")) + '</div>'),  # 6
         gr.skip(), gr.skip(), gr.skip(),  # 7-9: gen_info, metadata_1, metadata_2
         gr.skip(), gr.skip(), gr.skip(), gr.skip(),  # 10-13: batch state
     )
@@ -153,42 +171,47 @@ def _simple_generate_wrapper(
     )
 
     final_result = None
-    for partial in gen:
+    iterator = iter(gen)
+    while True:
+        try:
+            partial = next(iterator)
+        except StopIteration:
+            break
+        except Exception:
+            logger.exception("Simple UI generation failed")
+            yield _generation_failure_updates(
+                t("simple_flow.failed"),
+                current_batch_index, total_batches, batch_queue, generation_params_state,
+            )
+            return
         final_result = partial
-        yield (
-            partial[0] if len(partial) > 0 else gr.skip(),   # 0: audio_1
-            partial[1] if len(partial) > 1 else gr.skip(),   # 1: audio_2
-            gr.skip(),                                         # 2: step indicator
-            gr.skip(),                                         # 3: step 3
-            gr.skip(),                                         # 4: step 4
-            gr.skip(),                                         # 5: step 5
-            gr.update(
-                value='<div class="simple-progress-status">'
-                + html.escape(str(
-                    partial[PROGRESS_STATUS_INDEX]
-                    if len(partial) > PROGRESS_STATUS_INDEX
-                    else "Creating..."
-                ))
-                + '</div>'
-            ),                                # 6: progress
-            gr.skip(),                                         # 7: gen info
-            gr.skip(),                                         # 8: metadata 1
-            gr.skip(),                                         # 9: metadata 2
-            gr.skip(), gr.skip(), gr.skip(), gr.skip(),        # 10-13: batch state
-        )
+            yield (
+                partial[0] if len(partial) > 0 else gr.skip(),   # 0: audio_1
+                partial[1] if len(partial) > 1 else gr.skip(),   # 1: audio_2
+                gr.skip(),                                         # 2: step indicator
+                gr.skip(),                                         # 3: step 3
+                gr.skip(),                                         # 4: step 4
+                gr.skip(),                                         # 5: step 5
+                gr.update(
+                    value='<div class="simple-progress-status">'
+                    + html.escape(str(
+                        partial[PROGRESS_STATUS_INDEX]
+                        if len(partial) > PROGRESS_STATUS_INDEX
+                        else "Creating..."
+                    ))
+                    + '</div>'
+                ),                                # 6: progress
+                gr.skip(),                                         # 7: gen info
+                gr.skip(),                                         # 8: metadata 1
+                gr.skip(),                                         # 9: metadata 2
+                gr.skip(), gr.skip(), gr.skip(), gr.skip(),        # 10-13: batch state
+            )
+    
 
     if final_result is None:
-        yield (
-            gr.update(value=None),  # 0: audio_1
-            gr.update(value=None),  # 1: audio_2
-            gr.update(value=_step_indicator_html(5)),  # 2
-            gr.update(visible=False),  # 3: step 3 hide
-            gr.update(visible=False),  # 4: step 4 hide
-            gr.update(visible=True),  # 5: step 5 show
-            gr.skip(),  # 6: progress
-            gr.update(value=_build_status_html("Generation failed. Please try again.", False)),  # 7
-            gr.skip(), gr.skip(),  # 8-9: metadata_1, metadata_2
-            current_batch_index, total_batches, batch_queue, generation_params_state,  # 10-13
+        yield _generation_failure_updates(
+            t("simple_flow.failed"),
+            current_batch_index, total_batches, batch_queue, generation_params_state,
         )
         return
 

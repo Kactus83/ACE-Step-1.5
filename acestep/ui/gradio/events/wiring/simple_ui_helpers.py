@@ -1,4 +1,4 @@
-"""UI-only presentation, navigation, and download helpers.
+"""UI-only presentation, navigation, and failure-state helpers.
 
 These helpers never load model weights or mutate the inference service.
 """
@@ -107,7 +107,11 @@ def _start_generation() -> tuple:
         gr.update(visible=False),  # 3: step 3 hidden
         gr.update(visible=True),  # 4: step 4 visible
         gr.update(visible=False),  # 5: step 5 hidden
-        gr.update(value='<div class="simple-progress-status">Preparing...</div>'),  # 6: progress text
+        gr.update(value=(
+            '<div class="simple-progress-status">'
+            + html.escape(t("simple_flow.preparing"))
+            + '</div>'
+        )),  # 6: progress text
         gr.skip(),  # 7: gen info
         gr.skip(),  # 8: metadata 1
         gr.skip(),  # 9: metadata 2
@@ -115,35 +119,25 @@ def _start_generation() -> tuple:
     )
 
 
-def _save_audio_js() -> str:
-    """Return JS for downloading audio."""
-    return """(audio) => {
-        if (!audio) return;
-        let target = '';
-        let filename = 'audio';
-        if (typeof audio === 'object') {
-            target = audio.url || audio.data || audio.path || audio.name || '';
-            filename = audio.orig_name || audio.name || audio.path || filename;
-        } else {
-            target = audio;
-            filename = audio;
-        }
-        if (!target) return;
-        if (/^(javascript|data|file):/i.test(target)) return;
-        if (target.startsWith('/tmp/') || target.startsWith('/home/')) {
-            target = '/gradio_api/file=' + encodeURI(target);
-        }
-        let resolved;
-        try { resolved = new URL(target, window.location.origin); }
-        catch (error) { return; }
-        if (resolved.origin !== window.location.origin) return;
-        let a = document.createElement('a');
-        a.href = resolved.href;
-        a.download = filename.split(/[\\/]/).pop().split('?')[0] || 'audio';
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }"""
 
-
+def _generation_failure_updates(
+    message: str,
+    current_batch_index: int,
+    total_batches: int,
+    batch_queue: dict,
+    generation_params_state: dict,
+) -> tuple:
+    """Exit the creating step safely without mutating successful batches."""
+    return (
+        gr.update(value=None),
+        gr.update(value=None),
+        gr.update(value=_step_indicator_html(5)),
+        gr.update(visible=False),
+        gr.update(visible=False),
+        gr.update(visible=True),
+        gr.update(value=""),
+        gr.update(value=_build_status_html(message, False)),
+        gr.update(value=""),
+        gr.update(value=""),
+        current_batch_index, total_batches, batch_queue, generation_params_state,
+    )

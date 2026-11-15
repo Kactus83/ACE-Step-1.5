@@ -62,9 +62,7 @@ def build_simple_ui() -> dict[str, Any]:
         _, step4 = _build_step_creating()
         _, step5 = _build_step_results()
         simple_state_current_step = gr.State(value=1)
-        simple_state_song_style = gr.State(value="")
-        simple_state_lyrics = gr.State(value="")
-        simple_state_audio = gr.State(value=None)
+
         simple_hamburger_state = gr.State(value=False)
         # Separate session state: the advanced eight-slot batch queue is never mutated
         # by the experimental two-slot workflow.
@@ -89,9 +87,6 @@ def build_simple_ui() -> dict[str, Any]:
         "simple_about_close_btn": simple_about_close_btn,
         "simple_step_indicator": simple_step_indicator,
         "simple_state_current_step": simple_state_current_step,
-        "simple_state_song_style": simple_state_song_style,
-        "simple_state_lyrics": simple_state_lyrics,
-        "simple_state_audio": simple_state_audio,
     }
     for d in (step1, step2, step3, step4, step5):
         result.update(d)
