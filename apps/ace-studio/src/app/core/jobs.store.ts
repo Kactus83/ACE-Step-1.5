@@ -9,13 +9,14 @@ import { decodeTask } from "./api-decoder";
 import { decodeAnalysisResult } from "./analysis-result";
 import { AnalysisResultMode, GenerateRequest, StudioJob } from "./api.types";
 import { ConnectionStore } from "./connection.store";
+import { decodeSessionJobs, encodeSessionJobs } from "./job-session-codec";
 
 /** @public Asynchronous generation orchestration without counterfeit progress. */
 @Injectable({ providedIn: "root" })
 export class JobsStore implements OnDestroy {
   private readonly api = inject(BackendClient);
   private readonly connection = inject(ConnectionStore);
-  private readonly storageKey = "ace-studio:tasks:v1";
+  private readonly storageKey = "ace-studio:tasks:v2";
   private timer: ReturnType<typeof setTimeout> | undefined;
   private disposed = false;
   private pollInFlight = false;
@@ -32,29 +33,22 @@ export class JobsStore implements OnDestroy {
 
   private persist(): void {
     try {
-      const minimal = this.jobs().slice(0, 30).map(job => ({
-        id: job.id, title: job.title, createdAt: job.createdAt,
-        analysisMode: job.analysisMode
-      }));
-      sessionStorage.setItem(this.storageKey, JSON.stringify(minimal));
-    } catch { /* storage may be blocked */ }
+      sessionStorage.setItem(this.storageKey,
+        JSON.stringify(encodeSessionJobs(this.connection.endpoint(), this.jobs())));
+    } catch { /* Session storage is optional. */ }
   }
 
   private restore(): void {
     try {
-      const raw: unknown = JSON.parse(sessionStorage.getItem(this.storageKey) || "[]");
-      if (!Array.isArray(raw)) return;
-      const jobs: StudioJob[] = raw.slice(0, 30).filter(
-        entry => entry && typeof entry.id === "string" && typeof entry.title === "string"
-      ).map(entry => ({
-        id: String(entry.id), title: String(entry.title),
-        createdAt: Number(entry.createdAt) || Date.now(),
-        phase: "unknown", progressText: "Checking recovered job…", results: [],
-        analysisMode: (["codes", "deep", "metadata"].includes(String(entry.analysisMode))
-          ? entry.analysisMode as AnalysisResultMode : undefined)
-      }));
-      this.jobs.set(jobs);
-    } catch { /* a corrupted session cache is not authoritative */ }
+      const raw = sessionStorage.getItem(this.storageKey);
+      if (!raw) return;
+      const entries = decodeSessionJobs(JSON.parse(raw) as unknown,
+        this.connection.endpoint());
+      this.jobs.set(entries.map(entry => ({
+        ...entry, phase: "unknown", progressText: "Checking recovered job…",
+        results: []
+      })));
+    } catch { /* Corrupt or unscoped cache must never trigger backend queries. */ }
   }
 
   /** @public Queue generation, retaining input values only in memory. */
@@ -160,6 +154,7 @@ export class JobsStore implements OnDestroy {
     if (this.timer) clearTimeout(this.timer);
   }
 }
+
 
 
 
