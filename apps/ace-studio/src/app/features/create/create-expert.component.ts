@@ -3,9 +3,10 @@
  * @remarks Explicit advanced diffusion, DCW and 5Hz LM controls for the ACE-Step API.
  * @public
  */
-import { Component, input } from "@angular/core";
+import { Component, inject, input } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { createGenerationForm } from "./create.form";
+import { LocaleStore } from "../../core/locale.store";
 
 /** @public Advanced parameters bound to the same form as the creation editor. */
 @Component({
@@ -15,6 +16,8 @@ import { createGenerationForm } from "./create.form";
   templateUrl: "./create-expert.component.html"
 })
 export class CreateExpertComponent {
+  readonly locale = inject(LocaleStore);
   /** @public Shared typed reactive generation form. */
   readonly form = input.required<ReturnType<typeof createGenerationForm>>();
 }
+

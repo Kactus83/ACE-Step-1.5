@@ -6,6 +6,7 @@
 import { Component, inject, input, output, signal } from "@angular/core";
 import { createGenerationForm } from "./create.form";
 import { PresetsStore } from "../../core/presets.store";
+import { LocaleStore } from "../../core/locale.store";
 
 /** @public Preset workspace free of backend and audio-storage responsibilities. */
 @Component({
@@ -17,6 +18,7 @@ export class CreatePresetsComponent {
   readonly form = input.required<ReturnType<typeof createGenerationForm>>();
   readonly resetMedia = output<void>();
   readonly presets = inject(PresetsStore);
+  readonly locale = inject(LocaleStore);
   readonly presetName = signal("");
   readonly selectedPresetId = signal("");
   readonly deletingPreset = signal(false);
@@ -46,9 +48,9 @@ export class CreatePresetsComponent {
       const saved = this.presets.save(this.presetName(), this.form().getRawValue());
       this.selectedPresetId.set(saved.id);
       this.presetName.set("");
-      this.notice.set("Preset saved on this device.");
+      this.notice.set(this.locale.text("preset.saved"));
     } catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Unable to save preset.");
+      this.error.set(error instanceof Error ? error.message : this.locale.text("preset.saveFailed"));
     }
   }
 
@@ -63,7 +65,7 @@ export class CreatePresetsComponent {
     });
     this.resetMedia.emit();
     this.error.set(null);
-    this.notice.set("Preset restored. Source media and semantic audio codes were cleared.");
+    this.notice.set(this.locale.text("preset.restored"));
   }
 
   /** @public Require two explicit clicks before removing local preset data. */
@@ -74,8 +76,9 @@ export class CreatePresetsComponent {
     this.presets.remove(id);
     this.selectedPresetId.set("");
     this.deletingPreset.set(false);
-    this.notice.set("Preset deleted from this device.");
+    this.notice.set(this.locale.text("preset.deleted"));
   }
 }
+
 
 
