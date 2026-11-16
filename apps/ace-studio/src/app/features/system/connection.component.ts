@@ -5,6 +5,7 @@
  */
 import { Component, inject, signal } from "@angular/core";
 import { BackendStore } from "../../core/backend.store";
+import { LocaleStore } from "../../core/locale.store";
 import { ConnectionStore } from "../../core/connection.store";
 import { JobsStore } from "../../core/jobs.store";
 import { AudioService } from "../../core/audio.service";
@@ -29,6 +30,7 @@ export class ConnectionComponent {
   private readonly datasetTasks = inject(DatasetTasksStore);
   private readonly training = inject(TrainingStore);
   readonly backend = inject(BackendStore);
+  readonly locale = inject(LocaleStore);
   readonly jobs = inject(JobsStore);
   readonly endpoint = signal(this.connection.endpoint());
   readonly token = signal(this.connection.apiKey());
@@ -72,11 +74,12 @@ export class ConnectionComponent {
       this.saved.set(this.backend.health()?.status === "ok" && !this.backend.error());
       if (this.saved()) this.jobs.resumeAfterReconnect();
     } catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Invalid connection settings.");
+      this.error.set(error instanceof Error ? error.message : this.locale.text("system.invalid"));
     }
   }
 
 }
+
 
 
 
