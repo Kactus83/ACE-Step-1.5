@@ -5,6 +5,7 @@
  */
 import { Component, ElementRef, computed, inject, signal, viewChild } from "@angular/core";
 import { AudioService } from "../../core/audio.service";
+import { LocaleStore } from "../../core/locale.store";
 import { ConnectionStore } from "../../core/connection.store";
 import { JobsStore } from "../../core/jobs.store";
 import { LibraryStore } from "../library/library.store";
@@ -17,6 +18,7 @@ import { comparisonOptions } from "./comparison-options";
   templateUrl: "./comparison.component.html"
 })
 export class ComparisonComponent {
+  readonly locale = inject(LocaleStore);
   private readonly audio = inject(AudioService);
   private readonly connection = inject(ConnectionStore);
   private readonly jobs = inject(JobsStore);
@@ -55,7 +57,7 @@ export class ComparisonComponent {
     if (!this.a() || !this.b() || this.loading()) return;
     const choiceA = this.a()!, choiceB = this.b()!;
     if (choiceA.file === choiceB.file) {
-      this.error.set("Choose two different audio files for comparison."); return;
+      this.error.set(this.locale.text("compare.errorSame")); return;
     }
     const revision = this.connection.revision();
     this.loading.set(true);
@@ -70,7 +72,7 @@ export class ComparisonComponent {
       this.urlB.set(urlB);
     } catch (error: unknown) {
       if (revision === this.connection.revision()) this.error.set(
-        error instanceof Error ? error.message : "Cannot load comparison audio.");
+        error instanceof Error ? error.message : this.locale.text("compare.errorLoad"));
     } finally { this.loading.set(false); }
   }
 
@@ -82,7 +84,7 @@ export class ComparisonComponent {
     other?.pause();
     this.error.set(null);
     try { await active.play(); }
-    catch { this.error.set("Playback was blocked or the audio file has expired."); }
+    catch { this.error.set(this.locale.text("compare.errorPlayback")); }
   }
 
   /**
@@ -99,7 +101,7 @@ export class ComparisonComponent {
     try { await Promise.all([a.play(), b.play()]); }
     catch {
       this.stop();
-      this.error.set("Synchronized audition is unavailable for these tracks.");
+      this.error.set(this.locale.text("compare.errorSync"));
     }
   }
 
@@ -109,4 +111,5 @@ export class ComparisonComponent {
     this.playerB()?.nativeElement.pause();
   }
 }
+
 

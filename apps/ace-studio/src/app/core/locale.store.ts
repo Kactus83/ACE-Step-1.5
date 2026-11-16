@@ -107,6 +107,12 @@ const MESSAGES = {
   "compare.start": { en: "Start both approximately together", fr: "Lancer les deux pistes approximativement ensemble" },
   "compare.pause": { en: "Pause both", fr: "Mettre les deux en pause" },
   "compare.warning": { en: "Browser and WebView audio clocks are not sample-synchronized. This is a listening comparison, not phase-accurate analysis.", fr: "Les horloges audio des navigateurs et WebView ne sont pas synchronisées à l’échantillon près. Cette comparaison est destinée à l’écoute, pas à une analyse de phase." },
+  "batch.previousAria": { en: "Previous variant", fr: "Variante précédente" },
+  "batch.nextAria": { en: "Next variant", fr: "Variante suivante" },
+  "compare.errorSame": { en: "Choose two different audio files for comparison.", fr: "Choisissez deux fichiers audio différents pour les comparer." },
+  "compare.errorLoad": { en: "Cannot load comparison audio.", fr: "Impossible de charger les pistes à comparer." },
+  "compare.errorPlayback": { en: "Playback was blocked or the audio file has expired.", fr: "La lecture est bloquée ou le fichier audio a expiré." },
+  "compare.errorSync": { en: "Synchronized audition is unavailable for these tracks.", fr: "La lecture simultanée est indisponible pour ces pistes." },
 } as const satisfies Record<string, Record<StudioLocale, string>>;
 
 /** @public Only keys whose language coverage is checked at build time. */
@@ -147,4 +153,5 @@ export class LocaleStore {
   /** @public Toggle English/French without reloading or clearing workspace state. */
   toggle(): void { this.set(this.mode() === "en" ? "fr" : "en"); }
 }
+
 

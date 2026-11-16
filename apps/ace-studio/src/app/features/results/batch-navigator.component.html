@@ -8,12 +8,12 @@
       </span>
     </div>
     <div class="batch-controls">
-      <button class="quiet" type="button" (click)="previous()" [attr.aria-label]="locale.text('batch.previous')">
+      <button class="quiet" type="button" (click)="previous()" [attr.aria-label]="locale.text('batch.previousAria')">
         {{ locale.text('batch.previous') }}
       </button>
       <button class="quiet" type="button" (click)="showAll()"
         [attr.aria-pressed]="normalized() === 'all'">{{ locale.text('batch.showAll') }}</button>
-      <button class="quiet" type="button" (click)="next()" [attr.aria-label]="locale.text('batch.next')">
+      <button class="quiet" type="button" (click)="next()" [attr.aria-label]="locale.text('batch.nextAria')">
         {{ locale.text('batch.next') }}
       </button>
     </div>
@@ -28,5 +28,6 @@
     </div>
   </nav>
 }
+
 
 
