@@ -8,6 +8,7 @@ import { DatePipe } from "@angular/common";
 import { ConnectionStore } from "../../core/connection.store";
 import { WorkflowStore } from "../../core/workflow.store";
 import { LibraryStore } from "./library.store";
+import { LocaleStore } from "../../core/locale.store";
 import { LibraryTrack } from "./library.types";
 import { AudioCardComponent } from "../results/audio-card.component";
 
@@ -22,6 +23,7 @@ export class LibraryTrackComponent {
   private readonly connection = inject(ConnectionStore);
   private readonly workflow = inject(WorkflowStore);
   readonly library = inject(LibraryStore);
+  readonly locale = inject(LocaleStore);
   readonly projectId = input.required<string>();
   readonly track = input.required<LibraryTrack>();
   readonly navigateCreate = output<void>();
@@ -77,5 +79,6 @@ export class LibraryTrackComponent {
     this.confirmingRemove.set(false);
   }
 }
+
 
 

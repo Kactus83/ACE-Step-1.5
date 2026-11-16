@@ -6,6 +6,7 @@
 import { Component, inject, input, signal } from "@angular/core";
 import { GeneratedAudio, StudioJob } from "../../core/api.types";
 import { LibraryStore } from "./library.store";
+import { LocaleStore } from "../../core/locale.store";
 
 /** @public Choose a local project; no automatic audio or prompt persistence. */
 @Component({
@@ -15,6 +16,7 @@ import { LibraryStore } from "./library.store";
 })
 export class LibrarySaveComponent {
   readonly library = inject(LibraryStore);
+  readonly locale = inject(LocaleStore);
   readonly job = input.required<StudioJob>();
   readonly result = input.required<GeneratedAudio>();
   readonly variant = input.required<number>();
@@ -37,4 +39,5 @@ export class LibrarySaveComponent {
     }
   }
 }
+
 

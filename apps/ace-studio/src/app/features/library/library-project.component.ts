@@ -5,6 +5,7 @@
  */
 import { Component, computed, inject, input, output, signal } from "@angular/core";
 import { LibraryStore } from "./library.store";
+import { LocaleStore } from "../../core/locale.store";
 import { LibraryProject } from "./library.types";
 import { LibraryTrackComponent } from "./library-track.component";
 
@@ -20,6 +21,7 @@ export class LibraryProjectComponent {
   readonly navigateCreate = output<void>();
   readonly removed = output<string>();
   readonly catalog = inject(LibraryStore);
+  readonly locale = inject(LocaleStore);
   readonly filter = signal("");
   readonly editingId = signal<string | null>(null);
   readonly confirmingDeleteId = signal<string | null>(null);
@@ -67,5 +69,6 @@ export class LibraryProjectComponent {
     this.confirmingDeleteId.set(null);
   }
 }
+
 
 

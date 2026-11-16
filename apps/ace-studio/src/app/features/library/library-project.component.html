@@ -4,43 +4,44 @@
   </div><span class="section-mark" aria-hidden="true">♫</span></div>
   @if (editingId() === project().id) {
     <form (submit)="$event.preventDefault(); save()">
-      <label class="field" for="project-edit-name"><span>Project name</span>
+      <label class="field" for="project-edit-name"><span>{{ locale.text('project.name') }}</span>
         <input id="project-edit-name" [value]="projectName()"
           (input)="changed($event,'name')" maxlength="100" required />
       </label>
-      <label class="field" for="project-edit-description"><span>Description</span>
+      <label class="field" for="project-edit-description"><span>{{ locale.text('project.description') }}</span>
         <textarea id="project-edit-description" rows="3" maxlength="3000"
           [value]="description()" (input)="changed($event,'description')"></textarea>
       </label>
       <button class="secondary-action" type="submit" [disabled]="!projectName().trim()">
-        Save project details
+        {{ locale.text('project.save') }}
       </button>
-      <button type="button" class="quiet" (click)="editingId.set(null)">Cancel</button>
+      <button type="button" class="quiet" (click)="editingId.set(null)">{{ locale.text('project.cancel') }}</button>
     </form>
   } @else {
-    <p class="muted">{{ project().description || 'No project notes yet.' }}</p>
-    <button type="button" class="quiet" (click)="beginEdit()">Edit project details</button>
+    <p class="muted">{{ project().description || locale.text('project.noNotes') }}</p>
+    <button type="button" class="quiet" (click)="beginEdit()">{{ locale.text('project.edit') }}</button>
   }
   <button type="button" class="quiet danger-text" (click)="remove()">
-    {{ confirmingDeleteId() === project().id ? 'Confirm permanent local project removal' : 'Delete local project' }}
+    {{ confirmingDeleteId() === project().id ? locale.text('project.deleteConfirm') : locale.text('project.delete') }}
   </button>
 </div>
 <section class="panel" aria-labelledby="library-track-list">
   <div class="section-heading"><div><p class="eyebrow">03 / TRACKS</p>
-    <h2 id="library-track-list">Saved track references</h2>
+    <h2 id="library-track-list">{{ locale.text('project.savedRefs') }}</h2>
   </div><span class="section-mark" aria-hidden="true">◈</span></div>
-  <label class="field" for="library-track-filter"><span>Filter titles, tags and notes</span>
+  <label class="field" for="library-track-filter"><span>{{ locale.text('project.filter') }}</span>
     <input id="library-track-filter" [value]="filter()"
-      (input)="changed($event,'filter')" placeholder="Filter this project…" />
+      (input)="changed($event,'filter')" [placeholder]="locale.text('project.filterPlaceholder')" />
   </label>
   <div class="library-track-list">
     @for (track of visible(); track track.id) {
       <ace-library-track [track]="track" [projectId]="project().id"
         (navigateCreate)="navigateCreate.emit()" />
     } @empty {
-      <p class="muted">No matching references. Save a track from Queue &amp; results.</p>
+      <p class="muted">{{ locale.text('project.noRefs') }}</p>
     }
   </div>
 </section>
+
 
 
