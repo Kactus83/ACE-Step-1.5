@@ -22,7 +22,6 @@ import { WorkflowStore } from "../../core/workflow.store";
 import { CreatePresetsComponent } from "./create-presets.component";
 import { CreateExpertComponent } from "./create-expert.component";
 import { CreateSourceEditComponent } from "./create-source-edit.component";
-
 /** @public Primary creation form, shared by web and desktop. */
 @Component({
   selector: "ace-create",
@@ -46,7 +45,6 @@ export class CreateComponent implements OnInit {
   readonly pendingDcwConfirmation = signal<string | null>(null);
   readonly pendingSampleConfirmation = signal<string | null>(null);
   readonly importName = computed(() => this.workflow.draft()?.source.prompt || "Generated track");
-
   readonly form = createGenerationForm(this.fb);
   readonly changes = toSignal(
     this.form.valueChanges.pipe(startWith(this.form.getRawValue())),
@@ -61,7 +59,6 @@ export class CreateComponent implements OnInit {
     return (["text2music", "cover", "repaint", "extract", "lego", "complete"] as TaskType[])
       .filter(mode => tasks.includes(mode) || mode === "text2music");
   });
-
   /** @public Apply a previously generated track as an editing source. */
   ngOnInit(): void {
     const staged = this.workflow.takeSettings();
@@ -92,7 +89,6 @@ export class CreateComponent implements OnInit {
       instrumental: false
     });
   }
-
   /**
    * @public Store user-selected audio locally until a generation is submitted.
    * @throws Never: invalid files set a visible form error.
@@ -112,7 +108,6 @@ export class CreateComponent implements OnInit {
       if (file) this.workflow.clear();
     } else this.reference.set(file);
   }
-
   /** @public Synchronize the visual range selection with the advanced time inputs. */
   setRepaintRange(range: { start: number; end: number }): void {
     this.form.patchValue({ repainting_start: range.start, repainting_end: range.end });
