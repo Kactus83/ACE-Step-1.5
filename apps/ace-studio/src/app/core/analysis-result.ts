@@ -3,27 +3,8 @@
  * @remarks Lossless-safe presentation of queued ACE-Step non-audio analysis.
  * @public
  */
-import { GenerateRequest, TaskRecordDto } from "../../core/api.types";
-import { isObject } from "../../core/api-decoder";
-
-/** @public Known non-audio analysis result categories. */
-export type AnalysisResultMode = "codes" | "deep" | "metadata";
-
-/** @public Finite scalar metadata returned by the Python analysis engine. */
-export interface AnalysisScalar {
-  readonly label: string;
-  readonly value: string;
-}
-
-/** @public Structured, bounded analysis result; never a synthetic audio file. */
-export interface AnalysisResult {
-  readonly kind: AnalysisResultMode;
-  readonly status: string;
-  readonly prompt: string;
-  readonly lyrics: string;
-  readonly audioCodes: string | null;
-  readonly fields: readonly AnalysisScalar[];
-}
+import { AnalysisResult, AnalysisResultMode, AnalysisScalar, GenerateRequest, TaskRecordDto } from "./api.types";
+import { isObject } from "./api-decoder";
 
 const directFields = [
   "bpm", "keyscale", "timesignature", "duration", "genre",
@@ -48,7 +29,7 @@ function scalar(value: unknown): string | null {
  * @returns Structured analysis or null for ordinary/unfinished audio results.
  */
 export function decodeAnalysisResult(
-  task: TaskRecordDto, request?: GenerateRequest
+  task: TaskRecordDto, request?: GenerateRequest, expectedKind?: AnalysisResultMode
 ): AnalysisResult | null {
   if (task.status !== 1) return null;
   let items: unknown = task.result;
@@ -61,7 +42,7 @@ export function decodeAnalysisResult(
   const status = safeText(item["status_message"], 160);
   const kind: AnalysisResultMode | null = status === "Audio Codes Extraction Success"
     ? "codes" : status === "Full Hardware Analysis Success"
-      ? "deep" : request?.analysis_only === true && item["file"] === ""
+      ? "deep" : (request?.analysis_only === true || expectedKind === "metadata") && item["file"] === ""
         ? "metadata" : null;
   if (!kind) return null;
   const values: AnalysisScalar[] = [];

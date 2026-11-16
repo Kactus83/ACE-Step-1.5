@@ -140,6 +140,25 @@ export interface GeneratedAudio {
 /** @public Client normalized job phase. */
 export type JobPhase = "queued" | "running" | "succeeded" | "failed" | "unknown";
 
+/** @public Recognized non-audio result kinds. */
+export type AnalysisResultMode = "codes" | "deep" | "metadata";
+
+/** @public Bounded scalar metadata from Python analysis. */
+export interface AnalysisScalar {
+  readonly label: string;
+  readonly value: string;
+}
+
+/** @public One analysis output, intentionally without a playable audio URI. */
+export interface AnalysisResult {
+  readonly kind: AnalysisResultMode;
+  readonly status: string;
+  readonly prompt: string;
+  readonly lyrics: string;
+  readonly audioCodes: string | null;
+  readonly fields: readonly AnalysisScalar[];
+}
+
 /** @public One client job and its reproducibility metadata. */
 export interface StudioJob {
   readonly id: string;
@@ -149,6 +168,10 @@ export interface StudioJob {
   readonly progressText: string;
   readonly error?: string;
   readonly results: readonly GeneratedAudio[];
+  /** @public Session-restorable flag for an analysis-only task. */
+  readonly analysisMode?: AnalysisResultMode;
+  /** @public Actual decoded non-audio result, not a music artifact. */
+  readonly analysis?: AnalysisResult | null;
   readonly request?: GenerateRequest;
   /** @public Source audio upload needed, but never persisted on the client. */
   readonly hasSourceAudio?: boolean;

@@ -4,7 +4,7 @@
  * @internal
  */
 import { describe, expect, it } from "vitest";
-import { decodeAnalysisResult } from "../../src/app/features/analysis/analysis-result";
+import { decodeAnalysisResult } from "../../src/app/core/analysis-result";
 
 describe("non-audio task results", () => {
   it("preserves extracted audio codes for deliberate export, not media playback", () => {
