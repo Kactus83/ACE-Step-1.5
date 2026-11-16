@@ -11,7 +11,7 @@ Consolidation PR #1 was already merged independently. Do not reapply it.
 
 1. Root `AGENTS.md`, Studio `AGENTS.md` and `README.md`.
 2. `docs/architecture.md`, `docs/contracts.md`, `docs/functional-coverage.md`.
-3. `docs/source-checkpoint-5.md`, `docs/continuation.md`.
+3. `docs/source-checkpoint-6.md`, `docs/continuation.md`.
 4. `docs/review-architecture.md`, `docs/review-ux.md`,
    `docs/security-review.md`, and `docs/verification.md`.
 
@@ -30,6 +30,15 @@ Consolidation PR #1 was already merged independently. Do not reapply it.
   run repeated costly GPU actions unless the user approves.
 - Validate actual desktop origins on Windows, macOS and Linux, including
   keyboard focus, browser codecs, CORS PUT and native application icons.
+
+## Concurrent local qualification
+
+The Windows local team already compiled and mock-qualified the prior source
+through commit `20286b7`. Their commits, dependency lockfiles, CSP fixes,
+safe backend filesystem-root guard and packaging evidence are preserved.
+The newer source must be validated from its own **current HEAD**.
+Our GitHub writes use a branch-head lease and do not force-push or merge.
+Local-team corrections take precedence when reconciling overlapping changes.
 
 ## Critical integration checks
 
@@ -52,5 +61,3 @@ real packaged-WebView startup and layout/navigation inspection. It does not
 cover real GPU/model execution, full Python regression, signed installation,
 visual assistive-technology acceptance or non-Windows packaging. Only the user
 can authorize promoting/merging the completed and accepted work.
-
-

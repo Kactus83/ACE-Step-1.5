@@ -39,7 +39,7 @@ From `apps/ace-studio` on a trusted development workstation:
 ```sh
 node --version
 npm --version
-npm install
+npm ci
 npm run lint
 npm run test
 npm run build
@@ -48,8 +48,9 @@ npm run e2e:mock
 npm run desktop:build
 ```
 
-Record command, exit status, logs and OS versions. Inspect exact npm dependency
-versions, generate/review/commit `package-lock.json` before reproducible `npm ci`.
+Record command, exit status, logs and OS versions. The npm and Cargo
+lockfiles are committed from the prior Windows qualification; prefer
+reproducible `npm ci` and `cargo --locked` verification.
 For desktop packaging record `rustc --version`, `cargo --version`, WebView2/
 GTK/macOS prerequisites, icon validation, CSP and signed/unsigned install tests.
 
@@ -91,13 +92,33 @@ instances. Never treat the fake mock WAV as evidence of inference quality.
     graceful stop, loss plot from real server points, log truncation.
 11. Export: verify typed EXPORT, double confirmation, same/overlapping/root
     directories rejected; perform actual export only to a throwaway destination.
-    The backend deletes an existing destination; verify permissions and
-    symlink behavior separately.
+    Studio's separate endpoint rejects existing destinations and is
+    fail-closed until `ACESTEP_STUDIO_FILE_ROOTS` is configured. The legacy
+    `/v1/training/export` deletes existing destinations; Studio never calls it.
 12. Run keyboard/screen-reader checks, skip link, light/dark contrast,
     zoom up to 200%, reduced-motion preference, mobile viewports, 320px width,
     media input labels and native WebView desktop controls.
 13. Confirm Gradio, Python CLI, model inference and Python training workflows
     are unchanged apart from reviewed additive API compatibility fixes.
+
+## Incremental validation required after the prior Windows checkpoint
+
+The source commits following `20286b7018469e1700874b25eaad766726236f97`
+introduce an independent Analysis workspace, code-control reuse, corrupted
+catalog recovery, partial EN/FR navigation and progress reporting.
+Re-run `npm ci`, lint, Angular build, all Vitest and Playwright mock scenarios
+at the *current branch HEAD*, not just the earlier locally qualified SHA.
+
+Specifically verify `tests/e2e/analysis.spec.ts`,
+`analysis-codes-reuse.spec.ts`, `library-recovery.spec.ts`,
+`locale.spec.ts` and all previous regression suites. Verify non-audio
+tasks show metadata without an audio player and extracted codes are never
+saved in localStorage by presets. New source has **no executed test evidence**
+until the local team records new exit codes and logs.
+
+For real GPU acceptance, exercise extract codes, deep analysis, 5Hz LM metadata
+and code-controlled text2music on a disposable model setup. Do not infer
+backend support from mock responses.
 
 ## Non-negotiable release gate
 
@@ -105,4 +126,3 @@ Draft PR stays unmerged until the remaining real API/GPU, visual,
 multiplatform and full-regression gates are completed, remaining security
 issues are addressed, CI reviewer signs off and user explicitly authorizes
 promotion. Local mock and packaging evidence is not a production certificate.
-

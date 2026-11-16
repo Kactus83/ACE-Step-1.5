@@ -47,19 +47,25 @@ roots. Authentication does not replace this filesystem boundary.
 
 ## Functional areas
 
-- Create: text2music, Cover/Repaint with source/reference uploads, advertised
+- Create: text2music, audio-code-conditioned creation, Cover/Repaint with
+  source/reference uploads, advertised
   Extract/Lego/Complete, waveform boundaries, expert diffusion/DCW/LM panel.
-- Queue & Results: actual status, authenticated audio, server metadata, batch
+- Analyze: semantic audio code extraction, LM-assisted deep recording analysis
+  and description-only metadata analysis via the original backend job queue.
+  Results are non-audio and can be exported or reused explicitly.
+- Queue & Results: server-reported numeric progress when present,
+  authenticated audio, server metadata, batch
   cards, settings/seed restore, approximate A/B audition.
-- Library: optional browser-local projects and bookmarks, tags, favorites,
-  notes and bounded JSON import/export.
+- Library: browser-local projects/bookmarks, tags/favorites, bounded JSON
+  import/export, and backup-first recovery from unreadable local catalogs.
 - Datasets: server-local scan/load/save, sample metadata updates, asynchronous
   labeling and tensor preprocessing.
 - Training: LoRA/LoKr status/start/stop, measured loss, tensor validation and
   explicit non-overwriting adapter export within operator-approved roots.
 - Connection: backend profile, model inventory, explicit initialization and
   real queue statistics.
-- Appearance: persistent light/dark visual preference.
+- Appearance: persistent light/dark and partial English/French navigation
+  preferences. See `docs/localization.md` for untranslated screens.
 
 **Important:** Library saves metadata and temporary audio references, not
 binary files. Explicitly download any track requiring long-term preservation.
@@ -82,6 +88,5 @@ Python API and broader regression commands are in `docs/verification.md`.
 Angular, mock browser, focused Python and Windows package checks have run
 locally and in CI; real GPU/model and screen-reader acceptance has not. See
 `docs/functional-coverage.md`, `docs/continuation.md`,
-`docs/source-checkpoint-4.md`, `docs/security-review.md` and the review files.
+`docs/source-checkpoint-6.md`, `docs/security-review.md` and the review files.
 The draft PR is not production-ready or merge-authorized.
-

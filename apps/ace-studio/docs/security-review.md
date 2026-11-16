@@ -33,6 +33,25 @@ Source-level review only; **not a penetration test, compiled audit or release ap
    clicks; sample-mode lazy LM initialization warns before submitting when
    the LM is not ready. No silent inference process starts.
 
+## New non-audio and recovery boundaries
+
+- Semantic audio codes originate from authenticated task results. The user can
+  explicitly export the full bounded code sequence as TXT. The Create editor
+  accepts up to 1,000,000 characters and does not save it in local presets or
+  browser-local projects. In-memory job requests can contain codes until
+  session disposal; do not add debug logging that prints them.
+- Deep/metadata-only analyses require an explicitly initialized 5Hz LM, and
+  extraction uses a real source upload. Each operation is queued through the
+  same backend without inventing playable audio.
+- Damaged project catalogs are never silently overwritten. The user can
+  export a raw text backup before a two-click corrupt-only reset. Raw backups
+  may contain private prompts, lyrics or notes; the download is initiated
+  only by the user.
+- Partial locale changes alter UI chrome text and the HTML language attribute,
+  but backend errors and user content are not automatically translated.
+- Only finite, backend-provided progress fractions in [0,1] are rendered
+  as percentages. Unreported values retain an indeterminate indicator.
+
 ## Residual risks
 
 - Configured export roots are a path boundary, not an atomic OS sandbox:
@@ -59,4 +78,3 @@ Verify real 401/403/404/409 behavior, blocked cross-origin URLs, CORS preflight
 PUT, safe-export conflicts and symlink test, local-storage corruption and
 multi-tab races, model initialization resource use, native CSP/permissions,
 screen reader, contrast, responsive layouts and the original Python CLI/Gradio.
-
