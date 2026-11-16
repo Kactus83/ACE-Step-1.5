@@ -141,7 +141,9 @@ const server = http.createServer(async (req, res) => {
       ? "codes" : lastSubmittedRequest?.full_analysis_only || flag("full_analysis_only")
         ? "deep" : lastSubmittedRequest?.analysis_only ? "metadata" : null;
     const id = "mock-" + (++sequence);
-    jobs.set(id, { prompt, polls: 0, analysisMode });
+    const variants = Number.isInteger(lastSubmittedRequest?.batch_size)
+      ? Math.max(1, Math.min(8, lastSubmittedRequest.batch_size)) : 1;
+    jobs.set(id, { prompt, polls: 0, analysisMode, variants });
     respond(wrap({ task_id: id, status: "queued", queue_position: 1 })); return;
   }
   if (url.pathname === "/query_result" && req.method === "POST") {
@@ -181,9 +183,14 @@ const server = http.createServer(async (req, res) => {
             lyrics: "", status: 1, metas: { bpm: 87, keyscale: "G major" }
           }]) };
       }
+      const samples = Array.from({ length: job.variants }, (_, index) => ({
+        file: index === 0 ? "/v1/audio?path=%2Fmock%2Fsilence.wav"
+          : "/v1/audio?path=%2Fmock%2Fsilence-" + (index + 1) + ".wav",
+        prompt: job.prompt, status: 1, seed_value: String(42 + index),
+        metas: { bpm: 120, variant: index + 1 }
+      }));
       return { task_id: id, status: 1, progress_text: "Done",
-        result: JSON.stringify([{ file: "/v1/audio?path=%2Fmock%2Fsilence.wav",
-          prompt: job.prompt, status: 1, seed_value: "42", metas: { bpm: 120 } }]) };
+        result: JSON.stringify(samples) };
     });
     respond(wrap(result)); return;
   }
