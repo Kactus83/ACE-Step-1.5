@@ -10,6 +10,8 @@ const port = Number(process.env.ACE_STUDIO_MOCK_PORT || 18081);
 let sequence = 0;
 const jobs = new Map();
 let lastSubmittedRequest = null;
+let rejectTaskAuth = false;
+let rejectedTaskPolls = 0;
 let trainingActive = false;
 let lmInitialized = false;
 let lastModelInit = null;
@@ -120,6 +122,14 @@ const server = http.createServer(async (req, res) => {
     respond(wrap({ message: "Stopping training..." })); return;
   }
   if (await datasetSimulator(req, url, respond)) return;
+  if (url.pathname === "/__mock__/task_auth" && req.method === "POST") {
+    rejectTaskAuth = url.searchParams.get("reject") === "1";
+    rejectedTaskPolls = 0;
+    respond(wrap({ rejectTaskAuth })); return;
+  }
+  if (url.pathname === "/__mock__/task_auth" && req.method === "GET") {
+    respond(wrap({ rejectTaskAuth, rejectedTaskPolls })); return;
+  }
   if (url.pathname === "/__mock__/last_submission" && req.method === "GET") {
     respond(wrap(lastSubmittedRequest)); return;
   }
@@ -147,6 +157,11 @@ const server = http.createServer(async (req, res) => {
     respond(wrap({ task_id: id, status: "queued", queue_position: 1 })); return;
   }
   if (url.pathname === "/query_result" && req.method === "POST") {
+    if (rejectTaskAuth) {
+      rejectedTaskPolls++;
+      respond({ detail: "Unauthorized mock polling" }, 401);
+      return;
+    }
     const chunks = [];
     for await (const chunk of req) chunks.push(chunk);
     let ids = [];
