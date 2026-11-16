@@ -20,6 +20,7 @@ test("connect, queue, inspect job and request playable audio", async ({ page }) 
 });
 
 test("refuses generation when no backend is available", async ({ page }) => {
+  await page.route("http://127.0.0.1:8001/**", route => route.abort());
   await page.goto("/");
   await page.getByLabel("Music description").fill("No offline simulation");
   await expect(page.getByRole("button", { name: /Generate music/ })).toBeDisabled();

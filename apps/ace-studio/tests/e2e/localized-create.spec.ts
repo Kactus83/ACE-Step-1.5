@@ -10,7 +10,7 @@ test("switch language while editing advanced diffusion and DCW without losing va
   await page.getByRole("button", { name: "Switch interface to French" }).click();
   await expect(page.getByRole("heading", { name: "Créez quelque chose de nouveau." }))
     .toBeVisible();
-  await page.getByLabel("Description musicale").fill("Percussions organiques et nappes analogiques");
+  await page.locator("#prompt").fill("Percussions organiques et nappes analogiques");
   await page.getByText("Réglages avancés").click();
   await expect(page.getByRole("heading", { name: "Ordonnanceur de diffusion" })).toBeVisible();
   await page.getByLabel("Politique DCW").selectOption("on");

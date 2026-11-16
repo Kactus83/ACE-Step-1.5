@@ -73,6 +73,10 @@ def _collect_model_inventory(
         loaded_dit_models[third_model] = True
 
     available_dit_models = set(loaded_dit_models.keys())
+    # The configured primary model remains a valid explicit initialization
+    # choice even before its checkpoint has been materialized locally.
+    if primary_model:
+        available_dit_models.add(primary_model)
     available_lm_models = set()
 
     if os.path.isdir(checkpoint_dir):

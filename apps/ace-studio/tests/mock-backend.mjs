@@ -54,6 +54,11 @@ const server = http.createServer(async (req, res) => {
       models_initialized: true, llm_initialized: lmInitialized })); return;
   }
   if (url.pathname === "/v1/models" && req.method === "GET") {
+    // The real server reserves this route for the OpenAI/OpenRouter-compatible
+    // model list. Studio must use the unambiguous inventory endpoint below.
+    respond({ object: "list", data: [] }); return;
+  }
+  if (url.pathname === "/v1/model_inventory" && req.method === "GET") {
     respond(wrap({ models: [{ name: "acestep-v15-turbo", is_loaded: true, is_default: true,
       supported_task_types: ["text2music", "cover", "repaint"] },
       { name: "acestep-v15-base", is_loaded: false,

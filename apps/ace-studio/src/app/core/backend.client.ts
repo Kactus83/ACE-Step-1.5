@@ -42,7 +42,7 @@ export class BackendClient {
   /** @public Enumerate available server models. */
   async models(): Promise<ModelInventory> {
     const data = await firstValueFrom(this.http.get<unknown>(
-      this.connection.endpoint() + "/v1/models", { headers: this.headers() }));
+      this.connection.endpoint() + "/v1/model_inventory", { headers: this.headers() }));
     return decodeModelInventory(unwrap<unknown>(data));
   }
 
