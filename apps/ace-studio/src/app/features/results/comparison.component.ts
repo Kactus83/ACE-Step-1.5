@@ -34,6 +34,17 @@ export class ComparisonComponent {
   readonly b = computed(() => this.options().find(item => item.id === this.selectedB()) || null);
   readonly urlA = signal<string | null>(null);
   readonly urlB = signal<string | null>(null);
+  private readonly loadedRevision = signal(-1);
+  private readonly loadedFiles = signal<readonly [string, string] | null>(null);
+
+  /** @public Playback is valid only for the current backend and exact file pair. */
+  readonly ready = computed(() => {
+    const files = this.loadedFiles();
+    return this.loadedRevision() === this.connection.revision()
+      && files !== null
+      && files[0] === this.a()?.file && files[1] === this.b()?.file
+      && this.urlA() !== null && this.urlB() !== null;
+  });
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
@@ -45,6 +56,8 @@ export class ComparisonComponent {
     this.error.set(null);
     this.urlA.set(null);
     this.urlB.set(null);
+    this.loadedFiles.set(null);
+    this.loadedRevision.set(-1);
     if (slot === "A") this.selectedA.set(target.value);
     else this.selectedB.set(target.value);
   }
@@ -61,6 +74,8 @@ export class ComparisonComponent {
     }
     const revision = this.connection.revision();
     this.loading.set(true);
+    this.loadedFiles.set(null);
+    this.loadedRevision.set(-1);
     this.error.set(null);
     try {
       const [urlA, urlB] = await Promise.all([
@@ -70,6 +85,8 @@ export class ComparisonComponent {
         || this.a()?.id !== choiceA.id || this.b()?.id !== choiceB.id) return;
       this.urlA.set(urlA);
       this.urlB.set(urlB);
+      this.loadedFiles.set([choiceA.file, choiceB.file]);
+      this.loadedRevision.set(revision);
     } catch (error: unknown) {
       if (revision === this.connection.revision()) this.error.set(
         error instanceof Error ? error.message : this.locale.text("compare.errorLoad"));
@@ -78,6 +95,7 @@ export class ComparisonComponent {
 
   /** @public Audition one channel, pausing the other. */
   async audition(slot: "A" | "B"): Promise<void> {
+    if (!this.ready()) return;
     const active = slot === "A" ? this.playerA()?.nativeElement : this.playerB()?.nativeElement;
     const other = slot === "A" ? this.playerB()?.nativeElement : this.playerA()?.nativeElement;
     if (!active) return;
@@ -92,6 +110,7 @@ export class ComparisonComponent {
    * @remarks HTMLMediaElement is not a sample-accurate synchronized mixer.
    */
   async playTogether(): Promise<void> {
+    if (!this.ready()) return;
     const a = this.playerA()?.nativeElement, b = this.playerB()?.nativeElement;
     if (!a || !b) return;
     this.stop();
@@ -111,5 +130,6 @@ export class ComparisonComponent {
     this.playerB()?.nativeElement.pause();
   }
 }
+
 
 

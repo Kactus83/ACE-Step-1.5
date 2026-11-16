@@ -28,7 +28,7 @@
       <button type="button" class="secondary-action" [disabled]="loading()"
         (click)="load()">{{ loading() ? locale.text('compare.loading') : locale.text('compare.load') }}</button>
     }
-    @if (urlA() && urlB()) {
+    @if (ready()) {
       <div class="comparison-players">
         <div><strong>{{ locale.text('compare.trackA') }}</strong>
           <audio #playerA [src]="urlA()" preload="none" controls
@@ -54,5 +54,6 @@
   }
   @if (error()) { <p class="field-error" role="alert">{{ error() }}</p> }
 </section>
+
 
 
