@@ -120,9 +120,37 @@ For real GPU acceptance, exercise extract codes, deep analysis, 5Hz LM metadata
 and code-controlled text2music on a disposable model setup. Do not infer
 backend support from mock responses.
 
+
+## Checkpoint 7 delta — not covered by the Windows baseline
+
+Source commits after `111bd004caadb43c48e451396e7083b22e791c31`
+introduced the typed bilingual Queue/Batch/A-B and Library UI, localized date
+display, dedicated translation dictionaries, and backend-change A/B media
+invalidation. The independent Windows team's earlier build/test evidence
+remains valid **only for the earlier SHA**, not the new branch HEAD.
+
+Run the entire existing suite at current HEAD and specifically include:
+- Vitest: `locale-workspaces.test.ts`, `localized-date.test.ts`,
+  `batch-navigation.test.ts`, `job-session-codec.test.ts`,
+  `dataset-edit-guard.test.ts`, `backend-error.test.ts`.
+- Playwright mock: `localized-workspaces.spec.ts`,
+  `batch-navigation.spec.ts`, `dataset-conflict.spec.ts`,
+  `auth-recovery.spec.ts`, `comparison-connection.spec.ts`.
+- Manually switch EN↔FR while Queue, A/B and a saved project are open.
+  Confirm user metadata, seeds, IDs and backend error messages remain
+  unchanged; inspect long French buttons at 320px width and 200% zoom.
+- Verify an authorization failure cannot be bypassed by the queue's
+  "Check jobs now" button; reconnect through Connection to re-enable polling.
+- Verify that switching endpoint/token invalidates loaded A/B audio immediately.
+
+**None of the tests in this checkpoint were executed by the web authoring
+environment.** Record toolchain, exit status, test counts, SHA and logs after
+the next local team validation pass.
+
 ## Non-negotiable release gate
 
 Draft PR stays unmerged until the remaining real API/GPU, visual,
 multiplatform and full-regression gates are completed, remaining security
 issues are addressed, CI reviewer signs off and user explicitly authorizes
 promotion. Local mock and packaging evidence is not a production certificate.
+

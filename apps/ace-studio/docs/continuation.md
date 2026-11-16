@@ -1,4 +1,4 @@
-# ACE Studio — Autonomous coordination and next source passes (checkpoint 6)
+# ACE Studio — Autonomous coordination and next source passes (checkpoint 7)
 
 Repository: `Kactus83/ACE-Step-1.5`
 Branch: `feature/ace-studio-angular-tauri`
@@ -47,29 +47,35 @@ desktop platforms and screen-reader acceptance remain unverified.
   automatic GPU work; excluded from presets and local project storage.
 - Description-from-analysis to Create, explicit intent only.
 - Queue/status/results, authenticated audio, actual progress fractions when
-  valid, multiple variants, approximate A/B audition and seed restoration.
+  valid, day-grouped multi-variant explorer, approximate A/B audition with
+  backend-revision invalidation and seed restoration. Recovered session IDs
+  are bound to their originating backend; 401/403 suspend background polling
+  until explicit successful reconnection.
 - Local project library, bookmarks, notes/tags/favorites, bounded JSON
   import/export, stale-tab protection and **backup-first corrupt-data
   recovery with two-click reset only when the current catalog is invalid**.
-- Datasets scan/load/save, sample updates, async label/tensors, LoRA/LoKr
+- Datasets scan/load/save, read-before-write metadata conflict checks,
+  sample updates, async label/tensors, LoRA/LoKr
   training/status/stop/loss and safe adapter export within explicitly
   approved server directories. Legacy destructive export route unchanged.
-- Dark/light tokens, keyboard help with Alt+1–7, initial typed EN/FR
-  persistence and partial localized navigation/Analysis labels.
+- Dark/light tokens, keyboard help with Alt+1–7, typed EN/FR persistence,
+  translated navigation, Analysis, Queue, A/B and Library. Localized dates
+  use client timezone; other forms and backend-owned errors remain untranslated.
 
 ## Highest-priority remaining source work
 
-1. **Batch/results explorer:** time/model groupings, batch variant navigation
-   and explicit repeat/compare workflows with source reattachment, without
-   inventing GPU cancellation or persisting audio binaries.
+1. **Batch/results explorer:** daily groups and individual variant navigation
+   now exist. Complete per-model filters, batch sorting, intentional repeat
+   with source reattachment and more detailed seed/metadata comparisons,
+   without inventing GPU cancellation or persisting audio binaries.
 2. **API lifecycle robustness:** task and server errors (401/403/404/409),
    recovery/timeouts, capability unavailable UX, pre-existing task
    observation and strict model/profile compatibility.
 3. **Server-global dataset contention:** clear ownership warnings, active
    task recovery, safe write/overwrite rules and coordination guidance.
-4. **Internationalization:** extend typed EN/FR strings to Create, jobs,
-   library, datasets, training, connection and all form errors. Current
-   language preference translates navigation and parts of Analysis only.
+4. **Internationalization:** Queue/Batch/A-B and Library now translated;
+   extend typed EN/FR strings to Create, results audio-card details, datasets,
+   training, Connection and validation errors, including French visual QA.
 5. **Native acceptance:** decide browser versus Tauri media save/dialog
    boundary with a capability-gated adapter, without blanket filesystem
    permissions or duplicate Python processes. Validate actual packaged
@@ -89,7 +95,9 @@ At **current branch HEAD**, rerun:
 - `npm ci && npm run lint && npm run test && npm run build`
 - `npm run e2e:mock` including `analysis.spec.ts`,
   `analysis-codes-reuse.spec.ts`, `library-recovery.spec.ts`,
-  `locale.spec.ts` and existing regressions
+  `locale.spec.ts`, `localized-workspaces.spec.ts`, `batch-navigation.spec.ts`,
+  `dataset-conflict.spec.ts`, `auth-recovery.spec.ts`,
+  `comparison-connection.spec.ts` and all older regressions
 - focused Python tests and later real GPU analysis/code-control paths
 - Windows packaged WebView navigation and file downloads; record exact
   exit status, SHA, platform and evidence
@@ -106,4 +114,5 @@ no silent loading/downloading, no API secrets in browser storage,
 no native shell/filesystem wildcard capabilities, no Python engine duplication,
 and no claim of 100% or production readiness without both complete source
 and actual acceptance evidence.
+
 
