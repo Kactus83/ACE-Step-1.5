@@ -26,12 +26,18 @@
     <pre class="metadata-lyrics analysis-code">{{ codePreview() }}{{ codeTruncated() ? '…' : '' }}</pre>
     <p class="small-note">Only the first 2,500 characters are previewed.
       Download the full sequence as a local text file to retain it.</p>
-    <button type="button" class="secondary-action" (click)="downloadCodes()">
-      Download audio codes as TXT
-    </button>
+    <div class="comparison-actions">
+      <button type="button" class="secondary-action" (click)="downloadCodes()">
+        Download audio codes as TXT
+      </button>
+      <button type="button" class="secondary-action" (click)="reuseCodes()">
+        Use semantic codes in Create
+      </button>
+    </div>
     @if (downloaded()) { <p class="small-note" role="status">Code file export requested.</p> }
   }
   <p class="small-note">These results are server-reported estimates or encoded
     semantic values, not a verified musical transcription or rendered audio.</p>
 </section>
+
 

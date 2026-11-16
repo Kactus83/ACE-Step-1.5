@@ -25,9 +25,10 @@
         (click)="deletePreset()">{{ deletingPreset() ? 'Confirm delete' : 'Delete preset' }}</button>
     </div>
   }
-  <p class="small-note">Stored locally on this device. Audio, jobs and API keys are not included.</p>
+  <p class="small-note">Stored locally on this device. Audio, jobs, semantic audio codes and API keys are not included.</p>
   @if (error()) { <p class="field-error" role="alert">{{ error() }}</p> }
   @if (notice()) { <p class="small-note" role="status">{{ notice() }}</p> }
 </section>
+
 
 

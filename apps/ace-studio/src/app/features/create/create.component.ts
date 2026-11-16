@@ -71,6 +71,16 @@ export class CreateComponent implements OnInit {
         : "Generation settings and reported seed restored. Review before generating.");
       return;
     }
+    const codes = this.workflow.takeCodes();
+    if (codes) {
+      this.resetMedia();
+      this.form.patchValue({
+        task_type: "text2music", sample_mode: false,
+        thinking: false, audio_code_string: codes.codes
+      });
+      this.error.set("Semantic audio codes loaded. Enter a music description and review settings before generating.");
+      return;
+    }
     const draft = this.workflow.draft();
     if (!draft) return;
     this.form.patchValue({
@@ -190,4 +200,5 @@ export class CreateComponent implements OnInit {
     }
   }
 }
+
 

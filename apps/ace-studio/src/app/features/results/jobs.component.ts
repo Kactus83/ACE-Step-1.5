@@ -61,12 +61,19 @@ export class JobsComponent {
     this.reuse.emit();
   }
 
+  /** @public Transfer extracted semantic codes to Create without persisting or auto-running. */
+  useCodes(codes: string): void {
+    this.workflow.useCodes(codes);
+    this.reuse.emit();
+  }
+
   /** @public Move a real generated audio artifact into a new edit intent. */
   edit(audio: GeneratedAudio, mode: "cover" | "repaint"): void {
     this.workflow.useAudio(audio, mode);
     this.reuse.emit();
   }
 }
+
 
 
 

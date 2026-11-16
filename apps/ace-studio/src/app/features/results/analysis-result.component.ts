@@ -3,7 +3,7 @@
  * @remarks Accessible inspection and deliberate export of non-audio backend results.
  * @public
  */
-import { Component, computed, input, signal } from "@angular/core";
+import { Component, computed, input, output, signal } from "@angular/core";
 import { AnalysisResult } from "../../core/api.types";
 
 /** @public Metadata/code result card that never creates an audio player. */
@@ -15,9 +15,17 @@ import { AnalysisResult } from "../../core/api.types";
 export class AnalysisResultComponent {
   readonly result = input.required<AnalysisResult>();
   readonly jobId = input.required<string>();
+  /** @public Ask parent to stage a user-approved code-controlled generation. */
+  readonly useCodesRequested = output<string>();
   readonly downloaded = signal(false);
   readonly codePreview = computed(() => this.result().audioCodes?.slice(0, 2500) || "");
   readonly codeTruncated = computed(() => (this.result().audioCodes?.length || 0) > 2500);
+
+  /** @public Reuse the exact in-memory code sequence without starting a task. */
+  reuseCodes(): void {
+    const codes = this.result().audioCodes;
+    if (codes) this.useCodesRequested.emit(codes);
+  }
 
   /** @public Export exactly the already received codes; no backend file access. */
   downloadCodes(): void {
@@ -36,4 +44,5 @@ export class AnalysisResultComponent {
     this.downloaded.set(true);
   }
 }
+
 

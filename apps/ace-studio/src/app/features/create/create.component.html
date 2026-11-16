@@ -188,6 +188,17 @@
         </label>
         <ace-create-expert [form]="form" />
         <ace-create-source-edit [form]="form" [mode]="selectedMode()" />
+        @if (selectedMode() === 'text2music' && !changes().sample_mode) {
+          <label class="field" for="semantic-audio-codes">
+            <span>Semantic audio codes <small>optional · experimental</small></span>
+            <textarea id="semantic-audio-codes" formControlName="audio_code_string"
+              rows="4" maxlength="1000000" spellcheck="false"
+              placeholder="Paste a code sequence or use one from the Analysis results"></textarea>
+          </label>
+          <p class="small-note">Provided codes bypass the language model's code generation.
+            Turn off LM thinking to use them. Codes are kept in memory for this
+            session and are excluded from saved presets and projects.</p>
+        }
         @if (selectedMode() === 'cover') {
           <label class="field" for="cover-strength"><span>Cover strength (0–1)</span>
             <input id="cover-strength" type="number" min="0" max="1" step=".05"
@@ -220,6 +231,7 @@
     </section>
   </aside>
 </form>
+
 
 
 
