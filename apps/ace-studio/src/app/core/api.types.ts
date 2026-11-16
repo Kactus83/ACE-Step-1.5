@@ -70,6 +70,8 @@ export interface GenerateRequest {
   readonly full_analysis_only?: boolean;
   /** @public Encode a source into semantic codes without rendering audio. */
   readonly extract_codes_only?: boolean;
+  /** @public Ephemeral backend semantic audio codes; never persisted in presets. */
+  readonly audio_code_string?: string;
   readonly audio_duration?: number;
   readonly bpm?: number;
   readonly key_scale?: string;
@@ -184,6 +186,7 @@ export interface StudioJob {
   /** @public Reference audio upload needed, but never persisted on the client. */
   readonly hasReferenceAudio?: boolean;
 }
+
 
 
 

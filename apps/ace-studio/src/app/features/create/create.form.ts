@@ -20,6 +20,7 @@ export function createGenerationForm(fb: FormBuilder) {
     repaint_wav_crossfade_sec: [0, [Validators.min(0), Validators.max(10)]],
     use_tiled_decode: [true],
     prompt: ["", [Validators.required, Validators.maxLength(5000)]],
+    audio_code_string: ["", [Validators.maxLength(1_000_000)]],
     lyrics: [""],
     instrumental: [true],
     task_type: ["text2music"],
@@ -60,6 +61,7 @@ export function createGenerationForm(fb: FormBuilder) {
     lm_top_p: [0.9, [Validators.min(0.01), Validators.max(0.99)]]
   });
 }
+
 
 
 

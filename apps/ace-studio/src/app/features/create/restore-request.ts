@@ -21,6 +21,7 @@ export function restoreGenerateRequest(
     track_name: displayTitle.slice(0, 120),
     target_stem: hasStem ? request.track_name || "drums" : "drums",
     track_classes: request.track_classes?.join(", ") || "",
+    audio_code_string: request.audio_code_string || "",
     global_caption: request.global_caption ?? "",
     cover_noise_strength: request.cover_noise_strength ?? 0,
     chunk_mask_mode: request.chunk_mask_mode ?? "auto",
@@ -84,6 +85,7 @@ export function withResultSeed(
   return Number.isSafeInteger(seed) && seed >= 0
     ? { ...request, seed, use_random_seed: false } : request;
 }
+
 
 
 

@@ -13,6 +13,7 @@ export interface CreateFormSnapshot extends ExpertSnapshot, SourceEditSnapshot {
   readonly target_stem: string;
   readonly track_classes: string;
   readonly prompt: string;
+  readonly audio_code_string: string;
   readonly lyrics: string;
   readonly instrumental: boolean;
   readonly task_type: string;
@@ -50,6 +51,13 @@ export function mapGenerateRequest(value: CreateFormSnapshot): GenerateRequest {
   const mode = value.task_type as TaskType;
   const needsStem = mode === "extract" || mode === "lego";
   const sample = mode === "text2music" && value.sample_mode;
+  const suppliedCodes = value.audio_code_string.trim();
+  if (suppliedCodes.length > 1_000_000) {
+    throw new Error("Semantic audio codes exceed the 1 MB text limit.");
+  }
+  if (suppliedCodes && (mode !== "text2music" || sample || value.thinking)) {
+    throw new Error("Use audio codes only in regular text-to-music with LM thinking disabled.");
+  }
   if (needsStem && !TRACK_NAMES.some(name => name === value.target_stem)) {
     throw new Error("Choose a supported instrument stem.");
   }
@@ -64,6 +72,7 @@ export function mapGenerateRequest(value: CreateFormSnapshot): GenerateRequest {
     lyrics: sample ? "" : value.instrumental ? "[inst]" : value.lyrics,
     sample_mode: sample,
     sample_query: sample ? value.prompt.trim() : undefined,
+    audio_code_string: suppliedCodes || undefined,
     task_type: mode,
     model: value.model || undefined,
     thinking: value.thinking,
@@ -88,6 +97,7 @@ export function mapGenerateRequest(value: CreateFormSnapshot): GenerateRequest {
     audio_format: value.audio_format as GenerateRequest["audio_format"]
   };
 }
+
 
 
 

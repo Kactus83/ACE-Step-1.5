@@ -56,11 +56,14 @@ export class CreatePresetsComponent {
   restorePreset(): void {
     const preset = this.presets.get(this.selectedPresetId());
     if (!preset) return;
-    this.form().patchValue(preset.fields as unknown as
-      Parameters<ReturnType<typeof createGenerationForm>["patchValue"]>[0]);
+    this.form().patchValue({
+      ...preset.fields as unknown as
+        Parameters<ReturnType<typeof createGenerationForm>["patchValue"]>[0],
+      audio_code_string: ""
+    });
     this.resetMedia.emit();
     this.error.set(null);
-    this.notice.set("Preset restored. Choose source media again if needed.");
+    this.notice.set("Preset restored. Source media and semantic audio codes were cleared.");
   }
 
   /** @public Require two explicit clicks before removing local preset data. */
@@ -74,4 +77,5 @@ export class CreatePresetsComponent {
     this.notice.set("Preset deleted from this device.");
   }
 }
+
 
