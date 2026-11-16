@@ -1,6 +1,6 @@
 /** @module api-decoder-test @remarks Offline regression coverage for legacy ACE-Step task envelopes. */
 import { describe, expect, it } from "vitest";
-import { decodeTask, normalizeAudioUrl, normalizeEndpoint, unwrap } from "../../src/app/core/api-decoder";
+import { decodeReportedProgress, decodeTask, normalizeAudioUrl, normalizeEndpoint, unwrap } from "../../src/app/core/api-decoder";
 
 describe("standalone API envelope", () => {
   it("unwraps a wrapped object", () => {
@@ -44,6 +44,18 @@ describe("query_result legacy result decoding", () => {
     expect(() => decodeTask({ status: 1, result: "broken JSON" })).toThrow("Malformed JSON");
     expect(() => decodeTask({ status: 1, result: '{"file":"bad"}' })).toThrow("array");
     expect(() => decodeTask({ status: "1", result: "[]" })).toThrow("Malformed");
+  });
+});
+
+describe("server-authoritative progress", () => {
+  it("never displays invented or unbounded backend progress", () => {
+    expect(decodeReportedProgress(0)).toBe(0);
+    expect(decodeReportedProgress(0.25)).toBe(0.25);
+    expect(decodeReportedProgress(1)).toBe(1);
+    expect(decodeReportedProgress(-0.01)).toBeUndefined();
+    expect(decodeReportedProgress(1.0001)).toBeUndefined();
+    expect(decodeReportedProgress(Number.NaN)).toBeUndefined();
+    expect(decodeReportedProgress("0.75")).toBeUndefined();
   });
 });
 

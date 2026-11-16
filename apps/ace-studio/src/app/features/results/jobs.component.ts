@@ -48,6 +48,15 @@ export class JobsComponent {
     if (el instanceof HTMLInputElement) this.search.set(el.value);
   }
 
+  /**
+   * @public Report actual server-supplied progress as an integer percent.
+   * @returns Null unless the backend supplied a finite normalized value.
+   */
+  reportedProgress(job: StudioJob): number | null {
+    const progress = job.results.find(result => typeof result.progress === "number")?.progress;
+    return progress === undefined ? null : Math.round(progress * 100);
+  }
+
   /** @public Distinguish successful analysis-only jobs from playable audio results. */
   hasPlayableAudio(job: StudioJob): boolean {
     return job.results.some(result => Boolean(result.file));

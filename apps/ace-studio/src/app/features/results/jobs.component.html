@@ -46,11 +46,22 @@
             [class.failed]="job.phase === 'failed'">{{ job.phase }}</span>
         </div>
         @if (job.phase === "running" || job.phase === "queued" || job.phase === "unknown") {
-          <div class="indeterminate-progress" aria-label="Generation in progress">
-            <span></span>
-          </div>
+          @let progress = reportedProgress(job);
+          @if (progress !== null) {
+            <div class="determinate-progress" role="progressbar"
+              aria-label="ACE-Step reported task progress"
+              aria-valuemin="0" aria-valuemax="100"
+              [attr.aria-valuenow]="progress">
+              <span [style.width.%]="progress"></span>
+            </div>
+            <p class="small-note">{{ progress }}% reported by ACE-Step.</p>
+          } @else {
+            <div class="indeterminate-progress" aria-label="Task progress not reported">
+              <span></span>
+            </div>
+            <p class="small-note">No numeric progress has been reported by ACE-Step.</p>
+          }
           <p role="status" class="progress-note">{{ job.progressText || "Waiting for the backend…" }}</p>
-          <p class="small-note">The engine has not supplied reliable percentage progress.</p>
         }
         @if (job.phase === "failed") {
           <p class="notice danger" role="alert">

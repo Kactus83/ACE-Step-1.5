@@ -29,6 +29,15 @@ export function unwrap<T>(payload: unknown): T {
 }
 
 /**
+ * @public Accept only valid backend-reported normalized progress.
+ * @returns Server progress in [0,1] or undefined when absent/malformed.
+ */
+export function decodeReportedProgress(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value)
+    && value >= 0 && value <= 1 ? value : undefined;
+}
+
+/**
  * @public Normalize status and decode the list carried by /query_result.
  * @throws Error when the response is corrupt, not when audio is simply absent.
  */
@@ -61,7 +70,7 @@ export function decodeTask(raw: unknown): {
       metas: isObject(item["metas"]) ? item["metas"] : undefined,
       error: typeof item["error"] === "string" ? item["error"] : undefined,
       stage: typeof item["stage"] === "string" ? item["stage"] : undefined,
-      progress: typeof item["progress"] === "number" ? item["progress"] : undefined
+      progress: decodeReportedProgress(item["progress"])
     };
   });
   const phase: JobPhase = dto.status === 0

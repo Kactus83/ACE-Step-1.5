@@ -463,3 +463,13 @@ h3 { font-size: 15px; font-weight: 600; }
   border: 1px solid var(--line); border-radius: 9px; padding: 8px 11px; }
 .locale-toggle:hover { border-color: var(--accent); }
 
+
+/* Determinate bars are displayed only for valid backend-reported fractions. */
+.determinate-progress { height: 7px; background: var(--surface-soft);
+  border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
+.determinate-progress span { display: block; height: 100%;
+  border-radius: inherit; background: var(--accent);
+  transition: width 180ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .determinate-progress span { transition: none; }
+}
