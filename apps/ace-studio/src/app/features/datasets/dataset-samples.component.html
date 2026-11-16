@@ -1,4 +1,8 @@
 <section class="panel" aria-labelledby="dataset-samples-heading">
+  <p class="small-note">This server has one shared active dataset. Before saving,
+    Studio checks that the selected sample has not changed since you opened it.
+    The Python API does not provide atomic revision locks, so simultaneous edits
+    still require operator coordination.</p>
   <div class="section-heading"><div>
     <p class="eyebrow">02 / SAMPLE METADATA</p><h2 id="dataset-samples-heading">Review your tracks</h2>
   </div><span class="section-mark" aria-hidden="true">♫</span></div>
@@ -64,4 +68,5 @@
     <p class="muted">Scan or load a dataset on the Python backend to inspect its samples.</p>
   }
 </section>
+
 

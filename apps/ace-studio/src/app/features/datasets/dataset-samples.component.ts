@@ -20,6 +20,7 @@ export class DatasetSamplesComponent {
   private readonly fb = inject(FormBuilder);
   readonly dataset = inject(DatasetStore);
   readonly selectedIndex = signal<number | null>(null);
+  readonly baseline = signal<DatasetSample | null>(null);
   readonly search = signal("");
   readonly selected = computed(() => {
     const index = this.selectedIndex();
@@ -51,6 +52,7 @@ export class DatasetSamplesComponent {
   /** @public Show a single server-indexed sample in the editor. */
   choose(sample: DatasetSample): void {
     this.selectedIndex.set(sample.index);
+    this.baseline.set({ ...sample });
     this.form.reset({
       caption: sample.caption,
       genre: sample.genre,
@@ -70,7 +72,10 @@ export class DatasetSamplesComponent {
    */
   async save(): Promise<void> {
     const sample = this.selected();
-    if (!sample || this.form.invalid) { this.form.markAllAsTouched(); return; }
+    const original = this.baseline();
+    if (!sample || !original || sample.index !== original.index || this.form.invalid) {
+      this.form.markAllAsTouched(); return;
+    }
     const raw = this.form.getRawValue();
     const request = updateSampleDto(sample, {
       caption: raw.caption,
@@ -83,11 +88,12 @@ export class DatasetSamplesComponent {
       language: raw.language,
       is_instrumental: raw.is_instrumental
     });
-    const updated = await this.dataset.update(request);
+    const updated = await this.dataset.update(request, original);
     if (updated) {
       const latest = this.selected();
       if (latest) this.choose(latest);
     }
   }
 }
+
 

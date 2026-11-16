@@ -6,8 +6,9 @@
 import { Injectable, inject, signal } from "@angular/core";
 import { ConnectionStore } from "../../core/connection.store";
 import { DatasetClient } from "./dataset.client";
+import { assertSampleUnchanged } from "./dataset-edit.guard";
 import {
-  DatasetOverview, SaveDatasetRequest, ScanDatasetRequest, UpdateSampleRequest
+  DatasetOverview, DatasetSample, SaveDatasetRequest, ScanDatasetRequest, UpdateSampleRequest
 } from "./dataset.contracts";
 
 /** @public Shared dataset state with serialized writes and stale-response suppression. */
@@ -95,8 +96,12 @@ export class DatasetStore {
   }
 
   /** @public Update indexed sample metadata, then reload the latest backend state. */
-  async update(request: UpdateSampleRequest): Promise<boolean> {
-    return this.perform(() => this.client.update(request), async (result, token) => {
+  async update(request: UpdateSampleRequest, expected: DatasetSample): Promise<boolean> {
+    return this.perform(async () => {
+      const current = await this.client.samples();
+      assertSampleUnchanged(expected, current);
+      return this.client.update(request);
+    }, async (result, token) => {
       await this.snapshot(token);
       if (token === this.token()) this.message.set(result.message);
     });
@@ -111,4 +116,5 @@ export class DatasetStore {
     this.message.set(null);
   }
 }
+
 
