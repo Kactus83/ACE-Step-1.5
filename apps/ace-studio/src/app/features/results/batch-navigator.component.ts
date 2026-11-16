@@ -5,6 +5,8 @@
  */
 import { Component, computed, input, output, signal } from "@angular/core";
 import { GeneratedAudio } from "../../core/api.types";
+import { LocaleStore } from "../../core/locale.store";
+import { inject } from "@angular/core";
 import {
   VariantSelection, normalizeVariantSelection, playableVariantIndices, stepVariant
 } from "./batch-navigation";
@@ -16,6 +18,7 @@ import {
   templateUrl: "./batch-navigator.component.html"
 })
 export class BatchNavigatorComponent {
+  readonly locale = inject(LocaleStore);
   readonly results = input.required<readonly GeneratedAudio[]>();
   readonly chosen = output<VariantSelection>();
   readonly selection = signal<VariantSelection>("all");
@@ -45,4 +48,5 @@ export class BatchNavigatorComponent {
     this.chosen.emit(normalized);
   }
 }
+
 

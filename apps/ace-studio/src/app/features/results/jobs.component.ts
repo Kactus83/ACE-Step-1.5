@@ -6,6 +6,7 @@
 import { Component, computed, inject, output, signal } from "@angular/core";
 import { DatePipe } from "@angular/common";
 import { JobsStore } from "../../core/jobs.store";
+import { LocaleStore } from "../../core/locale.store";
 import { GeneratedAudio, StudioJob } from "../../core/api.types";
 import { WorkflowStore } from "../../core/workflow.store";
 import { AudioCardComponent } from "./audio-card.component";
@@ -26,6 +27,7 @@ import { AnalysisResultComponent } from "./analysis-result.component";
 })
 export class JobsComponent {
   readonly jobs = inject(JobsStore);
+  readonly locale = inject(LocaleStore);
   readonly filter = signal<JobFilter>("all");
   readonly search = signal("");
   readonly visible = computed(() =>
@@ -110,3 +112,4 @@ export class JobsComponent {
     this.reuse.emit();
   }
 }
+

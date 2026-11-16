@@ -1,43 +1,43 @@
 <div class="page-heading">
   <div><p class="eyebrow">STUDIO MONITOR / OUTPUT</p>
-    <h1>Queue & results.</h1>
-    <p class="lead">Follow actual server jobs, listen to finished tracks, and reuse audio for new ideas.</p>
+    <h1>{{ locale.text('jobs.title') }}</h1>
+    <p class="lead">{{ locale.text('jobs.lead') }}</p>
   </div>
-  <button type="button" class="secondary-action" (click)="jobs.resume()">Check jobs now</button>
+  <button type="button" class="secondary-action" (click)="jobs.resume()">{{ locale.text('jobs.refresh') }}</button>
 </div>
 @if (jobs.error()) {
   <div class="notice warning" role="alert">
-    Connection interrupted: {{ jobs.error() }}. Pending jobs will be checked again automatically.
+    {{ locale.text('jobs.connection') }} {{ jobs.error() }}. {{ jobs.pollingBlocked() ? locale.text('jobs.blocked') : locale.text('jobs.retry') }}
   </div>
 }
 <details class="comparison-details advanced">
-  <summary>Compare finished tracks A/B <span aria-hidden="true">⌄</span></summary>
+  <summary>{{ locale.text('jobs.compare') }} <span aria-hidden="true">⌄</span></summary>
   <ace-comparison />
 </details>
 <div class="queue-filters">
-  <label class="field" for="queue-filter"><span>Status</span>
+  <label class="field" for="queue-filter"><span>{{ locale.text('jobs.status') }}</span>
     <select id="queue-filter" [value]="filter()" (change)="filterChanged($event)">
-      <option value="all">All jobs</option><option value="active">Active</option>
-      <option value="succeeded">Succeeded</option><option value="failed">Failed</option>
+      <option value="all">{{ locale.text('jobs.all') }}</option><option value="active">{{ locale.text('jobs.active') }}</option>
+      <option value="succeeded">{{ locale.text('jobs.succeeded') }}</option><option value="failed">{{ locale.text('jobs.failed') }}</option>
     </select>
   </label>
-  <label class="field" for="queue-search"><span>Search queue</span>
+  <label class="field" for="queue-search"><span>{{ locale.text('jobs.search') }}</span>
     <input id="queue-search" [value]="search()" (input)="searchChanged($event)"
-      placeholder="Title, task ID, prompt…" />
+      [placeholder]="locale.text('jobs.placeholder')" />
   </label>
 </div>
 @if (!jobs.jobs().length) {
   <section class="empty-state panel">
     <span class="empty-icon" aria-hidden="true">♫</span>
-    <h2>Your next masterpiece begins in Create.</h2>
-    <p>As soon as you submit a job, it appears here. Progress is always reported by ACE-Step.</p>
+    <h2>{{ locale.text('jobs.emptyTitle') }}</h2>
+    <p>{{ locale.text('jobs.emptyLead') }}</p>
   </section>
 } @else {
   <div class="job-list">
     @for (group of groups(); track group.key) {
-      <h2 class="job-day-heading">{{ group.label }} · {{ group.count }} jobs</h2>
+      <h2 class="job-day-heading">{{ group.label }} · {{ group.count }} {{ locale.text('jobs.unit') }}</h2>
       @for (job of group.jobs; track job.id) {
-      <article class="panel job-card" [attr.aria-label]="'Generation job ' + job.title">
+      <article class="panel job-card" [attr.aria-label]="locale.text('jobs.job') + job.title">
         <div class="job-heading">
           <div>
             <p class="eyebrow">JOB / {{ job.id.slice(0, 12) }}</p>
@@ -51,23 +51,23 @@
           @let progress = reportedProgress(job);
           @if (progress !== null) {
             <div class="determinate-progress" role="progressbar"
-              aria-label="ACE-Step reported task progress"
+              [attr.aria-label]="locale.text('jobs.numericAria')"
               aria-valuemin="0" aria-valuemax="100"
               [attr.aria-valuenow]="progress">
               <span [style.width.%]="progress"></span>
             </div>
-            <p class="small-note">{{ progress }}% reported by ACE-Step.</p>
+            <p class="small-note">{{ progress }}% {{ locale.text('jobs.reported') }}</p>
           } @else {
-            <div class="indeterminate-progress" aria-label="Task progress not reported">
+            <div class="indeterminate-progress" [attr.aria-label]="locale.text('jobs.indeterminateAria')">
               <span></span>
             </div>
-            <p class="small-note">No numeric progress has been reported by ACE-Step.</p>
+            <p class="small-note">{{ locale.text('jobs.progressAbsent') }}</p>
           }
-          <p role="status" class="progress-note">{{ job.progressText || "Waiting for the backend…" }}</p>
+          <p role="status" class="progress-note">{{ job.progressText || locale.text("jobs.waiting") }}</p>
         }
         @if (job.phase === "failed") {
           <p class="notice danger" role="alert">
-            {{ job.error || job.progressText || "Generation failed. Inspect backend diagnostics." }}
+            {{ job.error || job.progressText || locale.text('jobs.failure') }}
           </p>
         }
         @if (job.phase === "succeeded" && job.analysis; as analysis) {
@@ -75,7 +75,7 @@
             (useCodesRequested)="useCodes($event)"
             (useDescriptionRequested)="useDescription($event)" />
         } @else if (job.phase === "succeeded" && !hasPlayableAudio(job)) {
-          <p class="muted">Job completed without a playable audio file.</p>
+          <p class="muted">{{ locale.text('jobs.noAudio') }}</p>
         }
         @if (job.results.length) {
           <ace-batch-navigator [results]="job.results"
@@ -96,14 +96,15 @@
         }
         <div class="job-actions">
           <button type="button" class="quiet" (click)="jobs.forget(job.id)">
-            Remove from this session
+            {{ locale.text('jobs.forget') }}
           </button>
-          <span class="small-note">Does not cancel inference on the backend</span>
+          <span class="small-note">{{ locale.text('jobs.forgetNote') }}</span>
         </div>
       </article>
       }
     } @empty {
-      <p class="panel muted">No jobs match this filter.</p>
+      <p class="panel muted">{{ locale.text('jobs.noMatch') }}</p>
     }
   </div>
 }
+

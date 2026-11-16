@@ -22,7 +22,8 @@ export class JobsStore implements OnDestroy {
   private disposed = false;
   private pollInFlight = false;
   private failureCount = 0;
-  private authorizationBlocked = false;
+  /** @public Authorization failure suspends automated polling until reconnect. */
+  readonly pollingBlocked = signal(false);
 
   /** @public All session jobs, most recent first. */
   readonly jobs = signal<readonly StudioJob[]>([]);
@@ -84,7 +85,7 @@ export class JobsStore implements OnDestroy {
 
   /** @public Resume polling immediately after reconnection. */
   resume(): void {
-    this.authorizationBlocked = false;
+    this.pollingBlocked.set(false);
     this.failureCount = 0;
     this.schedule(0);
   }
@@ -96,7 +97,7 @@ export class JobsStore implements OnDestroy {
   }
 
   private async poll(): Promise<void> {
-    if (this.disposed || this.pollInFlight || this.authorizationBlocked) return;
+    if (this.disposed || this.pollInFlight || this.pollingBlocked()) return;
     const active = this.jobs().filter(job =>
       job.phase === "queued" || job.phase === "running" || job.phase === "unknown");
     if (!active.length) return;
@@ -126,14 +127,14 @@ export class JobsStore implements OnDestroy {
       if (revision === this.connection.revision()) {
         this.failureCount++;
         const failure = classifyBackendFailure(error);
-        if (failure.kind === "authorization") this.authorizationBlocked = true;
+        if (failure.kind === "authorization") this.pollingBlocked.set(true);
         this.error.set(safeBackendMessage(error));
       }
     } finally {
       this.pollInFlight = false;
       const hasActive = this.jobs().some(job =>
         job.phase === "queued" || job.phase === "running" || job.phase === "unknown");
-      if (hasActive && !this.authorizationBlocked) {
+      if (hasActive && !this.pollingBlocked()) {
         this.schedule(Math.min(30000, 2500 * 2 ** Math.min(4, this.failureCount)));
       }
     }
@@ -149,7 +150,7 @@ export class JobsStore implements OnDestroy {
     this.jobs.set([]);
     this.error.set(null);
     this.failureCount = 0;
-    this.authorizationBlocked = false;
+    this.pollingBlocked.set(false);
     this.persist();
   }
 
@@ -165,6 +166,7 @@ export class JobsStore implements OnDestroy {
     if (this.timer) clearTimeout(this.timer);
   }
 }
+
 
 
 
