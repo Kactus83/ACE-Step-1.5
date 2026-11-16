@@ -6,6 +6,7 @@
 import { Component, computed, inject, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { DatasetStore } from "./dataset.store";
+import { LocaleStore } from "../../core/locale.store";
 import { DatasetSample } from "./dataset.contracts";
 import { updateSampleDto } from "./dataset.decoder";
 
@@ -19,6 +20,7 @@ import { updateSampleDto } from "./dataset.decoder";
 export class DatasetSamplesComponent {
   private readonly fb = inject(FormBuilder);
   readonly dataset = inject(DatasetStore);
+  readonly locale = inject(LocaleStore);
   readonly selectedIndex = signal<number | null>(null);
   readonly baseline = signal<DatasetSample | null>(null);
   readonly search = signal("");
@@ -95,5 +97,6 @@ export class DatasetSamplesComponent {
     }
   }
 }
+
 
 

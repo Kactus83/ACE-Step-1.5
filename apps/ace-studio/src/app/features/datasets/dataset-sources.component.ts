@@ -6,6 +6,7 @@
 import { Component, inject, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { DatasetStore } from "./dataset.store";
+import { LocaleStore } from "../../core/locale.store";
 
 /** @public Scan/load/save controls for one backend-global dataset. */
 @Component({
@@ -17,6 +18,7 @@ import { DatasetStore } from "./dataset.store";
 export class DatasetSourcesComponent {
   private readonly fb = inject(FormBuilder);
   readonly dataset = inject(DatasetStore);
+  readonly locale = inject(LocaleStore);
   readonly confirmation = signal<string | null>(null);
   readonly pendingKind = signal<"scan" | "load" | "save" | null>(null);
   readonly scanForm = this.fb.nonNullable.group({
@@ -82,5 +84,6 @@ export class DatasetSourcesComponent {
   /** @public Refresh server state without changing it. */
   async refresh(): Promise<void> { await this.dataset.refresh(); }
 }
+
 
 

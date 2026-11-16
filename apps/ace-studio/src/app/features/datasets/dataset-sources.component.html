@@ -1,58 +1,59 @@
 <section class="panel" aria-labelledby="dataset-sources-heading">
   <div class="section-heading"><div>
-    <p class="eyebrow">01 / SOURCE</p><h2 id="dataset-sources-heading">Open or create dataset</h2>
+    <p class="eyebrow">01 / SOURCE</p><h2 id="dataset-sources-heading">{{ locale.text('dataset.sources.title') }}</h2>
   </div><span class="section-mark" aria-hidden="true">▧</span></div>
-  <p class="muted">All paths below refer to the Python backend machine. The active dataset is shared by users of this server; replacing it can discard unsaved metadata.</p>
+  <p class="muted">{{ locale.text('dataset.sources.warning') }}</p>
   <details class="advanced" open>
-    <summary>Scan audio directory</summary>
+    <summary>{{ locale.text('dataset.sources.scan') }}</summary>
     <form [formGroup]="scanForm" (ngSubmit)="scan()" (input)="invalidate()" (change)="invalidate()">
-      <label class="field" for="dataset-audio-dir"><span>Backend audio directory</span>
+      <label class="field" for="dataset-audio-dir"><span>{{ locale.text('dataset.sources.audioDir') }}</span>
         <input id="dataset-audio-dir" formControlName="audio_dir" placeholder="/data/audio" required />
       </label>
-      <label class="field" for="dataset-scan-name"><span>Dataset name</span>
+      <label class="field" for="dataset-scan-name"><span>{{ locale.text('dataset.sources.name') }}</span>
         <input id="dataset-scan-name" formControlName="dataset_name" required />
       </label>
-      <label class="field" for="dataset-tag"><span>Custom activation tag</span>
+      <label class="field" for="dataset-tag"><span>{{ locale.text('dataset.sources.activation') }}</span>
         <input id="dataset-tag" formControlName="custom_tag" />
       </label>
       <label class="checkbox-label">
         <input type="checkbox" formControlName="all_instrumental" />
-        <span>All samples instrumental</span>
+        <span>{{ locale.text('dataset.sources.instrumental') }}</span>
       </label>
       <button class="secondary-action" type="submit" [disabled]="scanForm.invalid || dataset.busy()">
-        {{ pendingKind() === 'scan' ? 'Confirm scan and replace' : 'Review scan / replace' }}
+        {{ pendingKind() === 'scan' ? locale.text('dataset.sources.scanConfirm') : locale.text('dataset.sources.scanReview') }}
       </button>
     </form>
   </details>
   <details class="advanced">
-    <summary>Load saved dataset JSON</summary>
+    <summary>{{ locale.text('dataset.sources.load') }}</summary>
     <form [formGroup]="loadForm" (ngSubmit)="load()" (input)="invalidate()">
-      <label class="field" for="dataset-json-path"><span>Existing backend JSON path</span>
+      <label class="field" for="dataset-json-path"><span>{{ locale.text('dataset.sources.loadPath') }}</span>
         <input id="dataset-json-path" formControlName="dataset_path" required />
       </label>
       <button class="secondary-action" type="submit" [disabled]="loadForm.invalid || dataset.busy()">
-        {{ pendingKind() === 'load' ? 'Confirm load and replace' : 'Review load / replace' }}
+        {{ pendingKind() === 'load' ? locale.text('dataset.sources.loadConfirm') : locale.text('dataset.sources.loadReview') }}
       </button>
     </form>
   </details>
   <details class="advanced">
-    <summary>Save dataset to backend filesystem</summary>
+    <summary>{{ locale.text('dataset.sources.save') }}</summary>
     <form [formGroup]="saveForm" (ngSubmit)="save()" (input)="invalidate()">
-      <label class="field" for="dataset-save-path"><span>Output JSON path</span>
+      <label class="field" for="dataset-save-path"><span>{{ locale.text('dataset.sources.savePath') }}</span>
         <input id="dataset-save-path" formControlName="save_path" placeholder="/data/studio_dataset.json" required />
       </label>
-      <label class="field" for="dataset-save-name"><span>Saved dataset name</span>
+      <label class="field" for="dataset-save-name"><span>{{ locale.text('dataset.sources.saveName') }}</span>
         <input id="dataset-save-name" formControlName="dataset_name" required />
       </label>
       <button class="secondary-action" type="submit"
         [disabled]="saveForm.invalid || !dataset.overview() || dataset.busy()">
-        {{ pendingKind() === 'save' ? 'Confirm save to server disk' : 'Review save to disk' }}
+        {{ pendingKind() === 'save' ? locale.text('dataset.sources.saveConfirm') : locale.text('dataset.sources.saveReview') }}
       </button>
     </form>
   </details>
   <div class="dataset-footer">
-    <button class="quiet" type="button" [disabled]="dataset.busy()" (click)="refresh()">Refresh from backend</button>
+    <button class="quiet" type="button" [disabled]="dataset.busy()" (click)="refresh()">{{ locale.text('dataset.sources.refresh') }}</button>
   </div>
 </section>
+
 
 

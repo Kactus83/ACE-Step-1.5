@@ -1,7 +1,7 @@
 <div class="page-heading">
   <div><p class="eyebrow">TRAINING / DATA PREPARATION</p>
-    <h1>Prepare your dataset.</h1>
-    <p class="lead">Curate server-hosted audio, label samples and preprocess tensors for LoRA or LoKr training.</p>
+    <h1>{{ locale.text('dataset.title') }}</h1>
+    <p class="lead">{{ locale.text('dataset.lead') }}</p>
   </div>
 </div>
 @if (dataset.error()) { <p class="notice danger" role="alert">{{ dataset.error() }}</p> }
@@ -17,4 +17,5 @@
     <ace-dataset-samples />
   </div>
 </div>
+
 

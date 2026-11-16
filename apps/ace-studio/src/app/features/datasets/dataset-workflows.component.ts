@@ -7,6 +7,7 @@ import { Component, inject, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { BackendStore } from "../../core/backend.store";
 import { DatasetStore } from "./dataset.store";
+import { LocaleStore } from "../../core/locale.store";
 import { DatasetTasksStore } from "./dataset.tasks.store";
 import { AutoLabelRequest, PreprocessRequest } from "./dataset.contracts";
 
@@ -21,6 +22,7 @@ export class DatasetWorkflowsComponent {
   private readonly fb = inject(FormBuilder);
   readonly backend = inject(BackendStore);
   readonly dataset = inject(DatasetStore);
+  readonly locale = inject(LocaleStore);
   readonly tasks = inject(DatasetTasksStore);
   readonly confirmLabel = signal<string | null>(null);
   readonly confirmPreprocess = signal<string | null>(null);
@@ -40,6 +42,20 @@ export class DatasetWorkflowsComponent {
     skip_existing: [true]
   });
 
+  /** @public Localize known server task phases, preserving unrecognized values. */
+  phaseText(value: string): string {
+    const phases: Readonly<Record<string, "dataset.taskPhase.idle" |
+      "dataset.taskPhase.running" | "dataset.taskPhase.completed" |
+      "dataset.taskPhase.failed">> = {
+      idle: "dataset.taskPhase.idle",
+      running: "dataset.taskPhase.running",
+      completed: "dataset.taskPhase.completed",
+      failed: "dataset.taskPhase.failed"
+    };
+    const key = phases[value];
+    return key ? this.locale.text(key) : value;
+  }
+
   /** @public Clear a confirmation when the corresponding request fields change. */
   changed(kind: "label" | "preprocess"): void {
     if (kind === "label") this.confirmLabel.set(null);
@@ -54,10 +70,10 @@ export class DatasetWorkflowsComponent {
     this.error.set(null);
     if (this.labeling.invalid) { this.labeling.markAllAsTouched(); return; }
     if (!this.dataset.overview()) {
-      this.error.set("Load or scan a dataset before labeling."); return;
+      this.error.set(this.locale.text("dataset.tasks.needDataset")); return;
     }
     if (!this.backend.inventory()?.llm_initialized) {
-      this.error.set("Initialize a backend LM before automatic labeling."); return;
+      this.error.set(this.locale.text("dataset.tasks.needLm")); return;
     }
     if (this.tasks.labelStatus()?.status === "running" || this.tasks.busy()) return;
     const raw = this.labeling.getRawValue();
@@ -78,14 +94,14 @@ export class DatasetWorkflowsComponent {
     this.error.set(null);
     if (this.preprocessing.invalid) { this.preprocessing.markAllAsTouched(); return; }
     if (!this.dataset.overview()?.labeled_count) {
-      this.error.set("At least one labeled dataset sample is required."); return;
+      this.error.set(this.locale.text("dataset.tasks.needLabeled")); return;
     }
     if (this.tasks.preprocessStatus()?.status === "running" || this.tasks.busy()) return;
     const request: PreprocessRequest = {
       output_dir: this.preprocessing.controls.output_dir.value.trim(),
       skip_existing: this.preprocessing.controls.skip_existing.value
     };
-    if (!request.output_dir) { this.error.set("Enter a backend tensor output directory."); return; }
+    if (!request.output_dir) { this.error.set(this.locale.text("dataset.tasks.needOutput")); return; }
     const signature = JSON.stringify(request);
     if (signature !== this.confirmPreprocess()) {
       this.confirmPreprocess.set(signature); return;
@@ -97,4 +113,5 @@ export class DatasetWorkflowsComponent {
   /** @public Refresh only the server-reported statuses of both operations. */
   async refresh(): Promise<void> { await this.tasks.refresh(); }
 }
+
 

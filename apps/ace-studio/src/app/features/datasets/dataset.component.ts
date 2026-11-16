@@ -5,6 +5,7 @@
  */
 import { Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { DatasetStore } from "./dataset.store";
+import { LocaleStore } from "../../core/locale.store";
 import { DatasetTasksStore } from "./dataset.tasks.store";
 import { DatasetSourcesComponent } from "./dataset-sources.component";
 import { DatasetSamplesComponent } from "./dataset-samples.component";
@@ -19,6 +20,7 @@ import { DatasetWorkflowsComponent } from "./dataset-workflows.component";
 })
 export class DatasetComponent implements OnInit, OnDestroy {
   readonly dataset = inject(DatasetStore);
+  readonly locale = inject(LocaleStore);
   readonly tasks = inject(DatasetTasksStore);
 
   /** @public Recover last async task status on entry without creating new tasks. */
@@ -27,4 +29,5 @@ export class DatasetComponent implements OnInit, OnDestroy {
   /** @public Suspend polling on navigation; backend work continues. */
   ngOnDestroy(): void { this.tasks.pause(); }
 }
+
 
