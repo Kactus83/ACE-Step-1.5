@@ -12,6 +12,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { startWith } from "rxjs";
 import { BackendClient } from "../../core/backend.client";
 import { BackendStore } from "../../core/backend.store";
+import { LocaleStore } from "../../core/locale.store";
 import { TaskType } from "../../core/api.types";
 import { ConnectionStore } from "../../core/connection.store";
 import { mapGenerateRequest, TRACK_NAMES } from "./create.request";
@@ -34,6 +35,7 @@ export class CreateComponent implements OnInit {
   private readonly api = inject(BackendClient);
   private readonly connection = inject(ConnectionStore);
   readonly backend = inject(BackendStore);
+  readonly locale = inject(LocaleStore);
   readonly jobs = inject(JobsStore);
   readonly workflow = inject(WorkflowStore);
   readonly stems = TRACK_NAMES;
@@ -67,8 +69,8 @@ export class CreateComponent implements OnInit {
       this.resetMedia();
       this.form.patchValue(restoreGenerateRequest(staged.request, staged.title));
       this.error.set(staged.originalMediaRequired
-        ? "Original source/reference audio is not stored. Reattach media before generating."
-        : "Generation settings and reported seed restored. Review before generating.");
+        ? this.locale.text("create.restoreMedia")
+        : this.locale.text("create.restoreSettings"));
       return;
     }
     const codes = this.workflow.takeCodes();
@@ -78,7 +80,7 @@ export class CreateComponent implements OnInit {
         task_type: "text2music", sample_mode: false,
         thinking: false, audio_code_string: codes.codes
       });
-      this.error.set("Semantic audio codes loaded. Enter a music description and review settings before generating.");
+      this.error.set(this.locale.text("create.codesLoaded"));
       return;
     }
     const draft = this.workflow.draft();
@@ -126,7 +128,7 @@ export class CreateComponent implements OnInit {
       this.source.set(audioBlobToSourceFile(blob, draft.source.file));
       this.workflow.clear();
     } catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Unable to load generated source.");
+      this.error.set(error instanceof Error ? error.message : this.locale.text("create.errorAudio"));
     }
   }
 
@@ -141,33 +143,33 @@ export class CreateComponent implements OnInit {
   async submit(): Promise<void> {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     if (this.backend.health()?.status !== "ok") {
-      this.error.set("Connect a running ACE-Step API before generating.");
+      this.error.set(this.locale.text("create.errorBackend"));
       return;
     }
     const value = this.form.getRawValue();
     const mode = value.task_type as TaskType;
     if (!this.supportedModes().includes(mode)) {
-      this.error.set("The selected model does not advertise this mode."); return;
+      this.error.set(this.locale.text("create.errorMode")); return;
     }
     let sourceFile = this.source();
     if (mode !== "text2music" && !sourceFile && !this.workflow.draft()) {
-      this.error.set("Select a source audio file for this mode."); return;
+      this.error.set(this.locale.text("create.errorSource")); return;
     }
     if (mode === "repaint" && value.repainting_end <= value.repainting_start) {
-      this.error.set("Repaint end must be greater than its start time.");
+      this.error.set(this.locale.text("create.errorRange"));
       return;
     }
     let request;
     try { request = mapGenerateRequest(value); }
     catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Invalid generation settings.");
+      this.error.set(error instanceof Error ? error.message : this.locale.text("create.errorSettings"));
       return;
     }
     if (request.dcw_enabled === true) {
       const fingerprint = JSON.stringify({ revision: this.connection.revision(), value });
       if (this.pendingDcwConfirmation() !== fingerprint) {
         this.pendingDcwConfirmation.set(fingerprint);
-        this.error.set("Forced DCW can distort non-turbo models. Review the warning and submit again to confirm.");
+        this.error.set(this.locale.text("create.errorDcw"));
         return;
       }
     }
@@ -176,7 +178,7 @@ export class CreateComponent implements OnInit {
       const fingerprint = JSON.stringify({ revision: this.connection.revision(), value });
       if (this.pendingSampleConfirmation() !== fingerprint) {
         this.pendingSampleConfirmation.set(fingerprint);
-        this.error.set("Sample mode may initialize the 5Hz language model and consume GPU memory. Submit again to confirm.");
+        this.error.set(this.locale.text("create.errorSample"));
         return;
       }
     }
@@ -194,7 +196,7 @@ export class CreateComponent implements OnInit {
       if (this.jobs.error()) { this.error.set(this.jobs.error()); return; }
       this.showJobs.emit();
     } catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Unable to prepare generation.");
+      this.error.set(error instanceof Error ? error.message : this.locale.text("create.errorPrepare"));
     }
   }
 }
