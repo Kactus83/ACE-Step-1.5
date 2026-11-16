@@ -42,6 +42,9 @@ test("metadata-only job uses initialized LM and renders no fake audio", async ({
     .toBeVisible({ timeout: 15_000 });
   await expect(page.getByText("87", { exact: true })).toBeVisible();
   await expect(page.locator("audio")).toHaveCount(0);
+  await page.getByRole("button", { name: "Use analyzed description in Create" }).click();
+  await expect(page.getByRole("heading", { name: "Create something new." })).toBeVisible();
+  await expect(page.getByLabel("Music description")).toHaveValue("Desert percussion and brass");
 });
 
 test("deep analysis includes backend-measured scalar fields", async ({ page }) => {
