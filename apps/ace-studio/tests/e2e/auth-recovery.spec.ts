@@ -21,6 +21,12 @@ test("an authorization failure suspends automatic polling and a reconnect resume
     const first = (await (await page.request.get(mock + "/__mock__/task_auth")).json()).data;
     expect(first.rejectedTaskPolls).toBe(1);
 
+    await page.getByRole("button", { name: "Queue & results" }).click();
+    await page.getByRole("button", { name: "Check jobs now" }).click();
+    const afterManual = (await (await page.request.get(
+      mock + "/__mock__/task_auth")).json()).data;
+    expect(afterManual.rejectedTaskPolls).toBe(1);
+
     await page.waitForTimeout(3500);
     const later = (await (await page.request.get(mock + "/__mock__/task_auth")).json()).data;
     expect(later.rejectedTaskPolls).toBe(1);
@@ -34,3 +40,4 @@ test("an authorization failure suspends automatic polling and a reconnect resume
     await page.request.post(mock + "/__mock__/task_auth?reject=0");
   }
 });
+

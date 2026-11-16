@@ -83,11 +83,23 @@ export class JobsStore implements OnDestroy {
     } finally { this.submitting.set(false); }
   }
 
-  /** @public Resume polling immediately after reconnection. */
+  /**
+   * @public Refresh pending tasks on demand, except when credentials were refused.
+   * @remarks A queue button cannot bypass an authorization failure.
+   */
   resume(): void {
-    this.pollingBlocked.set(false);
+    if (this.pollingBlocked()) return;
     this.failureCount = 0;
     this.schedule(0);
+  }
+
+  /**
+   * @public Resume a previously blocked queue only after an explicit successful connect.
+   * @remarks Called by the Connection screen after API validation, not by queue buttons.
+   */
+  resumeAfterReconnect(): void {
+    this.pollingBlocked.set(false);
+    this.resume();
   }
 
   private schedule(delayMs: number): void {
@@ -166,6 +178,7 @@ export class JobsStore implements OnDestroy {
     if (this.timer) clearTimeout(this.timer);
   }
 }
+
 
 
 
