@@ -44,7 +44,7 @@ export class JobsStore implements OnDestroy {
       if (!raw) return;
       const entries = decodeSessionJobs(JSON.parse(raw) as unknown,
         this.connection.endpoint());
-      this.jobs.set(entries.map(entry => ({
+      this.jobs.set(entries.map((entry): StudioJob => ({
         ...entry, phase: "unknown", progressText: "Checking recovered job…",
         results: []
       })));
