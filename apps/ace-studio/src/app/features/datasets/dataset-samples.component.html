@@ -1,71 +1,68 @@
 <section class="panel" aria-labelledby="dataset-samples-heading">
-  <p class="small-note">This server has one shared active dataset. Before saving,
-    Studio checks that the selected sample has not changed since you opened it.
-    The Python API does not provide atomic revision locks, so simultaneous edits
-    still require operator coordination.</p>
+  <p class="small-note">{{ locale.text('dataset.samples.warning') }}</p>
   <div class="section-heading"><div>
-    <p class="eyebrow">02 / SAMPLE METADATA</p><h2 id="dataset-samples-heading">Review your tracks</h2>
+    <p class="eyebrow">02 / SAMPLE METADATA</p><h2 id="dataset-samples-heading">{{ locale.text('dataset.samples.title') }}</h2>
   </div><span class="section-mark" aria-hidden="true">♫</span></div>
   @if (dataset.overview(); as overview) {
-    <p class="muted">{{ overview.labeled_count }} / {{ overview.num_samples }} samples labeled by the backend.</p>
-    <label class="field" for="dataset-search"><span>Filter by filename, genre, caption</span>
+    <p class="muted">{{ overview.labeled_count }} / {{ overview.num_samples }} {{ locale.text('dataset.samples.labeled') }}</p>
+    <label class="field" for="dataset-search"><span>{{ locale.text('dataset.samples.filter') }}</span>
       <input id="dataset-search" [value]="search()" (input)="searchChanged($event)"
-        placeholder="Search samples…" />
+        [placeholder]="locale.text('dataset.samples.search')" />
     </label>
-    <div class="dataset-sample-list" role="group" aria-label="Dataset samples">
+    <div class="dataset-sample-list" role="group" [attr.aria-label]="locale.text('dataset.samples.group')">
       @for (item of visible(); track item.index) {
         <button type="button" class="dataset-sample"
           [class.active]="selectedIndex() === item.index" (click)="choose(item)">
           <span>{{ item.index + 1 }}. {{ item.filename }}</span>
-          <small>{{ item.labeled ? 'Labeled' : 'Unlabeled' }} · {{ item.genre || 'No genre' }}</small>
+          <small>{{ item.labeled ? locale.text('dataset.samples.yes') : locale.text('dataset.samples.no') }} · {{ item.genre || locale.text('dataset.samples.noGenre') }}</small>
         </button>
       } @empty {
-        <p class="muted">No matching samples.</p>
+        <p class="muted">{{ locale.text('dataset.samples.noMatches') }}</p>
       }
     </div>
     @if (overview.num_samples > 100) {
-      <p class="small-note">Showing up to 100 matching samples. Filter to locate others.</p>
+      <p class="small-note">{{ locale.text('dataset.samples.limit') }}</p>
     }
     @if (selected(); as sample) {
       <form [formGroup]="form" (ngSubmit)="save()" class="dataset-editor">
-        <p class="eyebrow">EDITING / SAMPLE {{ sample.index + 1 }}</p>
-        <p class="muted">Source: {{ sample.filename }} · {{ sample.duration }}s</p>
-        <label class="field" for="sample-caption"><span>Caption / musical description</span>
+        <p class="eyebrow">{{ locale.text('dataset.samples.editing') }} {{ sample.index + 1 }}</p>
+        <p class="muted">{{ locale.text('dataset.samples.source') }} {{ sample.filename }} · {{ sample.duration }}s</p>
+        <label class="field" for="sample-caption"><span>{{ locale.text('dataset.samples.caption') }}</span>
           <textarea id="sample-caption" formControlName="caption" rows="3"></textarea>
         </label>
-        <label class="field" for="sample-genre"><span>Genre tags</span>
+        <label class="field" for="sample-genre"><span>{{ locale.text('dataset.samples.genre') }}</span>
           <input id="sample-genre" formControlName="genre" />
         </label>
-        <label class="field" for="sample-lyrics"><span>Lyrics</span>
+        <label class="field" for="sample-lyrics"><span>{{ locale.text('dataset.samples.lyrics') }}</span>
           <textarea id="sample-lyrics" formControlName="lyrics" rows="4"></textarea>
         </label>
         <div class="field-row">
-          <label class="field" for="sample-bpm"><span>BPM (0 = unknown)</span>
+          <label class="field" for="sample-bpm"><span>{{ locale.text('dataset.samples.bpm') }}</span>
             <input type="number" id="sample-bpm" formControlName="bpm" min="0" max="400" />
           </label>
-          <label class="field" for="sample-key"><span>Key</span>
+          <label class="field" for="sample-key"><span>{{ locale.text('dataset.samples.key') }}</span>
             <input id="sample-key" formControlName="keyscale" />
           </label>
         </div>
         <div class="field-row">
-          <label class="field" for="sample-timesig"><span>Time signature</span>
+          <label class="field" for="sample-timesig"><span>{{ locale.text('dataset.samples.timeSignature') }}</span>
             <input id="sample-timesig" formControlName="timesignature" />
           </label>
-          <label class="field" for="sample-lang"><span>Vocal language</span>
+          <label class="field" for="sample-lang"><span>{{ locale.text('dataset.samples.language') }}</span>
             <input id="sample-lang" formControlName="language" />
           </label>
         </div>
         <label class="checkbox-label"><input type="checkbox" formControlName="is_instrumental" />
-          <span>Instrumental sample</span>
+          <span>{{ locale.text('dataset.samples.instrumental') }}</span>
         </label>
         <button class="secondary-action" type="submit"
-          [disabled]="form.invalid || dataset.busy()">Save sample metadata</button>
+          [disabled]="form.invalid || dataset.busy()">{{ locale.text('dataset.samples.save') }}</button>
       </form>
     } @else {
-      <p class="small-note">Select an indexed sample to review or edit its metadata.</p>
+      <p class="small-note">{{ locale.text('dataset.samples.select') }}</p>
     }
   } @else {
-    <p class="muted">Scan or load a dataset on the Python backend to inspect its samples.</p>
+    <p class="muted">{{ locale.text('dataset.samples.empty') }}</p>
   }
 </section>
 
