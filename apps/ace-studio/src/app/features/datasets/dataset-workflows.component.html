@@ -1,78 +1,78 @@
 <section class="panel" aria-labelledby="dataset-actions-heading">
   <div class="section-heading"><div>
-    <p class="eyebrow">03 / AUTOMATION</p><h2 id="dataset-actions-heading">Label & preprocess</h2>
+    <p class="eyebrow">03 / AUTOMATION</p><h2 id="dataset-actions-heading">{{ locale.text('dataset.tasks.title') }}</h2>
   </div><span class="section-mark" aria-hidden="true">◎</span></div>
-  <p class="muted">These operations run on the existing Python backend. Closing this screen does not stop them.</p>
+  <p class="muted">{{ locale.text('dataset.tasks.warning') }}</p>
   @if (error()) { <p class="notice danger" role="alert">{{ error() }}</p> }
   <details class="advanced" open>
-    <summary>Automatic sample labeling</summary>
-    <p class="small-note">Requires an initialized language model and may modify metadata on the active backend dataset.</p>
+    <summary>{{ locale.text('dataset.tasks.label') }}</summary>
+    <p class="small-note">{{ locale.text('dataset.tasks.labelNotice') }}</p>
     <form [formGroup]="labeling" (ngSubmit)="startLabeling()"
       (input)="changed('label')" (change)="changed('label')">
       <label class="checkbox-label"><input type="checkbox" formControlName="only_unlabeled" />
-        <span>Process unlabeled samples only</span>
+        <span>{{ locale.text('dataset.tasks.onlyUnlabeled') }}</span>
       </label>
       <label class="checkbox-label"><input type="checkbox" formControlName="skip_metas" />
-        <span>Skip BPM/key/time-signature generation</span>
+        <span>{{ locale.text('dataset.tasks.skipMetas') }}</span>
       </label>
       <label class="checkbox-label"><input type="checkbox" formControlName="format_lyrics" />
-        <span>Format lyrics using the language model</span>
+        <span>{{ locale.text('dataset.tasks.formatLyrics') }}</span>
       </label>
       <label class="checkbox-label"><input type="checkbox" formControlName="transcribe_lyrics" />
-        <span>Transcribe lyrics from sample audio</span>
+        <span>{{ locale.text('dataset.tasks.transcribe') }}</span>
       </label>
       <div class="field-row">
-        <label class="field" for="label-chunk"><span>Chunk size</span>
+        <label class="field" for="label-chunk"><span>{{ locale.text('dataset.tasks.chunk') }}</span>
           <input id="label-chunk" type="number" formControlName="chunk_size" min="1" max="1000" />
         </label>
-        <label class="field" for="label-batch"><span>Batch size</span>
+        <label class="field" for="label-batch"><span>{{ locale.text('dataset.tasks.batch') }}</span>
           <input id="label-batch" type="number" formControlName="batch_size" min="1" max="32" />
         </label>
       </div>
-      <label class="field" for="label-save"><span>Optional auto-save JSON path on backend</span>
+      <label class="field" for="label-save"><span>{{ locale.text('dataset.tasks.savePath') }}</span>
         <input id="label-save" formControlName="save_path" placeholder="/data/labeled.json" />
       </label>
       <button type="submit" class="secondary-action"
         [disabled]="labeling.invalid || tasks.busy() || tasks.labelStatus()?.status === 'running'">
-        {{ confirmLabel() ? 'Confirm GPU labeling' : 'Review automatic labeling' }}
+        {{ confirmLabel() ? locale.text('dataset.tasks.labelConfirm') : locale.text('dataset.tasks.labelReview') }}
       </button>
     </form>
     @if (tasks.labelStatus(); as task) {
       <div class="dataset-task-status" aria-live="polite">
-        <strong>Labeling: {{ task.status }}</strong>
-        <span>{{ task.current }} / {{ task.total }} samples</span>
-        <p>{{ task.progress || 'No progress text reported.' }}</p>
+        <strong>{{ locale.text('dataset.tasks.labeling') }} {{ phaseText(task.status) }}</strong>
+        <span>{{ task.current }} / {{ task.total }} {{ locale.text('dataset.tasks.samples') }}</span>
+        <p>{{ task.progress || locale.text('dataset.tasks.noProgress') }}</p>
         @if (task.error) { <p class="field-error">{{ task.error }}</p> }
       </div>
     }
   </details>
   <details class="advanced">
-    <summary>Preprocess labeled audio into tensors</summary>
-    <p class="small-note">Requires labeled samples and an initialized DiT model. The backend may temporarily offload other models.</p>
+    <summary>{{ locale.text('dataset.tasks.preprocess') }}</summary>
+    <p class="small-note">{{ locale.text('dataset.tasks.preprocessNotice') }}</p>
     <form [formGroup]="preprocessing" (ngSubmit)="startPreprocessing()"
       (input)="changed('preprocess')" (change)="changed('preprocess')">
-      <label class="field" for="tensor-output"><span>Output directory on the backend</span>
+      <label class="field" for="tensor-output"><span>{{ locale.text('dataset.tasks.output') }}</span>
         <input id="tensor-output" formControlName="output_dir" placeholder="/data/tensors" required />
       </label>
       <label class="checkbox-label"><input type="checkbox" formControlName="skip_existing" />
-        <span>Skip existing tensors</span>
+        <span>{{ locale.text('dataset.tasks.skipExisting') }}</span>
       </label>
       <button type="submit" class="secondary-action"
         [disabled]="preprocessing.invalid || tasks.busy() || tasks.preprocessStatus()?.status === 'running'">
-        {{ confirmPreprocess() ? 'Confirm tensor preprocessing' : 'Review preprocessing' }}
+        {{ confirmPreprocess() ? locale.text('dataset.tasks.preprocessConfirm') : locale.text('dataset.tasks.preprocessReview') }}
       </button>
     </form>
     @if (tasks.preprocessStatus(); as task) {
       <div class="dataset-task-status" aria-live="polite">
-        <strong>Preprocessing: {{ task.status }}</strong>
-        <span>{{ task.current }} / {{ task.total }} labeled samples</span>
+        <strong>{{ locale.text('dataset.tasks.preprocessing') }} {{ phaseText(task.status) }}</strong>
+        <span>{{ task.current }} / {{ task.total }} {{ locale.text('dataset.tasks.labeledSamples') }}</span>
         <p>{{ task.progress || 'No progress text reported.' }}</p>
         @if (task.error) { <p class="field-error">{{ task.error }}</p> }
       </div>
     }
   </details>
   <div class="dataset-footer">
-    <button type="button" class="quiet" (click)="refresh()">Refresh task statuses</button>
+    <button type="button" class="quiet" (click)="refresh()">{{ locale.text('dataset.tasks.refresh') }}</button>
   </div>
 </section>
 
