@@ -1,49 +1,49 @@
 <div class="page-heading">
   <div>
     <p class="eyebrow">CREATIVE WORKSPACE / GENERATION</p>
-    <h1>Create something new.</h1>
-    <p class="lead">Describe the music you want to hear. ACE-Step does the heavy lifting on your existing engine.</p>
+    <h1>{{ locale.text('create.title') }}</h1>
+    <p class="lead">{{ locale.text('create.lead') }}</p>
   </div>
-  <div class="header-note">LOCAL INFERENCE <span aria-hidden="true">✳</span> YOUR CONTROL</div>
+  <div class="header-note">{{ locale.text('create.control') }} <span aria-hidden="true">✳</span></div>
 </div>
 
 @if (error()) { <p class="notice danger" role="alert">{{ error() }}</p> }
-@if (backend.error()) { <p class="notice warning" role="status">Connection: {{ backend.error() }}</p> }
+@if (backend.error()) { <p class="notice warning" role="status">{{ locale.text('create.connection') }} {{ backend.error() }}</p> }
 
 <form [formGroup]="form" (ngSubmit)="submit()" class="create-layout">
   <div class="main-panel">
     <section class="panel" aria-labelledby="composition-heading">
       <div class="section-heading">
-        <div><p class="eyebrow">01 / FOUNDATION</p><h2 id="composition-heading">Your sound</h2></div>
+        <div><p class="eyebrow">01 / FOUNDATION</p><h2 id="composition-heading">{{ locale.text('create.sound') }}</h2></div>
         <span class="section-mark" aria-hidden="true">◈</span>
       </div>
-      <label class="field" for="track-title"><span>Track name <small>optional</small></span>
-        <input id="track-title" formControlName="track_name" placeholder="e.g. Midnight frequencies" />
+      <label class="field" for="track-title"><span>{{ locale.text('create.trackName') }} <small>{{ locale.text('create.optional') }}</small></span>
+        <input id="track-title" formControlName="track_name" [placeholder]="locale.text('create.trackExample')" />
       </label>
       <label class="field" for="prompt"><span>
         {{ changes().sample_mode && selectedMode() === 'text2music'
-          ? 'Idea / query for the 5Hz language model' : 'Music description' }}
-        <small>required</small></span>
+          ? locale.text('create.idea') : locale.text('create.description') }}
+        <small>{{ locale.text('create.required') }}</small></span>
         <textarea id="prompt" formControlName="prompt" rows="5"
-          placeholder="A textured, hypnotic downtempo track with warm analog synths, polyrhythmic percussion and an evolving bassline..."></textarea>
+          [placeholder]="locale.text('create.promptPlaceholder')"></textarea>
       </label>
       @if (form.controls.prompt.invalid && form.controls.prompt.touched) {
-        <p class="field-error" role="alert">A description is required (maximum 5,000 characters).</p>
+        <p class="field-error" role="alert">{{ locale.text('create.promptError') }}</p>
       }
 
       <div class="field-row">
-        <label class="field" for="model"><span>Model</span>
+        <label class="field" for="model"><span>{{ locale.text('create.model') }}</span>
           <select id="model" formControlName="model">
-            <option value="">Backend default</option>
+            <option value="">{{ locale.text('create.default') }}</option>
             @for (model of backend.inventory()?.models || []; track model.name) {
-              <option [value]="model.name">{{ model.name }} {{ model.is_loaded ? '· loaded' : '· available' }}</option>
+              <option [value]="model.name">{{ model.name }} {{ model.is_loaded ? locale.text('create.loaded') : locale.text('create.available') }}</option>
             }
           </select>
         </label>
-        <label class="field" for="mode"><span>Creation mode</span>
+        <label class="field" for="mode"><span>{{ locale.text('create.mode') }}</span>
           <select id="mode" formControlName="task_type">
             @for (mode of supportedModes(); track mode) {
-              <option [value]="mode">{{ mode === 'text2music' ? 'Text to music' : mode }}</option>
+              <option [value]="mode">{{ mode === 'text2music' ? locale.text('create.modeText') : mode }}</option>
             }
           </select>
         </label>
@@ -51,26 +51,25 @@
 
       @if (selectedMode() === 'text2music') {
         <label class="checkbox-label"><input type="checkbox" formControlName="sample_mode" />
-          <span><strong>Generate music concept with 5Hz LM</strong>
-            <small>The language model writes the detailed caption, lyrics and musical metadata from your idea.
-              It may initialize the LM and use additional GPU memory.</small></span>
+          <span><strong>{{ locale.text('create.sampleTitle') }}</strong>
+            <small>{{ locale.text('create.sampleHint') }}</small></span>
         </label>
       }
       <div class="toggle-row">
         @if (!changes().sample_mode || selectedMode() !== 'text2music') {
         <label class="checkbox-label"><input type="checkbox" formControlName="instrumental" />
-          <span><strong>Instrumental</strong><small>No vocal lyrics</small></span>
+          <span><strong>{{ locale.text('create.instrumental') }}</strong><small>{{ locale.text('create.noVocals') }}</small></span>
         </label>
         }
         <label class="checkbox-label"><input type="checkbox" formControlName="thinking" />
-          <span><strong>LM thinking</strong><small>Advanced language model assistance</small></span>
+          <span><strong>{{ locale.text('create.thinking') }}</strong><small>{{ locale.text('create.thinkingHint') }}</small></span>
         </label>
       </div>
 
       @if (!form.controls.instrumental.value && (!changes().sample_mode || selectedMode() !== "text2music")) {
-        <label class="field" for="lyrics"><span>Lyrics</span>
+        <label class="field" for="lyrics"><span>{{ locale.text('create.lyrics') }}</span>
           <textarea id="lyrics" formControlName="lyrics" rows="7"
-            placeholder="[Verse]\nWrite the words for your composition..."></textarea>
+            [placeholder]="locale.text('create.lyricsPlaceholder')"></textarea>
         </label>
       }
     </section>
@@ -78,39 +77,39 @@
     <section class="panel" aria-labelledby="conditioning-heading">
       <div class="section-heading"><div>
         <p class="eyebrow">02 / TRANSFORMATION</p>
-        <h2 id="conditioning-heading">Audio conditioning</h2>
+        <h2 id="conditioning-heading">{{ locale.text('create.conditioning') }}</h2>
       </div><span class="section-mark" aria-hidden="true">♫</span></div>
       @if (selectedMode() !== "text2music") {
-        <p class="muted">A source track is required for {{ selectedMode() }}. Only the backend processes audio.</p>
+        <p class="muted">{{ locale.text('create.sourceRequired') }} {{ selectedMode() }}. {{ locale.text('create.sourceOnly') }}</p>
         @if (selectedMode() === "extract" || selectedMode() === "lego") {
-          <label class="field" for="target-stem"><span>Instrument track to {{ selectedMode() }}</span>
+          <label class="field" for="target-stem"><span>{{ locale.text('create.stem') }} {{ selectedMode() }}</span>
             <select id="target-stem" formControlName="target_stem">
               @for (stem of stems; track stem) {
                 <option [value]="stem">{{ stem }}</option>
               }
             </select>
           </label>
-          <p class="small-note">Extract isolates a stem; Lego generates an additional stem from the source context. Requires a compatible base model.</p>
+          <p class="small-note">{{ locale.text('create.stemHint') }}</p>
         }
         @if (selectedMode() === "complete") {
-          <label class="field" for="complete-classes"><span>Track classes to complete (comma-separated)</span>
-            <input id="complete-classes" formControlName="track_classes" placeholder="drums, bass, synth" />
+          <label class="field" for="complete-classes"><span>{{ locale.text('create.classes') }}</span>
+            <input id="complete-classes" formControlName="track_classes" [placeholder]="locale.text('create.classesPlaceholder')" />
           </label>
-          <p class="small-note">Supported classes: {{ stems.join(', ') }}. Leave empty for the backend's generic completion instruction.</p>
+          <p class="small-note">{{ locale.text('create.classesHint') }} {{ stems.join(', ') }}. {{ locale.text('create.classesDefault') }}</p>
         }
         @if (workflow.draft()) {
           <div class="imported-asset">
-            <span>↗ Imported from results: {{ importName() }}</span>
-            <button type="button" class="quiet" (click)="workflow.clear()">Remove</button>
+            <span>{{ locale.text('create.imported') }} {{ importName() }}</span>
+            <button type="button" class="quiet" (click)="workflow.clear()">{{ locale.text('create.remove') }}</button>
           </div>
         }
-      } @else { <p class="muted">Use a reference track to influence the style of your generation.</p> }
+      } @else { <p class="muted">{{ locale.text('create.referenceStyle') }}</p> }
 
       @if (selectedMode() !== "text2music") {
         <label class="file-picker" for="source-audio">
           <span class="file-icon" aria-hidden="true">♫</span>
-          <span><strong>{{ source()?.name || 'Choose source audio' }}</strong>
-            <small>WAV · MP3 · FLAC · OGG · M4A / up to 120 MB</small></span>
+          <span><strong>{{ source()?.name || locale.text('create.sourceChoice') }}</strong>
+            <small>{{ locale.text('create.sourceFileHint') }}</small></span>
         </label>
         <input id="source-audio" type="file" accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a"
           (change)="pickAudio($event, 'source')" class="visually-hidden" />
@@ -118,7 +117,7 @@
       @if (selectedMode() === 'repaint') {
         @if (workflow.draft() && !source()) {
           <button type="button" class="secondary-action" (click)="loadDraftSource()">
-            Load generated source for waveform
+            {{ locale.text('create.loadWaveform') }}
           </button>
         }
         <ace-repaint-timeline [file]="source()" [start]="changes().repainting_start || 0"
@@ -126,8 +125,8 @@
       }
       <label class="file-picker" for="reference-audio">
         <span class="file-icon" aria-hidden="true">⊛</span>
-        <span><strong>{{ reference()?.name || 'Optional reference audio' }}</strong>
-          <small>Style, texture and musical character</small></span>
+        <span><strong>{{ reference()?.name || locale.text('create.referenceChoice') }}</strong>
+          <small>{{ locale.text('create.referenceHint') }}</small></span>
       </label>
       <input id="reference-audio" type="file" accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a"
         (change)="pickAudio($event, 'reference')" class="visually-hidden" />
@@ -231,6 +230,7 @@
     </section>
   </aside>
 </form>
+
 
 
 
