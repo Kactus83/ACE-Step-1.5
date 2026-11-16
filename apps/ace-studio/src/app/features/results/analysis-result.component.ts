@@ -20,11 +20,15 @@ export class AnalysisResultComponent {
   readonly downloaded = signal(false);
   readonly codePreview = computed(() => this.result().audioCodes?.slice(0, 2500) || "");
   readonly codeTruncated = computed(() => (this.result().audioCodes?.length || 0) > 2500);
+  readonly codesReusable = computed(() => {
+    const length = this.result().audioCodes?.length || 0;
+    return length > 0 && length <= 1_000_000;
+  });
 
   /** @public Reuse the exact in-memory code sequence without starting a task. */
   reuseCodes(): void {
     const codes = this.result().audioCodes;
-    if (codes) this.useCodesRequested.emit(codes);
+    if (codes && this.codesReusable()) this.useCodesRequested.emit(codes);
   }
 
   /** @public Export exactly the already received codes; no backend file access. */
@@ -44,5 +48,3 @@ export class AnalysisResultComponent {
     this.downloaded.set(true);
   }
 }
-
-

@@ -24,4 +24,14 @@ export function audioBlobToSourceFile(blob: Blob, backendAudioUrl?: string): Fil
   });
 }
 
-
+/**
+ * @public Validate transient audio upload metadata before sending to the backend.
+ * @returns A user-facing reason to reject this file, or null when accepted.
+ */
+export function validateAudioUpload(file: Pick<File, "size" | "name" | "type">): string | null {
+  if (file.size <= 0 || file.size > 120 * 1024 * 1024
+    || !(file.type.startsWith("audio/") || /\.(wav|mp3|flac|ogg|m4a)$/i.test(file.name))) {
+    return "Use an audio file under 120 MB (WAV, MP3, FLAC, OGG or M4A).";
+  }
+  return null;
+}

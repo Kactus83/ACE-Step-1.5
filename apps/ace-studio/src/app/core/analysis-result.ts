@@ -55,12 +55,11 @@ export function decodeAnalysisResult(
   };
   for (const name of directFields) add(name, item[name]);
   if (isObject(item["metas"])) {
-    for (const name of [
-      "bpm", "keyscale", "timesignature", "duration", "genres",
-      "genre", "language", "caption"
-    ]) add(name, item["metas"][name]);
+    for (const [name, value] of Object.entries(item["metas"]).slice(0, 48)) {
+      if (/^[a-zA-Z][a-zA-Z0-9_-]{0,79}$/.test(name)) add(name, value);
+    }
   }
-  const codes = kind === "metadata" ? null : safeText(item["audio_codes"], 1_000_000);
+  const codes = kind === "metadata" ? null : safeText(item["audio_codes"], 3_000_000);
   return {
     kind, status: status || "Analysis complete",
     prompt: safeText(item["prompt"], 5000),
@@ -69,4 +68,3 @@ export function decodeAnalysisResult(
     fields: values
   };
 }
-

@@ -31,6 +31,7 @@ export class LibraryStore {
     }
     this.persistence.listen(
       projects => {
+        this.error.set(null);
         this.projects.set(projects);
         this.message.set("Project catalog updated from another browser tab.");
       },
@@ -181,5 +182,3 @@ export class LibraryStore {
     setTimeout(() => URL.revokeObjectURL(url), 3000);
   }
 }
-
-

@@ -30,14 +30,17 @@
       <button type="button" class="secondary-action" (click)="downloadCodes()">
         Download audio codes as TXT
       </button>
-      <button type="button" class="secondary-action" (click)="reuseCodes()">
+      <button type="button" class="secondary-action" [disabled]="!codesReusable()"
+        (click)="reuseCodes()">
         Use semantic codes in Create
       </button>
     </div>
+    @if (!codesReusable()) {
+      <p class="small-note">This code sequence exceeds the 1,000,000-character
+        limit for the Create editor. Download the complete sequence instead.</p>
+    }
     @if (downloaded()) { <p class="small-note" role="status">Code file export requested.</p> }
   }
   <p class="small-note">These results are server-reported estimates or encoded
     semantic values, not a verified musical transcription or rendered audio.</p>
 </section>
-
-

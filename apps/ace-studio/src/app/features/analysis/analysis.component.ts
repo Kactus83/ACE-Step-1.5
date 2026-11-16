@@ -7,6 +7,7 @@ import { Component, computed, inject, output, signal } from "@angular/core";
 import { BackendStore } from "../../core/backend.store";
 import { JobsStore } from "../../core/jobs.store";
 import { AnalysisMode, mapAnalysisRequest } from "./analysis.request";
+import { validateAudioUpload } from "../create/source-audio";
 
 /** @public Standalone analysis workspace with explicit server jobs and no audio synthesis. */
 @Component({
@@ -60,11 +61,11 @@ export class AnalysisComponent {
     const target = event.target;
     if (!(target instanceof HTMLInputElement)) return;
     const file = target.files?.item(0) || null;
-    if (file && (file.size > 120 * 1024 * 1024
-      || !(file.type.startsWith("audio/") || /\.(wav|mp3|flac|ogg|m4a)$/i.test(file.name)))) {
+    const issue = file ? validateAudioUpload(file) : null;
+    if (issue) {
       target.value = "";
       this.source.set(null);
-      this.error.set("Choose WAV, MP3, FLAC, OGG or M4A audio smaller than 120 MB.");
+      this.error.set(issue);
       return;
     }
     this.source.set(file);
@@ -105,4 +106,3 @@ export class AnalysisComponent {
     }
   }
 }
-

@@ -6,7 +6,7 @@
 import { Component, OnInit, computed, inject, output, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { RepaintTimelineComponent } from "./repaint-timeline.component";
-import { audioBlobToSourceFile } from "./source-audio";
+import { audioBlobToSourceFile, validateAudioUpload } from "./source-audio";
 import { createGenerationForm } from "./create.form";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { startWith } from "rxjs";
@@ -98,9 +98,9 @@ export class CreateComponent implements OnInit {
   pickAudio(event: Event, kind: "source" | "reference"): void {
     const target = event.target as HTMLInputElement;
     const file = target.files?.item(0) || null;
-    if (file && (file.size > 120 * 1024 * 1024
-      || !(file.type.startsWith("audio/") || /\.(wav|mp3|flac|ogg|m4a)$/i.test(file.name)))) {
-      this.error.set("Use an audio file under 120 MB (WAV, MP3, FLAC, OGG or M4A).");
+    const issue = file ? validateAudioUpload(file) : null;
+    if (issue) {
+      this.error.set(issue);
       target.value = "";
       return;
     }
