@@ -6,6 +6,7 @@
 import { Component, computed, inject, output, signal } from "@angular/core";
 import { LibraryStore } from "./library.store";
 import { LibraryProjectComponent } from "./library-project.component";
+import { LibraryRecoveryService } from "./library.recovery";
 
 /** @public User-controlled local project library, never an implicit cloud backup. */
 @Component({
@@ -16,6 +17,7 @@ import { LibraryProjectComponent } from "./library-project.component";
 })
 export class LibraryComponent {
   readonly catalog = inject(LibraryStore);
+  readonly recovery = inject(LibraryRecoveryService);
   readonly navigateCreate = output<void>();
   readonly selectedId = signal<string | null>(null);
   readonly query = signal("");

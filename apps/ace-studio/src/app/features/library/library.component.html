@@ -12,6 +12,35 @@
 @if (error()) { <p role="alert" class="notice danger">{{ error() }}</p> }
 @if (catalog.error()) { <p role="alert" class="notice danger">{{ catalog.error() }}</p> }
 @if (catalog.message()) { <p role="status" class="notice success">{{ catalog.message() }}</p> }
+@if (recovery.corrupt()) {
+  <section class="panel" aria-labelledby="catalog-recovery-title">
+    <div class="section-heading"><div>
+      <p class="eyebrow">LOCAL DATA SAFETY</p>
+      <h2 id="catalog-recovery-title">The stored project catalog is unreadable.</h2>
+    </div></div>
+    <p class="notice danger">No stored data has been overwritten. Download
+      a raw backup before deciding whether to discard the damaged catalog.
+      The raw backup can contain creative descriptions, lyrics and annotations.</p>
+    <div class="comparison-actions">
+      <button type="button" class="secondary-action"
+        (click)="recovery.downloadRaw()">Back up unreadable catalog</button>
+      <button type="button" class="quiet danger-text"
+        (click)="recovery.reset()">
+        {{ recovery.armed()
+          ? 'Confirm discard corrupt catalog' : 'Review corrupt catalog reset' }}
+      </button>
+    </div>
+    <p class="small-note">The reset deletes only the unreadable metadata
+      catalog on this device, never audio files or the Python server dataset.
+      A catalog that has become valid cannot be deleted by this recovery action.</p>
+  </section>
+}
+@if (recovery.error()) {
+  <p class="notice danger" role="alert">{{ recovery.error() }}</p>
+}
+@if (recovery.message()) {
+  <p class="notice success" role="status">{{ recovery.message() }}</p>
+}
 <div class="library-layout">
   <aside class="panel library-index" aria-labelledby="library-index-title">
     <div class="section-heading"><div>
