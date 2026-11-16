@@ -4,10 +4,10 @@
  * @public
  */
 import { Component, computed, inject, output, signal } from "@angular/core";
-import { DatePipe } from "@angular/common";
+import { formatStudioDate } from "../../core/localized-date";
 import { JobsStore } from "../../core/jobs.store";
-import { LocaleStore } from "../../core/locale.store";
-import { GeneratedAudio, StudioJob } from "../../core/api.types";
+import { LocaleKey, LocaleStore } from "../../core/locale.store";
+import { GeneratedAudio, JobPhase, StudioJob } from "../../core/api.types";
 import { WorkflowStore } from "../../core/workflow.store";
 import { AudioCardComponent } from "./audio-card.component";
 import { withResultSeed } from "../create/restore-request";
@@ -22,7 +22,7 @@ import { AnalysisResultComponent } from "./analysis-result.component";
 @Component({
   selector: "ace-jobs",
   standalone: true,
-  imports: [AudioCardComponent, AnalysisResultComponent, LibrarySaveComponent, ComparisonComponent, BatchNavigatorComponent, DatePipe],
+  imports: [AudioCardComponent, AnalysisResultComponent, LibrarySaveComponent, ComparisonComponent, BatchNavigatorComponent],
   templateUrl: "./jobs.component.html"
 })
 export class JobsComponent {
@@ -49,6 +49,23 @@ export class JobsComponent {
     const selection = normalizeVariantSelection(
       this.selections()[job.id] ?? "all", job.results);
     return selection === "all" || selection === index;
+  }
+
+  /** @public Localize backend task phase without rewriting server progress diagnostics. */
+  phaseLabel(phase: JobPhase): string {
+    const key: Record<JobPhase, LocaleKey> = {
+      queued: "jobs.phase.queued",
+      running: "jobs.phase.running",
+      succeeded: "jobs.phase.succeeded",
+      failed: "jobs.phase.failed",
+      unknown: "jobs.phase.unknown"
+    };
+    return this.locale.text(key[phase]);
+  }
+
+  /** @public Localize the client event timestamp in the device's timezone. */
+  dateLabel(value: number): string {
+    return formatStudioDate(value, this.locale.mode());
   }
 
   /** @public Change the client-only phase filter without contacting the backend. */
@@ -112,4 +129,5 @@ export class JobsComponent {
     this.reuse.emit();
   }
 }
+
 

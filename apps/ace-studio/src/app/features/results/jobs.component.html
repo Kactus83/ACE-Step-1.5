@@ -42,10 +42,10 @@
           <div>
             <p class="eyebrow">JOB / {{ job.id.slice(0, 12) }}</p>
             <h2>{{ job.title }}</h2>
-            <p class="muted"><time>{{ job.createdAt | date:'medium' }}</time></p>
+            <p class="muted"><time>{{ dateLabel(job.createdAt) }}</time></p>
           </div>
           <span class="job-status" [class.success]="job.phase === 'succeeded'"
-            [class.failed]="job.phase === 'failed'">{{ job.phase }}</span>
+            [class.failed]="job.phase === 'failed'">{{ phaseLabel(job.phase) }}</span>
         </div>
         @if (job.phase === "running" || job.phase === "queued" || job.phase === "unknown") {
           @let progress = reportedProgress(job);
@@ -107,4 +107,5 @@
     }
   </div>
 }
+
 

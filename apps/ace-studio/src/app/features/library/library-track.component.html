@@ -1,7 +1,7 @@
 <article class="library-track">
   <div class="library-track-heading">
     <div><strong>{{ track().title }}</strong>
-      <p class="small-note">{{ locale.text('track.variant') }} {{ track().variant }} · {{ track().savedAt | date:'medium' }}</p>
+      <p class="small-note">{{ locale.text('track.variant') }} {{ track().variant }} · {{ savedDate(track().savedAt) }}</p>
     </div>
     <button type="button" class="quiet" [attr.aria-label]="track().favorite ? locale.text('track.favoriteRemove') : locale.text('track.favoriteAdd')"
       (click)="toggleFavorite()">{{ track().favorite ? locale.text('track.favoriteSaved') : locale.text('track.favoriteMark') }}</button>
@@ -44,5 +44,6 @@
     {{ confirmingRemove() ? locale.text('track.removeConfirm') : locale.text('track.remove') }}
   </button>
 </article>
+
 
 

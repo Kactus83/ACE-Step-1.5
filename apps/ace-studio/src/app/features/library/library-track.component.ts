@@ -4,7 +4,7 @@
  * @public
  */
 import { Component, computed, inject, input, output, signal } from "@angular/core";
-import { DatePipe } from "@angular/common";
+import { formatStudioDate } from "../../core/localized-date";
 import { ConnectionStore } from "../../core/connection.store";
 import { WorkflowStore } from "../../core/workflow.store";
 import { LibraryStore } from "./library.store";
@@ -16,7 +16,7 @@ import { AudioCardComponent } from "../results/audio-card.component";
 @Component({
   selector: "ace-library-track",
   standalone: true,
-  imports: [AudioCardComponent, DatePipe],
+  imports: [AudioCardComponent],
   templateUrl: "./library-track.component.html"
 })
 export class LibraryTrackComponent {
@@ -33,6 +33,11 @@ export class LibraryTrackComponent {
   readonly tags = signal("");
   readonly favorite = signal(false);
   readonly confirmingRemove = signal(false);
+
+  /** @public Format a local bookmark timestamp using the selected language. */
+  savedDate(timestamp: number): string {
+    return formatStudioDate(timestamp, this.locale.mode());
+  }
 
   /** @public Stage non-destructive editing of local notes and classification. */
   beginEdit(): void {
@@ -79,6 +84,7 @@ export class LibraryTrackComponent {
     this.confirmingRemove.set(false);
   }
 }
+
 
 
 

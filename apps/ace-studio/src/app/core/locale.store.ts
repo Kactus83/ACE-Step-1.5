@@ -171,6 +171,11 @@ const MESSAGES = {
   "librarySave.save": { en: "Save to project", fr: "Enregistrer dans le projet" },
   "librarySave.saved": { en: "Reference saved", fr: "Référence enregistrée" },
   "librarySave.empty": { en: "Create a project in Library to bookmark this track.", fr: "Créez un projet dans Bibliothèque pour enregistrer cette piste." },
+  "jobs.phase.queued": { en: "queued", fr: "en attente" },
+  "jobs.phase.running": { en: "running", fr: "en cours" },
+  "jobs.phase.succeeded": { en: "succeeded", fr: "terminée" },
+  "jobs.phase.failed": { en: "failed", fr: "échouée" },
+  "jobs.phase.unknown": { en: "unknown", fr: "inconnu" },
 } as const satisfies Record<string, Record<StudioLocale, string>>;
 
 /** @public Only keys whose language coverage is checked at build time. */
@@ -211,5 +216,6 @@ export class LocaleStore {
   /** @public Toggle English/French without reloading or clearing workspace state. */
   toggle(): void { this.set(this.mode() === "en" ? "fr" : "en"); }
 }
+
 
 
