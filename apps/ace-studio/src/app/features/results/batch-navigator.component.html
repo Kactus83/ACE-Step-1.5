@@ -1,0 +1,31 @@
+@if (indices().length > 1) {
+  <nav class="batch-navigator" aria-label="Batch variant navigation">
+    <div class="batch-count">
+      <strong>{{ indices().length }} generated variants</strong>
+      <span class="small-note">
+        {{ normalized() === 'all' ? 'All audio variants visible' :
+          'Viewing variant ' + current() + ' of ' + indices().length }}
+      </span>
+    </div>
+    <div class="batch-controls">
+      <button class="quiet" type="button" (click)="previous()" aria-label="Previous variant">
+        ← Previous
+      </button>
+      <button class="quiet" type="button" (click)="showAll()"
+        [attr.aria-pressed]="normalized() === 'all'">Show all</button>
+      <button class="quiet" type="button" (click)="next()" aria-label="Next variant">
+        Next →
+      </button>
+    </div>
+    <div class="batch-index" aria-label="Choose individual variant">
+      @for (index of indices(); track index) {
+        <button type="button" class="quiet" (click)="select(index)"
+          [attr.aria-pressed]="normalized() === index"
+          [attr.aria-label]="'Show variant ' + (index + 1)">
+          {{ index + 1 }}
+        </button>
+      }
+    </div>
+  </nav>
+}
+
