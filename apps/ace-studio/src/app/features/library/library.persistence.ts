@@ -96,6 +96,37 @@ export class LibraryPersistence implements OnDestroy {
     this.lastSeen = serialized;
   }
 
+  /**
+   * @public Return an unreadable raw snapshot without altering localStorage.
+   * @returns The corrupt source text or null when the catalog is valid or empty.
+   */
+  readCorruptSnapshot(): string | null {
+    const raw = localStorage.getItem(KEY);
+    if (raw === null) return null;
+    try { this.decode(raw); return null; }
+    catch { return raw; }
+  }
+
+  /**
+   * @public Discard an unchanged, confirmed corrupt catalog only.
+   * @throws Error if data changed, became valid or cannot be cleared.
+   * @remarks Destructive action belongs only to explicit two-click UI recovery.
+   */
+  discardCorruptSnapshot(expected: string): void {
+    const current = localStorage.getItem(KEY);
+    if (current === null || current !== expected) {
+      throw new Error("Stored catalog changed. Restart the recovery confirmation.");
+    }
+    try { this.decode(current); }
+    catch {
+      localStorage.removeItem(KEY);
+      this.lastSeen = null;
+      this.onUpdate?.([]);
+      return;
+    }
+    throw new Error("The catalog is valid and cannot be discarded by recovery.");
+  }
+
   /** @public Release event listeners for isolated tests and app destruction. */
   ngOnDestroy(): void {
     if (typeof window !== "undefined") {
