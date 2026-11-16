@@ -6,6 +6,7 @@
 import { Component, OnDestroy, OnInit, computed, inject, output, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { BackendStore } from "../../core/backend.store";
+import { LocaleStore } from "../../core/locale.store";
 import { TrainingStore } from "./training.store";
 import { mapTrainingRequest } from "./training.request";
 import { TrainingExportComponent } from "./training-export.component";
@@ -23,6 +24,7 @@ import { isObject } from "../../core/api-decoder";
 export class TrainingComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   readonly backend = inject(BackendStore);
+  readonly locale = inject(LocaleStore);
   readonly training = inject(TrainingStore);
   readonly datasetTasks = inject(DatasetTasksStore);
   readonly openDatasets = output<void>();
@@ -93,7 +95,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
   /** @public Validate preprocessed tensor directory on the Python server. */
   async validateTensors(): Promise<void> {
     const path = this.form.controls.tensor_dir.value.trim();
-    if (!path) { this.error.set("Enter a tensor directory on the backend machine."); return; }
+    if (!path) { this.error.set(this.locale.text("training.enterDir")); return; }
     this.confirming.set(null);
     this.error.set(null);
     await this.training.validateTensors(path);
@@ -107,13 +109,13 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.error.set(null);
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     if (this.backend.health()?.status !== "ok") {
-      this.error.set("Connect a running ACE-Step API first."); return;
+      this.error.set(this.locale.text("training.needBackend")); return;
     }
     const values = this.form.getRawValue();
     try {
       const request = mapTrainingRequest(values, this.mode());
       if (this.training.tensorInfo()?.tensor_dir !== request.tensor_dir) {
-        this.error.set("Validate the selected tensor directory before training."); return;
+        this.error.set(this.locale.text("training.needValidation")); return;
       }
       const signature = JSON.stringify({ mode: this.mode(), request });
       if (this.confirming() !== signature) {
@@ -123,7 +125,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
       await this.training.start(this.mode(), request);
       this.confirming.set(null);
     } catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Cannot start training.");
+      this.error.set(error instanceof Error ? error.message : this.locale.text("training.startError"));
     }
   }
 
@@ -134,6 +136,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
     await this.training.requestStop();
   }
 }
+
 
 
 

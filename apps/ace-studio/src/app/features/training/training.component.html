@@ -1,7 +1,7 @@
 <div class="page-heading">
   <div><p class="eyebrow">ADVANCED / MODEL CUSTOMIZATION</p>
-    <h1>Train your own sound.</h1>
-    <p class="lead">Prepare a dataset and fine-tune LoRA or LoKr adapters through the existing ACE-Step Python engine.</p>
+    <h1>{{ locale.text('training.title') }}</h1>
+    <p class="lead">{{ locale.text('training.lead') }}</p>
   </div>
 </div>
 @if (training.error()) { <p class="notice danger" role="alert">{{ training.error() }}</p> }
@@ -11,30 +11,30 @@
   <div class="main-panel">
     <section class="panel" aria-labelledby="training-status-heading">
       <div class="section-heading"><div>
-        <p class="eyebrow">LIVE / ENGINE STATE</p><h2 id="training-status-heading">Training monitor</h2>
+        <p class="eyebrow">LIVE / ENGINE STATE</p><h2 id="training-status-heading">{{ locale.text('training.monitor') }}</h2>
       </div><span class="section-mark" aria-hidden="true">◎</span></div>
       <div class="training-stats">
-        <div><small>State</small><strong>{{ training.status()?.status || 'Unavailable' }}</strong></div>
-        <div><small>Epoch</small><strong>{{ training.status()?.current_epoch ?? '—' }}</strong></div>
-        <div><small>Step</small><strong>{{ training.status()?.current_step ?? '—' }}</strong></div>
-        <div><small>Loss</small><strong>{{ training.status()?.current_loss ?? '—' }}</strong></div>
+        <div><small>{{ locale.text('training.state') }}</small><strong>{{ training.status()?.status || locale.text('training.unavailable') }}</strong></div>
+        <div><small>{{ locale.text('training.epoch') }}</small><strong>{{ training.status()?.current_epoch ?? '—' }}</strong></div>
+        <div><small>{{ locale.text('training.step') }}</small><strong>{{ training.status()?.current_step ?? '—' }}</strong></div>
+        <div><small>{{ locale.text('training.loss') }}</small><strong>{{ training.status()?.current_loss ?? '—' }}</strong></div>
       </div>
       @if (training.status()?.is_training) {
-        <p class="muted">Training is active on the backend. Navigation does not stop the training run.</p>
+        <p class="muted">{{ locale.text('training.running') }}</p>
         <button type="button" class="secondary-action danger-action" (click)="stop()">
-          {{ stopConfirm() ? 'Confirm graceful stop' : 'Request training stop' }}
+          {{ stopConfirm() ? locale.text('training.confirmStop') : locale.text('training.requestStop') }}
         </button>
       } @else {
-        <p class="muted">No training is currently reported. Status is refreshed every 5 seconds while this view is open.</p>
+        <p class="muted">{{ locale.text('training.idle') }}</p>
       }
       <ace-training-loss [history]="training.status()?.loss_history || []" />
       @if (training.status()?.steps_per_second) {
-        <p class="small-note">Measured training speed:
-          {{ training.status()?.steps_per_second }} steps/sec</p>
+        <p class="small-note">{{ locale.text('training.speed') }}
+          {{ training.status()?.steps_per_second }} {{ locale.text('training.stepsPerSecond') }}</p>
       }
       @if (logText()) {
         <details class="advanced training-console">
-          <summary>View latest backend training log</summary>
+          <summary>{{ locale.text('training.log') }}</summary>
           <pre>{{ logText() }}</pre>
         </details>
       }
@@ -45,15 +45,14 @@
 
     <section class="panel" aria-labelledby="dataset-heading">
       <div class="section-heading"><div>
-        <p class="eyebrow">01 / DATASET</p><h2 id="dataset-heading">Prepare the source</h2>
+        <p class="eyebrow">01 / DATASET</p><h2 id="dataset-heading">{{ locale.text('training.dataset') }}</h2>
       </div><span class="section-mark" aria-hidden="true">▧</span></div>
-      <p class="muted">Build your dataset, label samples and preprocess tensors before LoRA/LoKr training.
-        All paths belong to the Python server.</p>
+      <p class="muted">{{ locale.text('training.datasetInfo') }}</p>
       @if (datasetTasks.preprocessStatus(); as task) {
-        <p class="small-note">Latest preprocessing: {{ task.status }} · {{ task.current }} / {{ task.total }}</p>
+        <p class="small-note">{{ locale.text('training.latestPreprocess') }} {{ task.status }} · {{ task.current }} / {{ task.total }}</p>
       }
       <button type="button" class="secondary-action" (click)="openDatasets.emit()">
-        Manage datasets & preprocessing
+        {{ locale.text('training.manageDataset') }}
       </button>
     </section>
     <ace-training-export [currentOutput]="form.controls.output_dir.value" />
@@ -61,115 +60,116 @@
   <aside class="configuration-panel">
     <section class="panel" aria-labelledby="train-config-heading">
       <div class="section-heading"><div>
-        <p class="eyebrow">02 / CONFIGURATION</p><h2 id="train-config-heading">Fine-tuning</h2>
+        <p class="eyebrow">02 / CONFIGURATION</p><h2 id="train-config-heading">{{ locale.text('training.fineTune') }}</h2>
       </div><span class="section-mark" aria-hidden="true">⚙</span></div>
-      <label class="field" for="training-mode"><span>Algorithm</span>
+      <label class="field" for="training-mode"><span>{{ locale.text('training.algorithm') }}</span>
         <select id="training-mode" [value]="mode()" (change)="changeMode($event)">
           <option value="lora">LoRA</option><option value="lokr">LoKr</option>
         </select>
       </label>
       <form [formGroup]="form" (ngSubmit)="start()">
-        <label class="field" for="tensor-dir"><span>Preprocessed tensor directory</span>
+        <label class="field" for="tensor-dir"><span>{{ locale.text('training.tensorDir') }}</span>
           <input id="tensor-dir" formControlName="tensor_dir" required placeholder="/path/to/tensors" />
         </label>
         @if (latestTensorDirectory()) {
           <button type="button" class="quiet" (click)="usePreprocessedTensors()">
-            Use latest preprocessed tensor directory
+            {{ locale.text('training.useLatest') }}
           </button>
         }
         <button type="button" class="secondary-action" (click)="validateTensors()"
-          [disabled]="!form.controls.tensor_dir.value.trim()">Validate tensors</button>
+          [disabled]="!form.controls.tensor_dir.value.trim()">{{ locale.text('training.validate') }}</button>
         @if (training.tensorInfo(); as info) {
           <p class="notice success" role="status">
-            {{ info.dataset_name }} · {{ info.num_samples }} preprocessed tensors
+            {{ info.dataset_name }} · {{ info.num_samples }} {{ locale.text('training.preprocessed') }}
           </p>
         }
-        <label class="field training-divider" for="output-dir"><span>Backend output directory</span>
+        <label class="field training-divider" for="output-dir"><span>{{ locale.text('training.outputDir') }}</span>
           <input id="output-dir" formControlName="output_dir" required />
         </label>
         <div class="field-row">
-          <label class="field" for="training-lr"><span>Learning rate</span>
+          <label class="field" for="training-lr"><span>{{ locale.text('training.learningRate') }}</span>
             <input id="training-lr" type="number" formControlName="learning_rate"
               min="0.000000001" step="0.00001" />
           </label>
-          <label class="field" for="training-epochs"><span>Epochs</span>
+          <label class="field" for="training-epochs"><span>{{ locale.text('training.epochs') }}</span>
             <input id="training-epochs" type="number" formControlName="train_epochs" min="1" />
           </label>
         </div>
         <div class="field-row">
-          <label class="field" for="training-batch"><span>Batch size</span>
+          <label class="field" for="training-batch"><span>{{ locale.text('training.batch') }}</span>
             <input id="training-batch" type="number" formControlName="train_batch_size" min="1" />
           </label>
-          <label class="field" for="training-gradient"><span>Gradient accumulation</span>
+          <label class="field" for="training-gradient"><span>{{ locale.text('training.gradientAccumulation') }}</span>
             <input id="training-gradient" type="number" formControlName="gradient_accumulation" min="1" />
           </label>
         </div>
         @if (mode() === 'lora') {
           <div class="field-row">
-            <label class="field" for="lora-rank"><span>LoRA rank</span>
+            <label class="field" for="lora-rank"><span>{{ locale.text('training.loraRank') }}</span>
               <input id="lora-rank" type="number" formControlName="lora_rank" min="1" max="256" />
             </label>
-            <label class="field" for="lora-alpha"><span>LoRA alpha</span>
+            <label class="field" for="lora-alpha"><span>{{ locale.text('training.loraAlpha') }}</span>
               <input id="lora-alpha" type="number" formControlName="lora_alpha" min="1" max="512" />
             </label>
           </div>
-          <label class="field" for="lora-dropout"><span>Dropout</span>
+          <label class="field" for="lora-dropout"><span>{{ locale.text('training.dropout') }}</span>
             <input id="lora-dropout" type="number" formControlName="lora_dropout"
               min="0" max="1" step=".01" />
           </label>
           <label class="checkbox-label"><input type="checkbox" formControlName="use_fp8" />
-            <span>Enable FP8 if hardware supports it</span>
+            <span>{{ locale.text('training.fp8') }}</span>
           </label>
         } @else {
           <div class="field-row">
-            <label class="field" for="lokr-dim"><span>LoKr dimension</span>
+            <label class="field" for="lokr-dim"><span>{{ locale.text('training.lokrDimension') }}</span>
               <input id="lokr-dim" type="number" formControlName="lokr_linear_dim" min="1" max="256" />
             </label>
-            <label class="field" for="lokr-alpha"><span>LoKr alpha</span>
+            <label class="field" for="lokr-alpha"><span>{{ locale.text('training.lokrAlpha') }}</span>
               <input id="lokr-alpha" type="number" formControlName="lokr_linear_alpha" min="1" max="512" />
             </label>
           </div>
-          <label class="field" for="lokr-factor"><span>Factor (-1 = auto)</span>
+          <label class="field" for="lokr-factor"><span>{{ locale.text('training.lokrFactor') }}</span>
             <input id="lokr-factor" type="number" formControlName="lokr_factor" min="-1" max="8" />
           </label>
           <label class="checkbox-label"><input type="checkbox" formControlName="lokr_decompose_both" />
-            <span>Decompose both matrices</span>
+            <span>{{ locale.text('training.decomposeBoth') }}</span>
           </label>
           <label class="checkbox-label"><input type="checkbox" formControlName="lokr_use_tucker" />
-            <span>Use Tucker decomposition</span>
+            <span>{{ locale.text('training.tucker') }}</span>
           </label>
           <label class="checkbox-label"><input type="checkbox" formControlName="lokr_use_scalar" />
-            <span>Use scalar calibration</span>
+            <span>{{ locale.text('training.scalar') }}</span>
           </label>
           <label class="checkbox-label"><input type="checkbox" formControlName="lokr_weight_decompose" />
-            <span>Enable weight decomposition</span>
+            <span>{{ locale.text('training.weightDecompose') }}</span>
           </label>
         }
         <details class="advanced">
-          <summary>Advanced training parameters <span aria-hidden="true">⌄</span></summary>
-          <label class="field" for="save-every"><span>Save every N epochs</span>
+          <summary>{{ locale.text('training.advanced') }} <span aria-hidden="true">⌄</span></summary>
+          <label class="field" for="save-every"><span>{{ locale.text('training.saveInterval') }}</span>
             <input id="save-every" type="number" min="1" formControlName="save_every_n_epochs" />
           </label>
-          <label class="field" for="training-shift"><span>Training shift</span>
+          <label class="field" for="training-shift"><span>{{ locale.text('training.shift') }}</span>
             <input id="training-shift" type="number" min="0" step=".1" formControlName="training_shift" />
           </label>
-          <label class="field" for="training-seed"><span>Training seed</span>
+          <label class="field" for="training-seed"><span>{{ locale.text('training.seed') }}</span>
             <input id="training-seed" type="number" formControlName="training_seed" />
           </label>
           <label class="checkbox-label"><input type="checkbox" formControlName="gradient_checkpointing" />
-            <span>Gradient checkpointing</span>
+            <span>{{ locale.text('training.checkpointing') }}</span>
           </label>
         </details>
-        <p class="small-note">Starting training can occupy the GPU for hours and temporarily move/unload models.</p>
+        <p class="small-note">{{ locale.text('training.warning') }}</p>
         <button type="submit" class="primary-action"
           [disabled]="form.invalid || training.status()?.is_training || backend.health()?.status !== 'ok'">
-          {{ confirming() ? 'Confirm start ' + mode().toUpperCase() + ' training' : 'Review training impact' }}
+          {{ confirming() ? locale.text('training.confirmStart') + ' ' + mode().toUpperCase() + ' ' + locale.text('training.startSuffix') : locale.text('training.reviewStart') }}
           <span aria-hidden="true">→</span>
         </button>
       </form>
     </section>
   </aside>
 </div>
+
 
 
 
