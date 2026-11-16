@@ -69,8 +69,8 @@ export class ConnectionComponent {
       }
       if (changed) this.audio.clear();
       await this.backend.refresh();
-      this.jobs.resume();
       this.saved.set(this.backend.health()?.status === "ok" && !this.backend.error());
+      if (this.saved()) this.jobs.resume();
     } catch (error: unknown) {
       this.error.set(error instanceof Error ? error.message : "Invalid connection settings.");
     }

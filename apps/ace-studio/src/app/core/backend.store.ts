@@ -5,6 +5,7 @@
  */
 import { Injectable, inject, signal } from "@angular/core";
 import { BackendClient } from "./backend.client";
+import { safeBackendMessage } from "./backend-error";
 import { BackendHealth, BackendStats, ModelInventory } from "./api.types";
 import { ConnectionStore } from "./connection.store";
 
@@ -53,7 +54,7 @@ export class BackendStore {
       this.health.set(null);
       this.inventory.set(null);
       this.stats.set(null);
-      this.error.set(error instanceof Error ? error.message : "Backend unavailable.");
+      this.error.set(safeBackendMessage(error));
     } finally {
       if (sequence === this.requestSequence) this.busy.set(false);
     }
@@ -71,7 +72,7 @@ export class BackendStore {
       success = true;
     } catch (error: unknown) {
       if (revision === this.connection.revision()) {
-        this.error.set(error instanceof Error ? error.message : "Model initialization failed.");
+        this.error.set(safeBackendMessage(error));
       }
     } finally {
       this.busy.set(false);

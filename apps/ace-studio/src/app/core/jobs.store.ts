@@ -5,6 +5,7 @@
  */
 import { Injectable, OnDestroy, inject, signal } from "@angular/core";
 import { BackendClient } from "./backend.client";
+import { classifyBackendFailure, safeBackendMessage } from "./backend-error";
 import { decodeTask } from "./api-decoder";
 import { decodeAnalysisResult } from "./analysis-result";
 import { AnalysisResultMode, GenerateRequest, StudioJob } from "./api.types";
@@ -21,6 +22,7 @@ export class JobsStore implements OnDestroy {
   private disposed = false;
   private pollInFlight = false;
   private failureCount = 0;
+  private authorizationBlocked = false;
 
   /** @public All session jobs, most recent first. */
   readonly jobs = signal<readonly StudioJob[]>([]);
@@ -75,13 +77,17 @@ export class JobsStore implements OnDestroy {
       this.schedule(0);
     } catch (error: unknown) {
       if (revision === this.connection.revision()) {
-        this.error.set(error instanceof Error ? error.message : "Generation submission failed.");
+        this.error.set(safeBackendMessage(error));
       }
     } finally { this.submitting.set(false); }
   }
 
   /** @public Resume polling immediately after reconnection. */
-  resume(): void { this.failureCount = 0; this.schedule(0); }
+  resume(): void {
+    this.authorizationBlocked = false;
+    this.failureCount = 0;
+    this.schedule(0);
+  }
 
   private schedule(delayMs: number): void {
     if (this.disposed) return;
@@ -90,7 +96,7 @@ export class JobsStore implements OnDestroy {
   }
 
   private async poll(): Promise<void> {
-    if (this.disposed || this.pollInFlight) return;
+    if (this.disposed || this.pollInFlight || this.authorizationBlocked) return;
     const active = this.jobs().filter(job =>
       job.phase === "queued" || job.phase === "running" || job.phase === "unknown");
     if (!active.length) return;
@@ -119,13 +125,17 @@ export class JobsStore implements OnDestroy {
     } catch (error: unknown) {
       if (revision === this.connection.revision()) {
         this.failureCount++;
-        this.error.set(error instanceof Error ? error.message : "Job polling unavailable.");
+        const failure = classifyBackendFailure(error);
+        if (failure.kind === "authorization") this.authorizationBlocked = true;
+        this.error.set(safeBackendMessage(error));
       }
     } finally {
       this.pollInFlight = false;
       const hasActive = this.jobs().some(job =>
         job.phase === "queued" || job.phase === "running" || job.phase === "unknown");
-      if (hasActive) this.schedule(Math.min(30000, 2500 * 2 ** Math.min(4, this.failureCount)));
+      if (hasActive && !this.authorizationBlocked) {
+        this.schedule(Math.min(30000, 2500 * 2 ** Math.min(4, this.failureCount)));
+      }
     }
   }
 
@@ -139,6 +149,7 @@ export class JobsStore implements OnDestroy {
     this.jobs.set([]);
     this.error.set(null);
     this.failureCount = 0;
+    this.authorizationBlocked = false;
     this.persist();
   }
 
