@@ -138,47 +138,47 @@
 
     <section class="panel" aria-labelledby="settings-heading">
       <div class="section-heading"><div><p class="eyebrow">03 / PARAMETERS</p>
-        <h2 id="settings-heading">Fine-tune</h2></div>
+        <h2 id="settings-heading">{{ locale.text('create.fineTune') }}</h2></div>
         <span class="section-mark" aria-hidden="true">⚙</span>
       </div>
-      <label class="field" for="duration"><span>Duration <small>seconds</small></span>
+      <label class="field" for="duration"><span>{{ locale.text('create.duration') }} <small>{{ locale.text('create.seconds') }}</small></span>
         <input id="duration" type="number" formControlName="duration" min="10" max="600" step="1" />
       </label>
       <div class="field-row">
-        <label class="field" for="bpm"><span>BPM <small>0 = auto</small></span>
+        <label class="field" for="bpm"><span>BPM <small>{{ locale.text('create.autoBpm') }}</small></span>
           <input id="bpm" type="number" formControlName="bpm" min="0" max="300" />
         </label>
-        <label class="field" for="batch-size"><span>Variations</span>
+        <label class="field" for="batch-size"><span>{{ locale.text('create.variations') }}</span>
           <input id="batch-size" type="number" formControlName="batch_size" min="1" max="8" />
         </label>
       </div>
-      <label class="field" for="key-scale"><span>Key / scale</span>
-        <input id="key-scale" formControlName="key_scale" placeholder="Auto" />
+      <label class="field" for="key-scale"><span>{{ locale.text('create.scale') }}</span>
+        <input id="key-scale" formControlName="key_scale" [placeholder]="locale.text('create.auto')" />
       </label>
 
       <details class="advanced">
-        <summary>Advanced controls <span aria-hidden="true">⌄</span></summary>
-        <label class="field" for="inference-steps"><span>Inference steps</span>
+        <summary>{{ locale.text('create.advanced') }} <span aria-hidden="true">⌄</span></summary>
+        <label class="field" for="inference-steps"><span>{{ locale.text('create.steps') }}</span>
           <input id="inference-steps" type="number" formControlName="inference_steps" min="1" max="200" />
         </label>
-        <label class="field" for="guidance"><span>Guidance scale</span>
+        <label class="field" for="guidance"><span>{{ locale.text('create.guidance') }}</span>
           <input id="guidance" type="number" step="0.1" formControlName="guidance_scale" min="0" max="30" />
         </label>
         <label class="checkbox-label"><input type="checkbox" formControlName="use_random_seed" />
-          <span>Random seed</span>
+          <span>{{ locale.text('create.randomSeed') }}</span>
         </label>
         @if (!form.controls.use_random_seed.value) {
-          <label class="field" for="seed"><span>Seed</span>
+          <label class="field" for="seed"><span>{{ locale.text('create.seed') }}</span>
             <input id="seed" type="number" formControlName="seed" />
           </label>
         }
         <label class="checkbox-label"><input type="checkbox" formControlName="use_format" />
-          <span>Format prompt with language model</span>
+          <span>{{ locale.text('create.formatPrompt') }}</span>
         </label>
-        <label class="field" for="vocal-language"><span>Vocal language</span>
+        <label class="field" for="vocal-language"><span>{{ locale.text('create.vocalLang') }}</span>
           <input id="vocal-language" formControlName="vocal_language" placeholder="en" />
         </label>
-        <label class="field" for="audio-format"><span>Audio format</span>
+        <label class="field" for="audio-format"><span>{{ locale.text('create.format') }}</span>
           <select id="audio-format" formControlName="audio_format">
             <option value="mp3">MP3</option><option value="wav">WAV</option>
             <option value="flac">FLAC</option><option value="opus">Opus</option>
@@ -189,26 +189,24 @@
         <ace-create-source-edit [form]="form" [mode]="selectedMode()" />
         @if (selectedMode() === 'text2music' && !changes().sample_mode) {
           <label class="field" for="semantic-audio-codes">
-            <span>Semantic audio codes <small>optional · experimental</small></span>
+            <span>{{ locale.text('create.codes') }} <small>{{ locale.text('create.experimental') }}</small></span>
             <textarea id="semantic-audio-codes" formControlName="audio_code_string"
               rows="4" maxlength="1000000" spellcheck="false"
-              placeholder="Paste a code sequence or use one from the Analysis results"></textarea>
+              [placeholder]="locale.text('create.codesPlaceholder')"></textarea>
           </label>
-          <p class="small-note">Provided codes bypass the language model's code generation.
-            Turn off LM thinking to use them. Codes are kept in memory for this
-            session and are excluded from saved presets and projects.</p>
+          <p class="small-note">{{ locale.text('create.codesHint') }}</p>
         }
         @if (selectedMode() === 'cover') {
-          <label class="field" for="cover-strength"><span>Cover strength (0–1)</span>
+          <label class="field" for="cover-strength"><span>{{ locale.text('create.coverStrength') }}</span>
             <input id="cover-strength" type="number" min="0" max="1" step=".05"
               formControlName="audio_cover_strength" />
           </label>
         }
         @if (selectedMode() === 'repaint') {
-          <label class="field" for="repaint-start"><span>Repaint from (sec)</span>
+          <label class="field" for="repaint-start"><span>{{ locale.text('create.repaintStart') }}</span>
             <input id="repaint-start" type="number" min="0" formControlName="repainting_start" />
           </label>
-          <label class="field" for="repaint-end"><span>Repaint until (sec)</span>
+          <label class="field" for="repaint-end"><span>{{ locale.text('create.repaintEnd') }}</span>
             <input id="repaint-end" type="number" min="0" formControlName="repainting_end" />
           </label>
         }
@@ -217,15 +215,15 @@
 
     <section class="submit-card">
       <div class="submit-decor" aria-hidden="true">✳</div>
-      <h2>Ready to create?</h2>
-      <p>Generation runs on your existing ACE-Step backend. Track progress in your queue.</p>
+      <h2>{{ locale.text('create.ready') }}</h2>
+      <p>{{ locale.text('create.readyHelp') }}</p>
       <button class="primary-action" type="submit"
         [disabled]="form.invalid || jobs.submitting() || backend.health()?.status !== 'ok'">
-        {{ jobs.submitting() ? 'Submitting…' : 'Generate music' }}
+        {{ jobs.submitting() ? locale.text('create.submitting') : locale.text('create.generate') }}
         <span aria-hidden="true">→</span>
       </button>
       @if (backend.health()?.status !== "ok") {
-        <p class="small-note">Connect a running backend to enable generation.</p>
+        <p class="small-note">{{ locale.text('create.needBackend') }}</p>
       }
     </section>
   </aside>
