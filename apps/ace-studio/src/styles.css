@@ -473,3 +473,21 @@ h3 { font-size: 15px; font-weight: 600; }
 @media (prefers-reduced-motion: reduce) {
   .determinate-progress span { transition: none; }
 }
+
+/* Batch variants and local session-day organization. */
+.job-day-heading { margin: 16px 0 10px; padding: 0 0 10px;
+  border-bottom: 1px solid var(--line-soft); color: var(--muted);
+  font-size: 12px; font-weight: 700; letter-spacing: .06em; }
+.batch-navigator { display: flex; flex-wrap: wrap; align-items: center;
+  gap: 12px; padding: 13px; margin: 16px 0 12px;
+  border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface-inset); }
+.batch-count { display: grid; gap: 4px; margin-right: auto; }
+.batch-count strong { font-size: 12px; }
+.batch-controls, .batch-index { display: flex; flex-wrap: wrap; gap: 5px; }
+.batch-index button[aria-pressed="true"], .batch-controls button[aria-pressed="true"] {
+  background: var(--selected-bg); color: var(--accent);
+  border-color: var(--selected-line); }
+.batch-index button { min-width: 30px; }
+@media (max-width: 620px) { .batch-navigator { align-items: stretch; }
+  .batch-count { width: 100%; } }

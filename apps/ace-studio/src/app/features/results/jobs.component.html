@@ -34,7 +34,9 @@
   </section>
 } @else {
   <div class="job-list">
-    @for (job of visible(); track job.id) {
+    @for (group of groups(); track group.key) {
+      <h2 class="job-day-heading">{{ group.label }} · {{ group.count }} jobs</h2>
+      @for (job of group.jobs; track job.id) {
       <article class="panel job-card" [attr.aria-label]="'Generation job ' + job.title">
         <div class="job-heading">
           <div>
@@ -76,9 +78,11 @@
           <p class="muted">Job completed without a playable audio file.</p>
         }
         @if (job.results.length) {
+          <ace-batch-navigator [results]="job.results"
+            (chosen)="chooseVariant(job.id, $event)" />
           <div class="audio-results">
             @for (result of job.results; track $index) {
-              @if (result.file) {
+              @if (result.file && showVariant(job, $index)) {
                 <ace-audio-card [result]="result" [index]="$index + 1"
                   [canRestore]="!!job.request"
                   (reuseRequested)="edit(result, $event)"
@@ -97,6 +101,7 @@
           <span class="small-note">Does not cancel inference on the backend</span>
         </div>
       </article>
+      }
     } @empty {
       <p class="panel muted">No jobs match this filter.</p>
     }

@@ -11,6 +11,8 @@ import { WorkflowStore } from "../../core/workflow.store";
 import { AudioCardComponent } from "./audio-card.component";
 import { withResultSeed } from "../create/restore-request";
 import { JobFilter, filterJobs } from "./job-filter";
+import { BatchNavigatorComponent } from "./batch-navigator.component";
+import { VariantSelection, groupJobsByDay, normalizeVariantSelection } from "./batch-navigation";
 import { LibrarySaveComponent } from "../library/library-save.component";
 import { ComparisonComponent } from "./comparison.component";
 import { AnalysisResultComponent } from "./analysis-result.component";
@@ -19,7 +21,7 @@ import { AnalysisResultComponent } from "./analysis-result.component";
 @Component({
   selector: "ace-jobs",
   standalone: true,
-  imports: [AudioCardComponent, AnalysisResultComponent, LibrarySaveComponent, ComparisonComponent, DatePipe],
+  imports: [AudioCardComponent, AnalysisResultComponent, LibrarySaveComponent, ComparisonComponent, BatchNavigatorComponent, DatePipe],
   templateUrl: "./jobs.component.html"
 })
 export class JobsComponent {
@@ -29,9 +31,23 @@ export class JobsComponent {
   readonly visible = computed(() =>
     filterJobs(this.jobs.jobs(), this.filter(), this.search())
   );
+  readonly selections = signal<Readonly<Record<string, VariantSelection>>>({});
+  readonly groups = computed(() => groupJobsByDay(this.visible()));
   private readonly workflow = inject(WorkflowStore);
   /** @public Request navigation to create editor. */
   readonly reuse = output<void>();
+
+  /** @public Focus an individual playable result without changing the backend job. */
+  chooseVariant(id: string, variant: VariantSelection): void {
+    this.selections.update(previous => ({ ...previous, [id]: variant }));
+  }
+
+  /** @public Retain all items or one playable item when server results change. */
+  showVariant(job: StudioJob, index: number): boolean {
+    const selection = normalizeVariantSelection(
+      this.selections()[job.id] ?? "all", job.results);
+    return selection === "all" || selection === index;
+  }
 
   /** @public Change the client-only phase filter without contacting the backend. */
   filterChanged(event: Event): void {
