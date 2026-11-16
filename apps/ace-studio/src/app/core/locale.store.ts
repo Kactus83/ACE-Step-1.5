@@ -9,6 +9,7 @@ import { LIBRARY_LOCALE_MESSAGES } from "./locale.library";
 import { SYSTEM_LOCALE_MESSAGES } from "./locale.system";
 import { CREATE_LOCALE_MESSAGES } from "./locale.create";
 import { CREATE_ADVANCED_LOCALE_MESSAGES } from "./locale.create-advanced";
+import { DATASET_LOCALE_MESSAGES } from "./locale.dataset";
 
 /** @public Explicitly supported interface languages. */
 export type StudioLocale = "en" | "fr";
@@ -62,7 +63,8 @@ const MESSAGES = {
   ...LIBRARY_LOCALE_MESSAGES,
   ...SYSTEM_LOCALE_MESSAGES,
   ...CREATE_LOCALE_MESSAGES,
-  ...CREATE_ADVANCED_LOCALE_MESSAGES
+  ...CREATE_ADVANCED_LOCALE_MESSAGES,
+  ...DATASET_LOCALE_MESSAGES
 } as const satisfies Record<string, Record<StudioLocale, string>>;
 
 /** @public Only keys whose language coverage is checked at build time. */
@@ -111,6 +113,7 @@ export class LocaleStore {
   /** @public Toggle English/French without reloading or clearing workspace state. */
   toggle(): void { this.set(this.mode() === "en" ? "fr" : "en"); }
 }
+
 
 
 
