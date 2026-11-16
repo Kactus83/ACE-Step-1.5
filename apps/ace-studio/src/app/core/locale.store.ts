@@ -54,7 +54,7 @@ const MESSAGES = {
   "analysis.deep": { en: "Deep analysis of a recording with 5Hz LM",
     fr: "Analyse approfondie d’un enregistrement avec le LM 5 Hz" },
   "analysis.text": { en: "Analyze a description / lyrics with 5Hz LM",
-    fr: "Analyser une description ou des paroles avec le LM 5 Hz" }
+    fr: "Analyser une description ou des paroles avec le LM 5 Hz" },
   ...RESULT_LOCALE_MESSAGES,
   ...LIBRARY_LOCALE_MESSAGES
 } as const satisfies Record<string, Record<StudioLocale, string>>;
