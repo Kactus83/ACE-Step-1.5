@@ -1,9 +1,9 @@
 <div class="page-heading">
   <div>
     <p class="eyebrow">STUDIO LAB / NON-AUDIO ANALYSIS</p>
-    <h1>Understand a recording.</h1>
-    <p class="lead">Inspect semantic audio codes or analyze musical metadata on your
-      existing ACE-Step engine. Results appear in the same Queue &amp; results view.</p>
+    <h1>{{ locale.text('analysis.title') }}</h1>
+    <p class="lead">{{ locale.text('analysis.lead') }}
+      Results appear in the Queue &amp; results view.</p>
   </div>
 </div>
 @if (error()) { <p class="notice danger" role="alert">{{ error() }}</p> }
@@ -13,11 +13,11 @@
       <p class="eyebrow">01 / ANALYSIS WORKFLOW</p>
       <h2 id="analysis-workflow-title">Select an operation</h2>
     </div><span class="section-mark" aria-hidden="true">⌁</span></div>
-    <label class="field" for="analysis-operation"><span>Analysis operation</span>
+    <label class="field" for="analysis-operation"><span>{{ locale.text('analysis.operation') }}</span>
       <select id="analysis-operation" [value]="mode()" (change)="chooseMode($event)">
-        <option value="codes">Extract audio codes from a recording</option>
-        <option value="deep">Deep analysis of a recording with 5Hz LM</option>
-        <option value="metadata">Analyze a description / lyrics with 5Hz LM</option>
+        <option value="codes">{{ locale.text('analysis.codes') }}</option>
+        <option value="deep">{{ locale.text('analysis.deep') }}</option>
+        <option value="metadata">{{ locale.text('analysis.text') }}</option>
       </select>
     </label>
     @switch (mode()) {
@@ -34,7 +34,7 @@
           supplied description and optional lyrics without producing audio.</p>
       }
     }
-    <label class="field" for="analysis-model"><span>DiT model</span>
+    <label class="field" for="analysis-model"><span>{{ locale.text('analysis.model') }}</span>
       <select id="analysis-model" [value]="model()" (change)="chooseModel($event)">
         <option value="">Backend default</option>
         @for (entry of backend.inventory()?.models || []; track entry.name) {
@@ -44,7 +44,7 @@
       </select>
     </label>
     @if (needsMedia()) {
-      <label class="field" for="analysis-source"><span>Source audio file</span>
+      <label class="field" for="analysis-source"><span>{{ locale.text('analysis.source') }}</span>
         <input id="analysis-source" type="file"
           accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a" (change)="chooseFile($event)" />
         <small>WAV · MP3 · FLAC · OGG · M4A · up to 120 MB</small>
@@ -54,12 +54,12 @@
           It is uploaded only after you submit the analysis.</p>
       }
     } @else {
-      <label class="field" for="analysis-prompt"><span>Music description</span>
+      <label class="field" for="analysis-prompt"><span>{{ locale.text('analysis.metadata') }}</span>
         <textarea id="analysis-prompt" rows="5" maxlength="5000" required
           [value]="prompt()" (input)="setText($event,'prompt')"
           placeholder="An evolving ambient track with acoustic percussion…"></textarea>
       </label>
-      <label class="field" for="analysis-lyrics"><span>Lyrics or structural hints (optional)</span>
+      <label class="field" for="analysis-lyrics"><span>{{ locale.text('analysis.lyrics') }}</span>
         <textarea id="analysis-lyrics" rows="4" maxlength="10000"
           [value]="lyrics()" (input)="setText($event,'lyrics')"
           placeholder="[Instrumental]"></textarea>
@@ -88,7 +88,7 @@
         They may occupy the GPU; no work starts automatically.</p>
       <button type="button" class="primary-action" [disabled]="!canSubmit()"
         (click)="submit()">
-        {{ jobs.submitting() ? 'Submitting…' : 'Submit analysis' }}
+        {{ jobs.submitting() ? 'Submitting…' : locale.text('analysis.submit') }}
         <span aria-hidden="true">→</span>
       </button>
       <p class="small-note">The result is metadata or audio codes, not a playable
@@ -96,4 +96,5 @@
     </section>
   </aside>
 </div>
+
 

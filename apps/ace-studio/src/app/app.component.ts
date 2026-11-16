@@ -14,6 +14,7 @@ import { DatasetComponent } from "./features/datasets/dataset.component";
 import { LibraryComponent } from "./features/library/library.component";
 import { AnalysisComponent } from "./features/analysis/analysis.component";
 import { ThemeStore } from "./core/theme.store";
+import { LocaleStore } from "./core/locale.store";
 import { StudioSection, isEditingElement, resolveStudioShortcut } from "./core/keyboard-shortcuts";
 
 type Section = StudioSection;
@@ -28,6 +29,7 @@ type Section = StudioSection;
 export class AppComponent implements OnInit {
   readonly backend = inject(BackendStore);
   readonly theme = inject(ThemeStore);
+  readonly locale = inject(LocaleStore);
   readonly jobs = inject(JobsStore);
   readonly section = signal<Section>("create");
   readonly shortcutsOpen = signal(false);
@@ -60,6 +62,7 @@ export class AppComponent implements OnInit {
   /** @public Navigate between always-shared Angular features. */
   navigate(destination: Section): void { this.section.set(destination); }
 }
+
 
 
 

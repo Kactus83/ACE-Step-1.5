@@ -6,6 +6,7 @@
 import { Component, computed, inject, output, signal } from "@angular/core";
 import { BackendStore } from "../../core/backend.store";
 import { JobsStore } from "../../core/jobs.store";
+import { LocaleStore } from "../../core/locale.store";
 import { AnalysisMode, mapAnalysisRequest } from "./analysis.request";
 import { validateAudioUpload } from "../create/source-audio";
 
@@ -18,6 +19,7 @@ import { validateAudioUpload } from "../create/source-audio";
 export class AnalysisComponent {
   readonly backend = inject(BackendStore);
   readonly jobs = inject(JobsStore);
+  readonly locale = inject(LocaleStore);
   readonly showJobs = output<void>();
   readonly mode = signal<AnalysisMode>("codes");
   readonly model = signal("");
@@ -106,3 +108,4 @@ export class AnalysisComponent {
     }
   }
 }
+

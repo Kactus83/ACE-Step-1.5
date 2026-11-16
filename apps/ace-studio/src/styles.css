@@ -456,3 +456,10 @@ h3 { font-size: 15px; font-weight: 600; }
 @media (max-width: 1020px) { .analysis-layout { grid-template-columns: 1fr; } }
 @media (max-width: 520px) { .analysis-facts { grid-template-columns: 1fr; } }
 
+
+/* Locale switching preserves the same semantic layout and user task state. */
+.locale-toggle { flex-shrink: 0; color: var(--text); font-size: 11px;
+  font-weight: 750; letter-spacing: .08em; background: var(--surface-raised);
+  border: 1px solid var(--line); border-radius: 9px; padding: 8px 11px; }
+.locale-toggle:hover { border-color: var(--accent); }
+
