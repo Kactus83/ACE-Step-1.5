@@ -6,6 +6,7 @@
 import { Injectable, signal } from "@angular/core";
 import { RESULT_LOCALE_MESSAGES } from "./locale.results";
 import { LIBRARY_LOCALE_MESSAGES } from "./locale.library";
+import { SYSTEM_LOCALE_MESSAGES } from "./locale.system";
 
 /** @public Explicitly supported interface languages. */
 export type StudioLocale = "en" | "fr";
@@ -56,7 +57,8 @@ const MESSAGES = {
   "analysis.text": { en: "Analyze a description / lyrics with 5Hz LM",
     fr: "Analyser une description ou des paroles avec le LM 5 Hz" },
   ...RESULT_LOCALE_MESSAGES,
-  ...LIBRARY_LOCALE_MESSAGES
+  ...LIBRARY_LOCALE_MESSAGES,
+  ...SYSTEM_LOCALE_MESSAGES
 } as const satisfies Record<string, Record<StudioLocale, string>>;
 
 /** @public Only keys whose language coverage is checked at build time. */
@@ -105,6 +107,7 @@ export class LocaleStore {
   /** @public Toggle English/French without reloading or clearing workspace state. */
   toggle(): void { this.set(this.mode() === "en" ? "fr" : "en"); }
 }
+
 
 
 
