@@ -17,6 +17,9 @@
   }
   @if (result().prompt) {
     <h4>Backend description</h4><p class="muted analysis-text">{{ result().prompt }}</p>
+    <button type="button" class="secondary-action" (click)="reuseDescription()">
+      Use analyzed description in Create
+    </button>
   }
   @if (result().lyrics) {
     <h4>Lyrics / structure</h4><pre class="metadata-lyrics">{{ result().lyrics }}</pre>

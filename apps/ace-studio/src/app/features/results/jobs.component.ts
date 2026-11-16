@@ -67,15 +67,21 @@ export class JobsComponent {
     this.reuse.emit();
   }
 
+  /** @public Stage actual LM analysis metadata as a user-editable generation draft. */
+  useDescription(value: { prompt: string; lyrics: string }): void {
+    this.workflow.useSettings({
+      task_type: "text2music",
+      prompt: value.prompt,
+      lyrics: value.lyrics,
+      thinking: false,
+      use_random_seed: true
+    }, "Analysis-derived composition", false);
+    this.reuse.emit();
+  }
+
   /** @public Move a real generated audio artifact into a new edit intent. */
   edit(audio: GeneratedAudio, mode: "cover" | "repaint"): void {
     this.workflow.useAudio(audio, mode);
     this.reuse.emit();
   }
 }
-
-
-
-
-
-

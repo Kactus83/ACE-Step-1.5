@@ -17,6 +17,8 @@ export class AnalysisResultComponent {
   readonly jobId = input.required<string>();
   /** @public Ask parent to stage a user-approved code-controlled generation. */
   readonly useCodesRequested = output<string>();
+  /** @public Stage an analysis-derived description for explicit generation. */
+  readonly useDescriptionRequested = output<{ prompt: string; lyrics: string }>();
   readonly downloaded = signal(false);
   readonly codePreview = computed(() => this.result().audioCodes?.slice(0, 2500) || "");
   readonly codeTruncated = computed(() => (this.result().audioCodes?.length || 0) > 2500);
@@ -29,6 +31,16 @@ export class AnalysisResultComponent {
   reuseCodes(): void {
     const codes = this.result().audioCodes;
     if (codes && this.codesReusable()) this.useCodesRequested.emit(codes);
+  }
+
+  /** @public Transfer the actual returned analysis description into Create. */
+  reuseDescription(): void {
+    const result = this.result();
+    if (!result.prompt.trim()) return;
+    this.useDescriptionRequested.emit({
+      prompt: result.prompt.trim(),
+      lyrics: result.lyrics
+    });
   }
 
   /** @public Export exactly the already received codes; no backend file access. */

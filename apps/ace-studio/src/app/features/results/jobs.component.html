@@ -59,7 +59,8 @@
         }
         @if (job.phase === "succeeded" && job.analysis; as analysis) {
           <ace-analysis-result [result]="analysis" [jobId]="job.id"
-            (useCodesRequested)="useCodes($event)" />
+            (useCodesRequested)="useCodes($event)"
+            (useDescriptionRequested)="useDescription($event)" />
         } @else if (job.phase === "succeeded" && !hasPlayableAudio(job)) {
           <p class="muted">Job completed without a playable audio file.</p>
         }
@@ -90,9 +91,3 @@
     }
   </div>
 }
-
-
-
-
-
-
