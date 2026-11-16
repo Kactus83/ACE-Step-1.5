@@ -12,6 +12,7 @@ import { ConnectionComponent } from "./features/system/connection.component";
 import { TrainingComponent } from "./features/training/training.component";
 import { DatasetComponent } from "./features/datasets/dataset.component";
 import { LibraryComponent } from "./features/library/library.component";
+import { AnalysisComponent } from "./features/analysis/analysis.component";
 import { ThemeStore } from "./core/theme.store";
 import { StudioSection, isEditingElement, resolveStudioShortcut } from "./core/keyboard-shortcuts";
 
@@ -21,7 +22,7 @@ type Section = StudioSection;
 @Component({
   selector: "ace-root",
   standalone: true,
-  imports: [CreateComponent, JobsComponent, LibraryComponent, DatasetComponent, TrainingComponent, ConnectionComponent],
+  imports: [CreateComponent, JobsComponent, LibraryComponent, AnalysisComponent, DatasetComponent, TrainingComponent, ConnectionComponent],
   templateUrl: "./app.component.html"
 })
 export class AppComponent implements OnInit {
@@ -59,6 +60,7 @@ export class AppComponent implements OnInit {
   /** @public Navigate between always-shared Angular features. */
   navigate(destination: Section): void { this.section.set(destination); }
 }
+
 
 
 

@@ -11,6 +11,10 @@
         [attr.aria-current]="section() === 'create' ? 'page' : null">
         <span class="nav-icon" aria-hidden="true">✳</span> Create
       </button>
+      <button type="button" [class.active]="section() === 'analysis'" (click)="navigate('analysis')"
+        [attr.aria-current]="section() === 'analysis' ? 'page' : null">
+        <span class="nav-icon" aria-hidden="true">⌁</span> Analyze
+      </button>
       <button type="button" [class.active]="section() === 'jobs'" (click)="navigate('jobs')"
         [attr.aria-current]="section() === 'jobs' ? 'page' : null">
         <span class="nav-icon" aria-hidden="true">◷</span> Queue & results
@@ -51,6 +55,7 @@
       <div class="breadcrumbs"><span>ACE Studio</span> <span aria-hidden="true">/</span>
         <strong>@switch (section()) {
           @case ("create") { Creation }
+          @case ("analysis") { Analysis }
           @case ("jobs") { Queue & results }
           @case ("library") { Library }
           @case ("datasets") { Datasets }
@@ -85,12 +90,14 @@
             <span><kbd>Alt + 1</kbd> Create</span><span><kbd>Alt + 2</kbd> Queue</span>
             <span><kbd>Alt + 3</kbd> Library</span><span><kbd>Alt + 4</kbd> Datasets</span>
             <span><kbd>Alt + 5</kbd> Training</span><span><kbd>Alt + 6</kbd> Connection</span>
+            <span><kbd>Alt + 7</kbd> Analysis</span>
           </div>
           <p class="small-note"><kbd>?</kbd> Toggle help · <kbd>Esc</kbd> Close help</p>
         </section>
       }
       @switch (section()) {
         @case ("create") { <ace-create (showJobs)="navigate('jobs')" /> }
+        @case ("analysis") { <ace-analysis (showJobs)="navigate('jobs')" /> }
         @case ("jobs") { <ace-jobs (reuse)="navigate('create')" /> }
         @case ("library") { <ace-library (navigateCreate)="navigate('create')" /> }
         @case ("datasets") { <ace-datasets /> }
@@ -100,6 +107,7 @@
     </main>
   </div>
 </div>
+
 
 
 

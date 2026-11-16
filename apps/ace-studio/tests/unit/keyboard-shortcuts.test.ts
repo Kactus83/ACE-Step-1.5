@@ -9,9 +9,9 @@ import { resolveStudioShortcut } from "../../src/app/core/keyboard-shortcuts";
 const alt = { altKey: true, ctrlKey: false, metaKey: false, shiftKey: false };
 
 describe("studio keyboard navigation", () => {
-  it("maps six Alt+digit combinations without relying on keyboard layout", () => {
-    const sections = ["create", "jobs", "library", "datasets", "training", "system"];
-    for (let i = 1; i <= 6; i++) {
+  it("maps seven Alt+digit combinations without relying on keyboard layout", () => {
+    const sections = ["create", "jobs", "library", "datasets", "training", "system", "analysis"];
+    for (let i = 1; i <= 7; i++) {
       expect(resolveStudioShortcut({ ...alt, code: "Digit" + i })).toBe(sections[i - 1]);
     }
   });
@@ -23,4 +23,5 @@ describe("studio keyboard navigation", () => {
     expect(resolveStudioShortcut({ ...alt, shiftKey: true, code: "Digit1" })).toBeNull();
   });
 });
+
 

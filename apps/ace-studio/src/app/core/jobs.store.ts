@@ -6,7 +6,8 @@
 import { Injectable, OnDestroy, inject, signal } from "@angular/core";
 import { BackendClient } from "./backend.client";
 import { decodeTask } from "./api-decoder";
-import { GenerateRequest, StudioJob } from "./api.types";
+import { decodeAnalysisResult } from "./analysis-result";
+import { AnalysisResultMode, GenerateRequest, StudioJob } from "./api.types";
 import { ConnectionStore } from "./connection.store";
 
 /** @public Asynchronous generation orchestration without counterfeit progress. */
@@ -32,7 +33,8 @@ export class JobsStore implements OnDestroy {
   private persist(): void {
     try {
       const minimal = this.jobs().slice(0, 30).map(job => ({
-        id: job.id, title: job.title, createdAt: job.createdAt
+        id: job.id, title: job.title, createdAt: job.createdAt,
+        analysisMode: job.analysisMode
       }));
       sessionStorage.setItem(this.storageKey, JSON.stringify(minimal));
     } catch { /* storage may be blocked */ }
@@ -47,7 +49,9 @@ export class JobsStore implements OnDestroy {
       ).map(entry => ({
         id: String(entry.id), title: String(entry.title),
         createdAt: Number(entry.createdAt) || Date.now(),
-        phase: "unknown", progressText: "Checking recovered job…", results: []
+        phase: "unknown", progressText: "Checking recovered job…", results: [],
+        analysisMode: (["codes", "deep", "metadata"].includes(String(entry.analysisMode))
+          ? entry.analysisMode as AnalysisResultMode : undefined)
       }));
       this.jobs.set(jobs);
     } catch { /* a corrupted session cache is not authoritative */ }
@@ -63,10 +67,13 @@ export class JobsStore implements OnDestroy {
     try {
       const accepted = await this.api.submit(request, source, reference);
       if (revision !== this.connection.revision()) return;
+      const analysisMode: AnalysisResultMode | undefined = request.extract_codes_only
+        ? "codes" : request.full_analysis_only ? "deep"
+          : request.analysis_only ? "metadata" : undefined;
       const job: StudioJob = {
         id: accepted.task_id, title: displayTitle || request.prompt.slice(0, 72) || "New track",
         createdAt: Date.now(), phase: "queued", progressText: "Queued",
-        results: [], request,
+        results: [], request, analysisMode,
         hasSourceAudio: Boolean(source), hasReferenceAudio: Boolean(reference)
       };
       this.jobs.update(items => [job, ...items.filter(item => item.id !== job.id)]);
@@ -104,7 +111,8 @@ export class JobsStore implements OnDestroy {
         if (!raw) return job;
         try {
           const next = decodeTask(raw);
-          return { ...job, phase: next.phase, results: next.results,
+          const analysis = decodeAnalysisResult(raw, job.request, job.analysisMode);
+          return { ...job, phase: next.phase, results: next.results, analysis,
             progressText: next.progressText || job.progressText,
             error: next.results.find(result => result.error)?.error || undefined };
         } catch (error: unknown) {
@@ -152,6 +160,7 @@ export class JobsStore implements OnDestroy {
     if (this.timer) clearTimeout(this.timer);
   }
 }
+
 
 
 

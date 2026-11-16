@@ -57,8 +57,10 @@
             {{ job.error || job.progressText || "Generation failed. Inspect backend diagnostics." }}
           </p>
         }
-        @if (job.phase === "succeeded" && !hasPlayableAudio(job)) {
-          <p class="muted">Generation completed.</p>
+        @if (job.phase === "succeeded" && job.analysis; as analysis) {
+          <ace-analysis-result [result]="analysis" [jobId]="job.id" />
+        } @else if (job.phase === "succeeded" && !hasPlayableAudio(job)) {
+          <p class="muted">Job completed without a playable audio file.</p>
         }
         @if (job.results.length) {
           <div class="audio-results">
@@ -87,6 +89,7 @@
     }
   </div>
 }
+
 
 
 

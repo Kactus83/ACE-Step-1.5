@@ -437,3 +437,22 @@ h3 { font-size: 15px; font-weight: 600; }
 @media (max-width: 720px) { .shortcut-list { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width: 450px) { .shortcut-list { grid-template-columns: 1fr; } }
 
+
+/* Analysis is a non-audio workflow, so output cards never include a player. */
+.analysis-layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(270px,355px);
+  align-items: start; gap: 22px; }
+.analysis-layout > * { min-width: 0; }
+.analysis-result { margin: 18px 0; padding: 17px;
+  border: 1px solid var(--accent-border); border-radius: 11px;
+  background: var(--surface-inset); }
+.analysis-facts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 9px 18px; margin: 16px 0; }
+.analysis-facts > div { min-width: 0; display: flex; flex-direction: column;
+  border-bottom: 1px solid var(--line-soft); padding: 6px 0 10px; gap: 4px; }
+.analysis-facts dt { color: var(--muted); font-size: 11px; }
+.analysis-facts dd { margin: 0; overflow-wrap: anywhere; font-size: 12px; }
+.analysis-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.analysis-code { max-height: 170px; }
+@media (max-width: 1020px) { .analysis-layout { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .analysis-facts { grid-template-columns: 1fr; } }
+

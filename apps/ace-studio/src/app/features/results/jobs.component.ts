@@ -13,12 +13,13 @@ import { withResultSeed } from "../create/restore-request";
 import { JobFilter, filterJobs } from "./job-filter";
 import { LibrarySaveComponent } from "../library/library-save.component";
 import { ComparisonComponent } from "./comparison.component";
+import { AnalysisResultComponent } from "./analysis-result.component";
 
 /** @public Accessible generation queue and track results. */
 @Component({
   selector: "ace-jobs",
   standalone: true,
-  imports: [AudioCardComponent, LibrarySaveComponent, ComparisonComponent, DatePipe],
+  imports: [AudioCardComponent, AnalysisResultComponent, LibrarySaveComponent, ComparisonComponent, DatePipe],
   templateUrl: "./jobs.component.html"
 })
 export class JobsComponent {
@@ -66,6 +67,7 @@ export class JobsComponent {
     this.reuse.emit();
   }
 }
+
 
 
 
