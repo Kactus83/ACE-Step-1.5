@@ -5,6 +5,7 @@
  */
 import { Component, computed, inject, signal } from "@angular/core";
 import { BackendStore } from "../../core/backend.store";
+import { LocaleStore } from "../../core/locale.store";
 import { ConnectionStore } from "../../core/connection.store";
 
 /** @public Backend model lifecycle UI; no model loads without double confirmation. */
@@ -15,6 +16,7 @@ import { ConnectionStore } from "../../core/connection.store";
 })
 export class ModelManagerComponent {
   readonly backend = inject(BackendStore);
+  readonly locale = inject(LocaleStore);
   private readonly connection = inject(ConnectionStore);
   readonly languageModel = signal("");
   readonly pending = signal<string | null>(null);
@@ -41,7 +43,7 @@ export class ModelManagerComponent {
     const inventory = this.backend.inventory();
     if (!inventory?.models.some(entry => entry.name === model)) return;
     if (lmModel && !inventory.lm_models?.some(entry => entry.name === lmModel)) {
-      this.notice.set("Language model was not advertised by this backend.");
+      this.notice.set(this.locale.text("models.errorUnlisted"));
       return;
     }
     const key = JSON.stringify({
@@ -50,14 +52,14 @@ export class ModelManagerComponent {
     if (this.pending() !== key) {
       this.pending.set(key);
       this.notice.set(lmModel
-        ? "Confirm reinitialization of DiT and initialization of the 5Hz LM. This may download checkpoints and consume GPU memory."
-        : "Confirm model initialization. This may download checkpoints and consume GPU memory.");
+        ? this.locale.text("models.confirmReinit")
+        : this.locale.text("models.confirmInit"));
       return;
     }
     this.pending.set(null);
     this.notice.set(null);
     await this.backend.load(model, lmModel);
-    if (!this.backend.error()) this.notice.set("Model initialization completed on the backend.");
+    if (!this.backend.error()) this.notice.set(this.locale.text("models.completed"));
   }
 
   /** @public Confirm a current DiT plus explicit 5Hz LM selection. */
@@ -74,5 +76,6 @@ export class ModelManagerComponent {
     });
   }
 }
+
 
 

@@ -1,47 +1,47 @@
-<section class="model-manager" aria-label="Model initialization">
-  <h3>Available DiT models</h3>
+<section class="model-manager" [attr.aria-label]="locale.text('models.region')">
+  <h3>{{ locale.text('models.available') }}</h3>
   @for (model of backend.inventory()?.models || []; track model.name) {
     <div class="model-entry">
       <div><strong>{{ model.name }}</strong>
-        <small>{{ model.is_loaded ? 'Loaded' : 'Available' }} ·
-          {{ model.supported_task_types?.length || 0 }} supported modes</small>
+        <small>{{ model.is_loaded ? locale.text('models.loaded') : locale.text('models.availableStatus') }} ·
+          {{ model.supported_task_types?.length || 0 }} {{ locale.text('models.supported') }}</small>
       </div>
       @if (!model.is_loaded) {
         <button type="button" class="secondary-action" [disabled]="backend.busy()"
           (click)="initialize(model.name)">
-          {{ awaiting(model.name) ? 'Confirm DiT load' : 'Review DiT load' }}
+          {{ awaiting(model.name) ? locale.text('models.confirmDit') : locale.text('models.reviewDit') }}
         </button>
-      } @else { <span class="small-note">Ready</span> }
+      } @else { <span class="small-note">{{ locale.text('models.ready') }}</span> }
     </div>
   } @empty {
-    <p class="muted">No models reported. Start ACE-Step, then refresh.</p>
+    <p class="muted">{{ locale.text('models.none') }}</p>
   }
-  <p class="small-note">All model initialization is explicit and may allocate GPU memory.</p>
+  <p class="small-note">{{ locale.text('models.resourceNotice') }}</p>
   <div class="model-lm">
-    <h3>5Hz language model initialization</h3>
-    <p class="muted">The Python initialization endpoint also reinitializes the
-      selected DiT. No separate lightweight LM-only route is advertised.</p>
-    <label class="field" for="select-lm-model"><span>Available language models</span>
+    <h3>{{ locale.text('models.lmTitle') }}</h3>
+    <p class="muted">{{ locale.text('models.lmResource') }}</p>
+    <label class="field" for="select-lm-model"><span>{{ locale.text('models.lmLabel') }}</span>
       <select id="select-lm-model" [value]="languageModel()"
         (change)="changeLanguageModel($event)">
-        <option value="">Select an advertised LM</option>
+        <option value="">{{ locale.text('models.selectLm') }}</option>
         @for (item of backend.inventory()?.lm_models || []; track item.name) {
           <option [value]="item.name">{{ item.name }}</option>
         }
       </select>
     </label>
-    <p class="small-note">Currently reported LM:
-      {{ backend.inventory()?.loaded_lm_model || 'None' }}</p>
+    <p class="small-note">{{ locale.text('models.currentLm') }}
+      {{ backend.inventory()?.loaded_lm_model || locale.text('models.noneValue') }}</p>
     <button type="button" class="secondary-action"
       [disabled]="backend.busy() || !selectedDit() || !languageModel()"
       (click)="initializeLanguageModel()">
-      {{ awaiting(selectedDit(), languageModel()) ? 'Confirm DiT + LM initialization'
-        : 'Review DiT + LM initialization' }}
+      {{ awaiting(selectedDit(), languageModel()) ? locale.text('models.confirmBoth')
+        : locale.text('models.reviewBoth') }}
     </button>
     @if (!(backend.inventory()?.lm_models?.length)) {
-      <p class="small-note">This server does not advertise selectable 5Hz models.</p>
+      <p class="small-note">{{ locale.text('models.noLm') }}</p>
     }
   </div>
   @if (notice()) { <p class="notice warning" role="status">{{ notice() }}</p> }
 </section>
+
 
