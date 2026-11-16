@@ -64,6 +64,12 @@ export interface GenerateRequest {
   readonly thinking: boolean;
   readonly sample_mode?: boolean;
   readonly sample_query?: string;
+  /** @public Inspect prompt/lyrics with LM without rendering audio. */
+  readonly analysis_only?: boolean;
+  /** @public Analyze source codes and metadata with DiT + initialized 5Hz LM. */
+  readonly full_analysis_only?: boolean;
+  /** @public Encode a source into semantic codes without rendering audio. */
+  readonly extract_codes_only?: boolean;
   readonly audio_duration?: number;
   readonly bpm?: number;
   readonly key_scale?: string;

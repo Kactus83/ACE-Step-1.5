@@ -135,8 +135,13 @@ const server = http.createServer(async (req, res) => {
       lastSubmittedRequest = { contentType: req.headers["content-type"],
         multipartBody: raw.slice(0, 4000) };
     }
+    const rawMode = lastSubmittedRequest?.multipartBody || "";
+    const flag = name => new RegExp('name="' + name + '"\\r?\\n\\r?\\ntrue').test(rawMode);
+    const analysisMode = lastSubmittedRequest?.extract_codes_only || flag("extract_codes_only")
+      ? "codes" : lastSubmittedRequest?.full_analysis_only || flag("full_analysis_only")
+        ? "deep" : lastSubmittedRequest?.analysis_only ? "metadata" : null;
     const id = "mock-" + (++sequence);
-    jobs.set(id, { prompt, polls: 0 });
+    jobs.set(id, { prompt, polls: 0, analysisMode });
     respond(wrap({ task_id: id, status: "queued", queue_position: 1 })); return;
   }
   if (url.pathname === "/query_result" && req.method === "POST") {
@@ -151,6 +156,31 @@ const server = http.createServer(async (req, res) => {
       job.polls++;
       if (job.polls < 2) return { task_id: id, status: 0,
         progress_text: "Sampling on mock backend", result: '[{"file":"","status":0}]' };
+      if (job.analysisMode === "codes") {
+        return { task_id: id, status: 1, progress_text: "Audio codes extracted",
+          result: JSON.stringify([{
+            status_message: "Audio Codes Extraction Success",
+            audio_codes: "<|audio_semantic|>FAKE_CODES_FOR_TEST_ONLY",
+            audio_paths: [], metas: {}
+          }]) };
+      }
+      if (job.analysisMode === "deep") {
+        return { task_id: id, status: 1, progress_text: "Deep analysis finished",
+          result: JSON.stringify([{
+            status_message: "Full Hardware Analysis Success", bpm: 93,
+            keyscale: "A minor", duration: 17, genre: "ambient",
+            prompt: "A mock analysis of an acoustic recording", lyrics: "[inst]",
+            audio_codes: "<|audio_semantic|>FAKE_DEEP_CODES",
+            metas: { bpm: 93, keyscale: "A minor", language: "en" }, audio_paths: []
+          }]) };
+      }
+      if (job.analysisMode === "metadata") {
+        return { task_id: id, status: 1, progress_text: "Metadata analyzed",
+          result: JSON.stringify([{
+            file: "", prompt: job.prompt,
+            lyrics: "", status: 1, metas: { bpm: 87, keyscale: "G major" }
+          }]) };
+      }
       return { task_id: id, status: 1, progress_text: "Done",
         result: JSON.stringify([{ file: "/v1/audio?path=%2Fmock%2Fsilence.wav",
           prompt: job.prompt, status: 1, seed_value: "42", metas: { bpm: 120 } }]) };
