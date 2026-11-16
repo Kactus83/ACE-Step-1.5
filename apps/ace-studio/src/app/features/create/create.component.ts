@@ -113,9 +113,7 @@ export class CreateComponent implements OnInit {
 
   /** @public Synchronize the visual range selection with the advanced time inputs. */
   setRepaintRange(range: { start: number; end: number }): void {
-    this.form.patchValue({
-      repainting_start: range.start, repainting_end: range.end
-    });
+    this.form.patchValue({ repainting_start: range.start, repainting_end: range.end });
   }
 
   /** @public Explicitly retrieve an older generated track for local waveform inspection. */
