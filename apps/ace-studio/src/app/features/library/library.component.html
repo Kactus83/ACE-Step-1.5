@@ -1,14 +1,11 @@
 <div class="page-heading">
   <div><p class="eyebrow">LOCAL WORKSPACE / PROJECTS</p>
-    <h1>Organize your creations.</h1>
-    <p class="lead">Keep intentional bookmarks of your finished tracks and their creative metadata.</p>
+    <h1>{{ locale.text('library.title') }}</h1>
+    <p class="lead">{{ locale.text('library.lead') }}</p>
   </div>
-  <button type="button" class="secondary-action" (click)="export()">Export projects JSON</button>
+  <button type="button" class="secondary-action" (click)="export()">{{ locale.text('library.export') }}</button>
 </div>
-<p class="notice warning">This catalog is stored only in this browser or Tauri profile.
-  It saves metadata and server references, <strong>not the audio files</strong>.
-  Audio may disappear when the Python server cleans up outputs. Download important tracks separately.
-</p>
+<p class="notice warning">{{ locale.text('library.backupNotice') }}</p>
 @if (error()) { <p role="alert" class="notice danger">{{ error() }}</p> }
 @if (catalog.error()) { <p role="alert" class="notice danger">{{ catalog.error() }}</p> }
 @if (catalog.message()) { <p role="status" class="notice success">{{ catalog.message() }}</p> }
@@ -16,23 +13,19 @@
   <section class="panel" aria-labelledby="catalog-recovery-title">
     <div class="section-heading"><div>
       <p class="eyebrow">LOCAL DATA SAFETY</p>
-      <h2 id="catalog-recovery-title">The stored project catalog is unreadable.</h2>
+      <h2 id="catalog-recovery-title">{{ locale.text('library.corruptTitle') }}</h2>
     </div></div>
-    <p class="notice danger">No stored data has been overwritten. Download
-      a raw backup before deciding whether to discard the damaged catalog.
-      The raw backup can contain creative descriptions, lyrics and annotations.</p>
+    <p class="notice danger">{{ locale.text('library.corruptWarning') }}</p>
     <div class="comparison-actions">
       <button type="button" class="secondary-action"
-        (click)="recovery.downloadRaw()">Back up unreadable catalog</button>
+        (click)="recovery.downloadRaw()">{{ locale.text('library.backup') }}</button>
       <button type="button" class="quiet danger-text"
         (click)="recovery.reset()">
         {{ recovery.armed()
-          ? 'Confirm discard corrupt catalog' : 'Review corrupt catalog reset' }}
+          ? locale.text('library.resetConfirm') : locale.text('library.resetReview') }}
       </button>
     </div>
-    <p class="small-note">The reset deletes only the unreadable metadata
-      catalog on this device, never audio files or the Python server dataset.
-      A catalog that has become valid cannot be deleted by this recovery action.</p>
+    <p class="small-note">{{ locale.text('library.resetDetail') }}</p>
   </section>
 }
 @if (recovery.error()) {
@@ -44,39 +37,39 @@
 <div class="library-layout">
   <aside class="panel library-index" aria-labelledby="library-index-title">
     <div class="section-heading"><div>
-      <p class="eyebrow">01 / PROJECTS</p><h2 id="library-index-title">Your collections</h2>
+      <p class="eyebrow">01 / PROJECTS</p><h2 id="library-index-title">{{ locale.text('library.collections') }}</h2>
     </div><span class="section-mark" aria-hidden="true">▦</span></div>
-    <label class="field" for="library-project-search"><span>Search projects and track tags</span>
+    <label class="field" for="library-project-search"><span>{{ locale.text('library.searchLabel') }}</span>
       <input id="library-project-search" [value]="query()" (input)="setQuery($event)"
-        placeholder="Search…" />
+        [placeholder]="locale.text('library.searchPlaceholder')" />
     </label>
-    <div class="library-project-list" role="group" aria-label="Local projects">
+    <div class="library-project-list" role="group" [attr.aria-label]="locale.text('library.projectsAria')">
       @for (project of visible(); track project.id) {
         <button type="button" class="dataset-sample"
           [class.active]="selectedId() === project.id"
           (click)="select(project.id)">
-          <span>{{ project.name }}</span><small>{{ project.tracks.length }} saved references</small>
+          <span>{{ project.name }}</span><small>{{ project.tracks.length }} {{ locale.text('library.references') }}</small>
         </button>
       } @empty {
-        <p class="small-note">No projects match your search.</p>
+        <p class="small-note">{{ locale.text('library.noMatches') }}</p>
       }
     </div>
     <form (submit)="$event.preventDefault(); create()">
-      <label class="field" for="library-new-name"><span>New project</span>
+      <label class="field" for="library-new-name"><span>{{ locale.text('library.newProject') }}</span>
         <input id="library-new-name" maxlength="100" [value]="newName()"
-          (input)="setNewName($event)" placeholder="Name your new project" />
+          (input)="setNewName($event)" [placeholder]="locale.text('library.newPlaceholder')" />
       </label>
       <button type="submit" class="secondary-action"
         [disabled]="!newName().trim() || catalog.projects().length >= 30">
-        Create local project
+        {{ locale.text('library.create') }}
       </button>
     </form>
     <div class="library-import">
-      <label class="field" for="library-import-json"><span>Import project metadata</span>
+      <label class="field" for="library-import-json"><span>{{ locale.text('library.importLabel') }}</span>
         <input id="library-import-json" type="file" accept=".json,application/json"
           (change)="import($event)" />
       </label>
-      <p class="small-note">Additive JSON import only; existing local projects are not overwritten.</p>
+      <p class="small-note">{{ locale.text('library.importNotice') }}</p>
     </div>
   </aside>
   <section class="library-details">
@@ -86,10 +79,11 @@
     } @else {
       <div class="panel empty-state">
         <span class="empty-icon" aria-hidden="true">▦</span>
-        <h2>Select a project to get started.</h2>
-        <p>Save references from Queue &amp; results, or create a project here.</p>
+        <h2>{{ locale.text('library.selectTitle') }}</h2>
+        <p>{{ locale.text('library.selectNote') }}</p>
       </div>
     }
   </section>
 </div>
+
 

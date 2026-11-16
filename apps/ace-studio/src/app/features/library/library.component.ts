@@ -5,6 +5,7 @@
  */
 import { Component, computed, inject, output, signal } from "@angular/core";
 import { LibraryStore } from "./library.store";
+import { LocaleStore } from "../../core/locale.store";
 import { LibraryProjectComponent } from "./library-project.component";
 import { LibraryRecoveryService } from "./library.recovery";
 
@@ -17,6 +18,7 @@ import { LibraryRecoveryService } from "./library.recovery";
 })
 export class LibraryComponent {
   readonly catalog = inject(LibraryStore);
+  readonly locale = inject(LocaleStore);
   readonly recovery = inject(LibraryRecoveryService);
   readonly navigateCreate = output<void>();
   readonly selectedId = signal<string | null>(null);
@@ -74,7 +76,7 @@ export class LibraryComponent {
     el.value = "";
     if (!file) return;
     if (file.size > 1_500_000) {
-      this.error.set("Choose an archive smaller than 1.5 MB."); return;
+      this.error.set(this.locale.text("library.importTooLarge")); return;
     }
     try {
       const contents = await file.text();
@@ -84,7 +86,7 @@ export class LibraryComponent {
       }
       this.error.set(null);
     } catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Could not import JSON.");
+      this.error.set(error instanceof Error ? error.message : this.locale.text("library.importFailed"));
     }
   }
 
@@ -93,4 +95,5 @@ export class LibraryComponent {
     if (this.selectedId() === id) this.selectedId.set(null);
   }
 }
+
 
