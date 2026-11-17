@@ -5,18 +5,20 @@
  */
 import { Injectable, OnDestroy, inject, signal } from "@angular/core";
 import { BackendClient } from "./backend.client";
-import { classifyBackendFailure, safeBackendMessage } from "./backend-error";
+import { classifyBackendFailure, safeSubmissionFailureMessage, safeBackendMessage } from "./backend-error";
 import { decodeTask } from "./api-decoder";
 import { decodeAnalysisResult } from "./analysis-result";
 import { AnalysisResultMode, GenerateRequest, StudioJob } from "./api.types";
 import { ConnectionStore } from "./connection.store";
 import { decodeSessionJobs, encodeSessionJobs } from "./job-session-codec";
+import { LocaleStore } from "./locale.store";
 
 /** @public Asynchronous generation orchestration without counterfeit progress. */
 @Injectable({ providedIn: "root" })
 export class JobsStore implements OnDestroy {
   private readonly api = inject(BackendClient);
   private readonly connection = inject(ConnectionStore);
+  private readonly locale = inject(LocaleStore);
   private readonly storageKey = "ace-studio:tasks:v2";
   private timer: ReturnType<typeof setTimeout> | undefined;
   private disposed = false;
@@ -78,7 +80,8 @@ export class JobsStore implements OnDestroy {
       this.schedule(0);
     } catch (error: unknown) {
       if (revision === this.connection.revision()) {
-        this.error.set(safeBackendMessage(error));
+        this.error.set(safeSubmissionFailureMessage(
+          error, this.locale.text("jobs.submitUncertain")));
       }
     } finally { this.submitting.set(false); }
   }

@@ -5,7 +5,7 @@
  */
 import { describe, expect, it } from "vitest";
 import {
-  classifyBackendFailure, safeBackendMessage
+  classifyBackendFailure, safeBackendMessage, safeSubmissionFailureMessage
 } from "../../src/app/core/backend-error";
 
 describe("backend failure policies", () => {
@@ -25,6 +25,15 @@ describe("backend failure policies", () => {
     const error = { status: 401, message: "Bearer SUPER_SECRET at /private" };
     expect(safeBackendMessage(error)).not.toContain("SUPER_SECRET");
     expect(safeBackendMessage(error)).toContain("401");
+  });
+  it("warns on ambiguous task acceptance without suggesting duplicate submissions", () => {
+    const notice = "Do not resubmit without checking the job.";
+    for (const failure of [{ status: 0 }, { status: 503 }, new Error("Unknown response")]) {
+      expect(safeSubmissionFailureMessage(failure, notice)).toContain(notice);
+    }
+    for (const failure of [{ status: 400 }, { status: 401 }, { status: 429 }]) {
+      expect(safeSubmissionFailureMessage(failure, notice)).not.toContain(notice);
+    }
   });
   it("preserves bounded local validation errors", () => {
     expect(safeBackendMessage(new Error("Invalid repaint range.")))

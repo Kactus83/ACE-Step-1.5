@@ -77,3 +77,17 @@ export function safeBackendMessage(value: unknown): string {
     ? value.message : classifyBackendFailure(value).message;
 }
 
+
+/**
+ * @public Warn that a lost submission acknowledgement might already represent GPU work.
+ * @remarks Unlike status polling, retrying POST /release_task can enqueue a second job.
+ * @param value Submission failure, including a possible network interruption.
+ * @param notice Localized UI text explaining the ambiguous acceptance.
+ * @returns Safe diagnostic with a warning only when server acceptance is uncertain.
+ */
+export function safeSubmissionFailureMessage(value: unknown, notice: string): string {
+  const kind = classifyBackendFailure(value).kind;
+  return safeBackendMessage(value) +
+    (kind === "network" || kind === "unavailable" || kind === "unknown"
+      ? " " + notice : "");
+}
