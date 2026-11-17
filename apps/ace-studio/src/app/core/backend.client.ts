@@ -13,6 +13,7 @@ import {
 import { ConnectionStore } from "./connection.store";
 import { normalizeAudioUrl, unwrap } from "./api-decoder";
 import { decodeBackendStats, decodeModelInventory, decodeTaskRecords } from "./api-contracts";
+import { readOnlyTimeout } from "./read-only-timeout";
 
 /** @public ACE-Step network transport with explicit per-request authentication. */
 @Injectable({ providedIn: "root" })
@@ -28,21 +29,24 @@ export class BackendClient {
   /** @public Check transport and service liveness, not model readiness. */
   async health(): Promise<BackendHealth> {
     const data = await firstValueFrom(this.http.get<unknown>(
-      this.connection.endpoint() + "/health", { headers: this.headers() }));
+      this.connection.endpoint() + "/health", { headers: this.headers() })
+      .pipe(readOnlyTimeout("Health check")));
     return unwrap<BackendHealth>(data);
   }
 
   /** @public Read backend queue size and authoritative job counters. */
   async stats(): Promise<BackendStats> {
     const data = await firstValueFrom(this.http.get<unknown>(
-      this.connection.endpoint() + "/v1/stats", { headers: this.headers() }));
+      this.connection.endpoint() + "/v1/stats", { headers: this.headers() })
+      .pipe(readOnlyTimeout("Queue statistics")));
     return decodeBackendStats(unwrap<unknown>(data));
   }
 
   /** @public Enumerate available server models. */
   async models(): Promise<ModelInventory> {
     const data = await firstValueFrom(this.http.get<unknown>(
-      this.connection.endpoint() + "/v1/model_inventory", { headers: this.headers() }));
+      this.connection.endpoint() + "/v1/model_inventory", { headers: this.headers() })
+      .pipe(readOnlyTimeout("Model inventory")));
     return decodeModelInventory(unwrap<unknown>(data));
   }
 
@@ -92,7 +96,8 @@ export class BackendClient {
     if (!ids.length) return [];
     const data = await firstValueFrom(this.http.post<unknown>(
       this.connection.endpoint() + "/query_result",
-      { task_id_list: ids }, { headers: this.headers() }));
+      { task_id_list: ids }, { headers: this.headers() })
+      .pipe(readOnlyTimeout("Task lookup")));
     return decodeTaskRecords(unwrap<unknown>(data), ids);
   }
 

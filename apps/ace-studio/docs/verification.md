@@ -226,6 +226,27 @@ successful task. The mock-only status switch must not affect Python.
 Run these new source tests and the existing `auth-recovery.spec.ts` at the
 new exact SHA; no current-head execution is claimed.
 
+## Bounded status-request lifetimes (17 November 2026)
+
+The Angular API adapter now imposes a 15-second first-response timeout on
+read-only `/health`, `/v1/model_inventory`, `/v1/stats` and task-status
+`/query_result` requests. An unresponsive polling request can therefore
+settle and enter the existing retry/backoff path rather than holding the
+non-overlap guard forever. The timeout unsubscribes from HTTP only: **it
+does not cancel, restart or retry a backend generation job**.
+
+Deliberately excluded: `/release_task` (acceptance can be ambiguous after
+a lost acknowledgement), model initialization, training mutations and
+audio transfers. Do not assume aborting any of those would undo backend work.
+
+- Unit: `tests/unit/read-only-timeout.test.ts` checks a normal response and
+  an indefinitely silent observable using virtual timers.
+- Manual: stall `/query_result` with a disposable mock or network proxy;
+  confirm one request at a time, a timeout warning after the bound, and
+  subsequent backoff without a new generation submission.
+- Run the complete current-head suite; this source change has no executed
+  CI/local test evidence yet.
+
 ## Non-negotiable release gate
 
 Draft PR stays unmerged until the remaining real API/GPU, visual,

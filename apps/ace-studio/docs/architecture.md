@@ -85,3 +85,12 @@ The list and workflow state are reset on backend origin or credential changes.\n
 7. Tauri and Web must continue to use one Angular source tree.
 
 
+
+## 17 November — bounded status reads
+
+HTTP health, inventory, stats and task-status lookups use a shared 15-second
+first-response timeout. A stuck network call is detached client-side and the
+existing polling backoff can resume. This is not a cancellation of server
+inference. Mutating operations (model loading, job submission and training)
+are intentionally outside this policy because the server may already have
+accepted them when a client loses its response.
