@@ -15,6 +15,7 @@ from acestep.api.http.studio_adapter_export_route import register_studio_adapter
 from acestep.api.http.lora_routes import register_lora_routes
 from acestep.api.http.model_service_routes import register_model_service_routes
 from acestep.api.http.query_result_route import register_query_result_route
+from acestep.api.http.studio_job_lookup_route import register_studio_job_lookup_route
 from acestep.api.http.reinitialize_route import register_reinitialize_route
 from acestep.api.http.release_task_route import register_release_task_route
 from acestep.api.http.sample_format_routes import register_sample_format_routes
@@ -168,4 +169,11 @@ def configure_api_routes(
         log_buffer=log_buffer,
     )
 
-
+    # Unlike legacy /query_result, this optional Studio route distinguishes
+    # unknown task IDs from queued tasks without launching new GPU work.
+    register_studio_job_lookup_route(
+        app=app,
+        verify_api_key=verify_api_key,
+        wrap_response=wrap_response,
+        store=store,
+    )

@@ -65,6 +65,7 @@ jobs:
           acestep.api.http.release_task_request_builder_test
           acestep.api.http.studio_adapter_export_test
           acestep.api.http.studio_cors_test
+          acestep.api.http.studio_job_lookup_route_test
 
   desktop-windows:
     name: Windows desktop package
