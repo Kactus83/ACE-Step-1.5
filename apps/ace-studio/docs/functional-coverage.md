@@ -1,22 +1,26 @@
 # ACE Studio — Functional coverage against ACE-Step 1.5
 
-Status: **locally compiled and mock-qualified on Windows**. Angular, Rust,
-focused Python, Windows desktop packaging, 78 unit tests and 20 browser-mock
-scenarios passed on 15 November 2026. Real GPU/model, full Python regression,
-signed-installer, screen-reader and non-Windows acceptance remains pending.
-The standalone FastAPI server is the only supported backend profile.
+Status: **qualified through 34b2fd83 on GitHub Actions, not yet at the
+current branch head**. A 15 November Windows qualification passed 78 Vitest
+tests, 20 browser mock scenarios, Rust checks, focused Python contracts and
+unsigned Windows packaging with a real WebView smoke. The later
+16 November GitHub Actions at `34b2fd83` passed Angular/browser mocks,
+focused Python contracts, Windows desktop packaging and CodeQL; PR evidence
+records 122 Vitest and 38 Playwright scenarios. Those are distinct runs.
 
-**Evidence boundary:** the executed Windows qualification predates the new
-Analysis, code-controlled generation, corrupted-catalog recovery, queue/session
-robustness, partial EN/FR workspaces and reported-progress source commits on 16 November. These new workflows have
-unit and browser mock tests **authored but not yet executed**; they require a
-fresh local CI run. Do not treat old green results as validation of new code.
+**Evidence boundary (17 November):** the newer `36a2b6f`, `75e8eaf`
+and `a3ab529` commits have tests authored but **no check-run evidence**
+at the time of inspection. API token isolation, recorded-model filter/order
+and result-details EN/FR changes therefore need a fresh current-HEAD CI.
+Real GPU generation/training, full Python regression, signed installer,
+screen-reader, cross-platform packaging and native download acceptance
+remain open. The standalone FastAPI profile is the only supported backend.
 
 | Capability | Source | Verification / limitations |
 | --- | --- | --- |
 | Angular 21 + Tauri 2 optional client | Verified locally | Shared frontend; Angular production build plus unsigned Windows MSI/NSIS packaging passed |
 | Connection/authentication/CORS | Written | Explicit HTTPS or loopback URL; volatile API key; Tauri CORS opt-in; CORS PUT added |
-| Backend readiness/model inventory/init | Written | /health, validated /v1/models, double-confirmed DiT + 5Hz LM /v1/init; GPU load untested |
+| Backend readiness/model inventory/init | Written | /health, validated /v1/model_inventory (not OpenAI-compatible /v1/models), double-confirmed DiT + 5Hz LM /v1/init; one real DiT GPU load smoke verified, full workflows pending |
 | Text-to-music | Written | Queued /release_task; prompt, instrumental, lyrics, model plus LM sample_mode/sample_query with resource confirmation; GPU QA pending |
 | Cover/Remix/Repaint | Partial | Multipart source/reference; waveform, ranges, latent/audio crossfade, source preservation, cover noise; codec QA pending |
 | Extract/Lego/Complete | Partial | Only model-advertised modes; stem and track_classes; real base-model GPU QA missing |
@@ -37,9 +41,9 @@ fresh local CI run. Do not treat old green results as validation of new code.
 | Trained adapter export | Written | Authenticated route fails closed without configured filesystem roots and refuses outside/existing/symlink targets; legacy endpoint unchanged |
 | Accessibility | Partial | Semantic labels, focus-visible, skip link, responsive CSS, reduced motion; screen-reader/zoom checks pending |
 | Light and dark appearance | Written | Semantic color tokens and local preference; human contrast/visual QA pending |
-| Keyboard shortcuts / translations | Partial | Alt+1..7 navigation, help panel, typed EN/FR navigation, Analysis, Queue/Batch, A/B and Library UI with localized timestamps; Create/Datasets/Training/Connection and error copy remain partial |
+| Keyboard shortcuts / translations | Partial | Alt+1..7 navigation, help panel, typed EN/FR for navigation, Create, datasets, training, Connection, Analysis, Queue/Batch, A/B, library and result detail UI. Remaining client error copy and real long-label / screen-reader QA pending |
 | Optional Tauri native integration | Partial | Safe WebView shell only; Windows MSI/NSIS built and release executable startup/layout/navigation inspected; installation and other OSes untested |
-| Tests | Older baseline verified locally | Windows evidence in verification.md records 78 Vitest and 20 Playwright plus focused Python; newly authored analysis, recovery, results/library i18n, batch, dataset conflict, credential retry, A/B invalidation, code-control and progress tests still unexecuted |
+| Tests | CI verified at 34b2fd83; new delta unverified | Windows qualification: 78 Vitest / 20 Playwright; subsequent GitHub CI and PR qualification: 122 Vitest / 38 Playwright at 34b2fd83. Three new 17 November commits add unit and E2E cases for credential isolation, model filter/sort and result localization; tests not yet executed at new SHA |
 | Existing Python CLI and Gradio | Source isolated | Opt-in desktop CORS + PUT, DCW parser forwarding, additive no-overwrite export route; complete regression testing pending |
 
 Do not conflate local metadata persistence with permanent backend audio storage.

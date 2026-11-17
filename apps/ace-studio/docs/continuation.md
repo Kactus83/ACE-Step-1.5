@@ -1,4 +1,4 @@
-# ACE Studio — Autonomous coordination and next source passes (checkpoint 7)
+# ACE Studio — Autonomous coordination and next source passes (checkpoint 8)
 
 Repository: `Kactus83/ACE-Step-1.5`
 Branch: `feature/ace-studio-angular-tauri`
@@ -25,10 +25,19 @@ mock scenarios, Cargo check/test, unsigned MSI/NSIS packaging, real packaged
 WebView launch, and focused Python unittests (18 tests with one skip).
 Read `docs/verification.md` and retain the exact logs and toolchain details.
 
-**This new source tranche, authored on 16 November after that qualification,
-has NOT been compiled or executed.** It must not inherit the older green
-status. Backend inference, GPU training, complete Python regression, other
-desktop platforms and screen-reader acceptance remain unverified.
+A later GitHub Actions qualification at **34b2fd83** succeeded on
+16 November 2026: Angular/browser mocks, focused Python contracts, Windows
+desktop package and CodeQL. The PR records 122 Vitest and 38 Playwright
+checks for that SHA. This supersedes the old unexecuted-checkpoint warning,
+but not the separate Windows runtime, GPU and accessibility acceptance gates.
+
+**17 November source delta after 34b2fd83:** `36a2b6f` isolates API
+tokens when changing the draft endpoint, `75e8eaf` adds recorded-model
+filtering and chronological queue sorting, and `a3ab529` localizes audio,
+metadata and analysis result controls. No GitHub check-runs were present for
+these SHA values when this report was updated. The tests are source-authored
+only. Full Python regression, real music inference/training, other platforms,
+install/upgrade and screen-reader acceptance remain unverified.
 
 ## Source now written
 
@@ -64,18 +73,19 @@ desktop platforms and screen-reader acceptance remain unverified.
 
 ## Highest-priority remaining source work
 
-1. **Batch/results explorer:** daily groups and individual variant navigation
-   now exist. Complete per-model filters, batch sorting, intentional repeat
-   with source reattachment and more detailed seed/metadata comparisons,
+1. **Batch/results explorer:** daily groups, variant navigation, recorded-model
+   filters and newest/oldest sorting now exist. Finish intentional repeat
+   with source reattachment and detailed seed/metadata comparisons,
    without inventing GPU cancellation or persisting audio binaries.
 2. **API lifecycle robustness:** task and server errors (401/403/404/409),
    recovery/timeouts, capability unavailable UX, pre-existing task
    observation and strict model/profile compatibility.
 3. **Server-global dataset contention:** clear ownership warnings, active
    task recovery, safe write/overwrite rules and coordination guidance.
-4. **Internationalization:** Queue/Batch/A-B and Library now translated;
-   extend typed EN/FR strings to Create, results audio-card details, datasets,
-   training, Connection and validation errors, including French visual QA.
+4. **Internationalization:** Queue/Batch/A-B, Library, Create, datasets,
+   training, Connection and audio/analysis result details have typed EN/FR
+   text. Audit remaining exception copy, validation feedback and dynamic
+   messages; verify French layouts visually.
 5. **Native acceptance:** decide browser versus Tauri media save/dialog
    boundary with a capability-gated adapter, without blanket filesystem
    permissions or duplicate Python processes. Validate actual packaged
@@ -93,7 +103,9 @@ desktop platforms and screen-reader acceptance remain unverified.
 
 At **current branch HEAD**, rerun:
 - `npm ci && npm run lint && npm run test && npm run build`
-- `npm run e2e:mock` including `analysis.spec.ts`,
+- `npm run e2e:mock` including the new `connection-credential-isolation.spec.ts`,
+  `job-model-filter.spec.ts`, `result-localization.spec.ts`,
+  `analysis.spec.ts`,
   `analysis-codes-reuse.spec.ts`, `library-recovery.spec.ts`,
   `locale.spec.ts`, `localized-workspaces.spec.ts`, `batch-navigation.spec.ts`,
   `dataset-conflict.spec.ts`, `auth-recovery.spec.ts`,

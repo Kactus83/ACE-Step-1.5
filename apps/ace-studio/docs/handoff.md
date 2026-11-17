@@ -31,6 +31,24 @@ Consolidation PR #1 was already merged independently. Do not reapply it.
 - Validate actual desktop origins on Windows, macOS and Linux, including
   keyboard focus, browser codecs, CORS PUT and native application icons.
 
+## Current source handoff — 17 November 2026
+
+Last fully green GitHub check suite: `34b2fd83` (16 November 2026,
+Angular/browser mocks, Python contracts, Windows package and CodeQL).
+New source commits on the existing branch:
+- `36a2b6f`: clear draft bearer token on endpoint edits; test cross-server isolation.
+- `75e8eaf`: model filter and newest/oldest queue ordering; unit and mock E2E.
+- `a3ab529`: EN/FR audio, generation metadata and analysis results; unit and
+  mock E2E. The backend response fields are not translated.
+
+The current code **has not been requalified since those changes**. Before
+acceptance, run `npm ci`, `npm run lint`, `npm run test`,
+`npm run build`, `npm run e2e:mock` and `npm run desktop:build`;
+log each command's SHA, exit status, toolchain and results. Inspect new tests
+alongside all earlier regressions. Then perform the real API/GPU, WebView,
+download, a11y and install checks listed in `docs/verification.md`.
+Keep PR #2 draft; do not merge.
+
 ## Concurrent local qualification
 
 The Windows local team already compiled and mock-qualified the prior source
