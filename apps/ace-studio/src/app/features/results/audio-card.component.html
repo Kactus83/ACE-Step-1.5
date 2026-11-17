@@ -1,33 +1,32 @@
-<section class="audio-card" [attr.aria-label]="'Generated track variant ' + index()">
+<section class="audio-card" [attr.aria-label]="locale.text('audio.variantAria') + ' ' + index()">
   <div class="audio-art" aria-hidden="true"><span>♫</span></div>
   <div class="audio-detail">
     <div class="audio-title">
-      <strong>Variant {{ index() }}</strong>
+      <strong>{{ locale.text('audio.variant') }} {{ index() }}</strong>
       @if (result().metas?.["bpm"]) { <small>{{ result().metas?.["bpm"] }} BPM</small> }
     </div>
     @if (!previewUrl()) {
       <button type="button" class="secondary-action" [disabled]="loading()" (click)="loadPreview()">
-        {{ loading() ? 'Loading audio…' : 'Load audio preview' }}
+        {{ loading() ? locale.text('audio.loading') : locale.text('audio.load') }}
       </button>
     } @else {
-      <audio [src]="previewUrl()" controls preload="none" aria-label="Audio preview"></audio>
+      <audio [src]="previewUrl()" controls preload="none"
+        [attr.aria-label]="locale.text('audio.previewAria')"></audio>
     }
     @if (error()) { <p class="field-error" role="alert">{{ error() }}</p> }
     @if (result().seed_value) {
-      <p class="small-note">Seed: {{ result().seed_value }}</p>
+      <p class="small-note">{{ locale.text('audio.seed') }} {{ result().seed_value }}</p>
     }
     <ace-result-metadata [result]="result()" />
     <div class="audio-actions">
-      <button type="button" class="quiet" (click)="download()">Download</button>
-      <button type="button" class="quiet" (click)="reuseRequested.emit('cover')">Remix ↗</button>
-      <button type="button" class="quiet" (click)="reuseRequested.emit('repaint')">Repaint ↗</button>
+      <button type="button" class="quiet" (click)="download()">{{ locale.text('audio.download') }}</button>
+      <button type="button" class="quiet" (click)="reuseRequested.emit('cover')">{{ locale.text('audio.remix') }} ↗</button>
+      <button type="button" class="quiet" (click)="reuseRequested.emit('repaint')">{{ locale.text('audio.repaint') }} ↗</button>
       @if (canRestore()) {
         <button type="button" class="quiet" (click)="restoreRequested.emit()">
-          Use settings &amp; seed ↗
+          {{ locale.text('audio.restore') }} ↗
         </button>
       }
     </div>
   </div>
 </section>
-
-

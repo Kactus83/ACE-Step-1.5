@@ -6,6 +6,7 @@
 import { Component, inject, input, output, signal } from "@angular/core";
 import { GeneratedAudio } from "../../core/api.types";
 import { AudioService } from "../../core/audio.service";
+import { LocaleStore } from "../../core/locale.store";
 import { ResultMetadataComponent } from "./result-metadata.component";
 
 /** @public A result preview, metadata and workflow reuse controls. */
@@ -17,6 +18,7 @@ import { ResultMetadataComponent } from "./result-metadata.component";
 })
 export class AudioCardComponent {
   private readonly audio = inject(AudioService);
+  readonly locale = inject(LocaleStore);
   readonly result = input.required<GeneratedAudio>();
   readonly index = input<number>(1);
   /** @public Only jobs with memory-resident requests can restore settings. */
@@ -36,7 +38,7 @@ export class AudioCardComponent {
     this.error.set(null);
     try { this.previewUrl.set(await this.audio.preview(this.result().file)); }
     catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Audio preview unavailable.");
+      this.error.set(error instanceof Error ? error.message : this.locale.text("audio.errorPreview"));
     } finally { this.loading.set(false); }
   }
 
@@ -46,7 +48,7 @@ export class AudioCardComponent {
     this.error.set(null);
     try { await this.audio.download(this.result().file, "ace-track-" + this.index() + ".mp3"); }
     catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : "Download failed.");
+      this.error.set(error instanceof Error ? error.message : this.locale.text("audio.errorDownload"));
     }
   }
 }

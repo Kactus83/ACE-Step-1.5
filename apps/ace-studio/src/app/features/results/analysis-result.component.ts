@@ -3,8 +3,9 @@
  * @remarks Accessible inspection and deliberate export of non-audio backend results.
  * @public
  */
-import { Component, computed, input, output, signal } from "@angular/core";
+import { Component, computed, inject, input, output, signal } from "@angular/core";
 import { AnalysisResult } from "../../core/api.types";
+import { LocaleStore } from "../../core/locale.store";
 
 /** @public Metadata/code result card that never creates an audio player. */
 @Component({
@@ -13,6 +14,7 @@ import { AnalysisResult } from "../../core/api.types";
   templateUrl: "./analysis-result.component.html"
 })
 export class AnalysisResultComponent {
+  readonly locale = inject(LocaleStore);
   readonly result = input.required<AnalysisResult>();
   readonly jobId = input.required<string>();
   /** @public Ask parent to stage a user-approved code-controlled generation. */

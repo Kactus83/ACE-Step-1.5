@@ -3,7 +3,8 @@
  * @remarks Inspect safe, server-reported generation metadata without inventing fields.
  * @public
  */
-import { Component, computed, input } from "@angular/core";
+import { Component, computed, inject, input } from "@angular/core";
+import { LocaleStore } from "../../core/locale.store";
 import { GeneratedAudio } from "../../core/api.types";
 
 /** @public Present actual server metadata, prompt and reproducibility information. */
@@ -13,6 +14,7 @@ import { GeneratedAudio } from "../../core/api.types";
   templateUrl: "./result-metadata.component.html"
 })
 export class ResultMetadataComponent {
+  readonly locale = inject(LocaleStore);
   readonly result = input.required<GeneratedAudio>();
   readonly properties = computed(() => {
     const metas = this.result().metas || {};
