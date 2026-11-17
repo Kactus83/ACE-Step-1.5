@@ -166,6 +166,22 @@ export class JobsStore implements OnDestroy {
     this.persist();
   }
 
+  /**
+   * @public Add a previously verified server job without submitting GPU work.
+   * @remarks Its timestamp is the local attachment time, not server creation time.
+   * @returns False when the job is already tracked in this session.
+   */
+  trackExisting(id: string): boolean {
+    if (this.jobs().some(item => item.id === id)) return false;
+    this.jobs.update(items => [{
+      id, title: id, createdAt: Date.now(), phase: "unknown",
+      progressText: "Checking existing task…", results: []
+    }, ...items]);
+    this.persist();
+    this.schedule(0);
+    return true;
+  }
+
   /** @public Forget a local item; does not cancel the backend GPU computation. */
   forget(id: string): void {
     this.jobs.update(items => items.filter(job => job.id !== id));
@@ -178,10 +194,3 @@ export class JobsStore implements OnDestroy {
     if (this.timer) clearTimeout(this.timer);
   }
 }
-
-
-
-
-
-
-

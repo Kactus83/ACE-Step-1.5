@@ -10,6 +10,7 @@
     {{ locale.text('jobs.connection') }} {{ jobs.error() }}. {{ jobs.pollingBlocked() ? locale.text('jobs.blocked') : locale.text('jobs.retry') }}
   </div>
 }
+<ace-job-attach />
 <details class="comparison-details advanced">
   <summary>{{ locale.text('jobs.compare') }} <span aria-hidden="true">⌄</span></summary>
   <ace-comparison />
@@ -59,6 +60,9 @@
           <span class="job-status" [class.success]="job.phase === 'succeeded'"
             [class.failed]="job.phase === 'failed'">{{ phaseLabel(job.phase) }}</span>
         </div>
+        @if (!job.request) {
+          <p class="small-note">{{ locale.text('jobs.attachUnrestorable') }}</p>
+        }
         @if (job.phase === "running" || job.phase === "queued" || job.phase === "unknown") {
           @let progress = reportedProgress(job);
           @if (progress !== null) {

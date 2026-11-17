@@ -17,12 +17,13 @@ import { VariantSelection, groupJobsByDay, normalizeVariantSelection } from "./b
 import { LibrarySaveComponent } from "../library/library-save.component";
 import { ComparisonComponent } from "./comparison.component";
 import { AnalysisResultComponent } from "./analysis-result.component";
+import { JobAttachComponent } from "./job-attach.component";
 
 /** @public Accessible generation queue and track results. */
 @Component({
   selector: "ace-jobs",
   standalone: true,
-  imports: [AudioCardComponent, AnalysisResultComponent, LibrarySaveComponent, ComparisonComponent, BatchNavigatorComponent],
+  imports: [AudioCardComponent, AnalysisResultComponent, LibrarySaveComponent, ComparisonComponent, BatchNavigatorComponent, JobAttachComponent],
   templateUrl: "./jobs.component.html"
 })
 export class JobsComponent {

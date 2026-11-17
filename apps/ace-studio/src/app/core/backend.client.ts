@@ -14,6 +14,7 @@ import { ConnectionStore } from "./connection.store";
 import { normalizeAudioUrl, unwrap } from "./api-decoder";
 import { decodeBackendStats, decodeModelInventory, decodeTaskRecords } from "./api-contracts";
 import { readOnlyTimeout } from "./read-only-timeout";
+import { ExistingJobLookup, decodeExistingJobLookup } from "./job-attachment";
 
 /** @public ACE-Step network transport with explicit per-request authentication. */
 @Injectable({ providedIn: "root" })
@@ -99,6 +100,17 @@ export class BackendClient {
       { task_id_list: ids }, { headers: this.headers() })
       .pipe(readOnlyTimeout("Task lookup")));
     return decodeTaskRecords(unwrap<unknown>(data), ids);
+  }
+
+  /**
+   * @public Verify an existing server job without submitting or scheduling inference.
+   * @throws Error when the server does not expose or recognize the job identifier.
+   */
+  async existingJob(id: string): Promise<ExistingJobLookup> {
+    const data = await firstValueFrom(this.http.get<unknown>(
+      this.connection.endpoint() + "/v1/studio/jobs/" + encodeURIComponent(id),
+      { headers: this.headers() }).pipe(readOnlyTimeout("Existing task lookup")));
+    return decodeExistingJobLookup(unwrap<unknown>(data), id);
   }
 
   /**

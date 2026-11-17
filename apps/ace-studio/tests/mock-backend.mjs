@@ -8,6 +8,7 @@ import { createDatasetSimulator } from "./mock-dataset.mjs";
 
 const port = Number(process.env.ACE_STUDIO_MOCK_PORT || 18081);
 let sequence = 0;
+let submissionCount = 0;
 const jobs = new Map();
 let lastSubmittedRequest = null;
 let rejectTaskAuth = false;
@@ -145,10 +146,22 @@ const server = http.createServer(async (req, res) => {
     rejectedTaskPolls = 0;
     respond(wrap({ taskPollFailureStatus })); return;
   }
+  if (url.pathname === "/__mock__/submission_count" && req.method === "GET") {
+    respond(wrap({ count: submissionCount })); return;
+  }
+  const existingJobMatch = /^\/v1\/studio\/jobs\/([A-Za-z0-9_.:-]{1,160})$/.exec(url.pathname);
+  if (existingJobMatch && req.method === "GET") {
+    const id = existingJobMatch[1];
+    const job = jobs.get(id);
+    if (!job) { respond({ detail: "Job not found on this server" }, 404); return; }
+    respond(wrap({ task_id: id, status: job.polls >= 2 ? "succeeded" : "queued" }));
+    return;
+  }
   if (url.pathname === "/__mock__/last_submission" && req.method === "GET") {
     respond(wrap(lastSubmittedRequest)); return;
   }
   if (url.pathname === "/release_task" && req.method === "POST") {
+    submissionCount++;
     const chunks = [];
     for await (const chunk of req) chunks.push(chunk);
     const raw = Buffer.concat(chunks).toString("utf8");
