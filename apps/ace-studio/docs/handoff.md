@@ -79,3 +79,18 @@ real packaged-WebView startup and layout/navigation inspection. It does not
 cover real GPU/model execution, full Python regression, signed installation,
 visual assistive-technology acceptance or non-Windows packaging. Only the user
 can authorize promoting/merging the completed and accepted work.
+
+## 17 November — checkpoint 9 incremental qualification
+
+Additional commits after the prior 17 November source report:
+`418345c` (pause non-retryable polling), `29e65a1` (15-second
+status-read timeout) and `6f2bd1a` (cross-server dataset PUT guard).
+Source head: `6f2bd1aeea450bb8f6a5d6cb613bb218160f96fd`.
+
+**New targeted tests:** `polling-fail-closed.spec.ts`,
+`read-only-timeout.test.ts`, `dataset-server-switch.spec.ts`.
+Run with the entire existing web and focused Python suites. All three new
+commits are **unqualified until current-head execution evidence exists**.
+
+See `docs/source-checkpoint-9.md` for exact changes, limitations and
+prioritization. Keep the PR draft, do not force-push and do not merge.

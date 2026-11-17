@@ -1,4 +1,4 @@
-# ACE Studio — Autonomous coordination and next source passes (checkpoint 8)
+# ACE Studio — Autonomous coordination and next source passes (checkpoint 9)
 
 Repository: `Kactus83/ACE-Step-1.5`
 Branch: `feature/ace-studio-angular-tauri`
@@ -128,3 +128,37 @@ and no claim of 100% or production readiness without both complete source
 and actual acceptance evidence.
 
 
+
+## 17 November continuation — hardening checkpoint 9
+
+Following `0fbf33b`, three source commits landed on this same branch:
+
+- `418345c`: auto-polling now respects the transport classifier's
+  `retryable=false` result. HTTP 404/409 and other non-retryable errors pause
+  background polling; explicit successful Connection is required to resume.
+  Playwright fixture and `polling-fail-closed.spec.ts` cover 404/409.
+- `29e65a1`: status-only HTTP calls (`/health`, model inventory, stats,
+  task lookup) use a shared 15-second first-response deadline; an abandoned
+  client request **does not** cancel a Python job. Mutation and media calls
+  remain outside the timeout policy. `read-only-timeout.test.ts` covers
+  successful and indefinitely silent streams.
+- `6f2bd1a`: an indexed dataset sample PUT now checks the captured
+  connection/generation token after the preflight GET before issuing any
+  write. `dataset-server-switch.spec.ts` simulates switching backend during
+  the held preflight. This is **not** an atomic CAS on one server.
+
+Latest source head at this checkpoint:
+`6f2bd1aeea450bb8f6a5d6cb613bb218160f96fd`.
+GitHub CI was last confirmed green at `34b2fd83`, before all 17 November
+changes. No fresh compilation, unit tests, browser tests, Rust/Python execution
+or GPU QA is claimed for the new commits.
+
+**Next execution gate:** run lint, Vitest, Angular build and all Playwright
+scenarios from the exact latest SHA, including:
+`connection-credential-isolation.spec.ts`,
+`job-model-filter.spec.ts`, `result-localization.spec.ts`,
+`create-source-revision.spec.ts`, `polling-fail-closed.spec.ts`,
+`dataset-server-switch.spec.ts`, `auth-recovery.spec.ts`,
+and `dataset-conflict.spec.ts`.
+Preserve existing Python/Gradio behavior and complete real audio, GPU,
+accessibility and native WebView acceptance before promotion.

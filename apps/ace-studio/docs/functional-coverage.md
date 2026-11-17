@@ -26,7 +26,7 @@ remain open. The standalone FastAPI profile is the only supported backend.
 | Extract/Lego/Complete | Partial | Only model-advertised modes; stem and track_classes; real base-model GPU QA missing |
 | Expert diffusion controls | Partial | ODE/SDE, shift, custom descending timesteps, CFG, ADG, DCW tri-state; remaining API modes and GPU behavior |
 | LM thinking/format/CoT | Partial | Explicit thinking, CoT, temperature/CFG/top-k/p; 5Hz model selection and consent-based init; backend/GPU QA pending |
-| Generation queue | Written | Task submission/status, server-origin-scoped session recovery, phase/search/explicit-model filters, newest/oldest sorting, day/variant batch navigation, 401/403 polling suspension, true reported progress; new model-filter regression requires qualification |
+| Generation queue | Written, latest source unqualified | Task submission/status, server-origin session recovery, model filters, chronological sorting, day/variant browsing, truthful progress; non-retryable 4xx pauses polling, transient 429/5xx retries, 15-second status-read timeout; latest browser/unit regression pending |
 | Non-audio analysis | Written, awaiting new CI | Exact extract_codes_only/full_analysis_only/analysis_only, structured queued metadata, full bounded code TXT and reusable descriptions; GPU/LM contract acceptance pending |
 | Semantic code generation | Written, awaiting new CI | audio_code_string provided only with text2music and LM thinking off; transient codes excluded from presets |
 | Results and audio | Written | Authenticated Blob player/download, detailed metadata, server seed, safe edit reuse |
@@ -36,7 +36,7 @@ remain open. The standalone FastAPI profile is the only supported backend.
 | Browser-local projects | Written | Metadata-only bookmarks, tags/favorites, search, bounded JSON import/export, external-tab refresh, stale-write rejection and explicit raw backup/recovery from corrupt catalog |
 | Durable server audio library | Unavailable | No corresponding server persistence contract; local project catalog **does not** back up audio |
 | Queue diagnostics | Written | Actual /v1/stats job counts; no fabricated GPU or VRAM metrics |
-| Server dataset lifecycle | Partial | Scan/load/save, indexed sample editing with read-before-write conflict checks, LM auto-label/tensor preprocess; server has no atomic CAS and needs GPU QA |
+| Server dataset lifecycle | Partial | Scan/load/save, indexed sample editing with read-before-write conflict checks and stale-connection guard before PUT, LM auto-label/tensor preprocess; backend still has no atomic CAS, live GPU validation pending |
 | LoRA/LoKr training | Partial | Tensor validation, explicit double-confirm start, stop request, real loss/history/log, preprocessed tensor handoff |
 | Trained adapter export | Written | Authenticated route fails closed without configured filesystem roots and refuses outside/existing/symlink targets; legacy endpoint unchanged |
 | Accessibility | Partial | Semantic labels, focus-visible, skip link, responsive CSS, reduced motion; screen-reader/zoom checks pending |
