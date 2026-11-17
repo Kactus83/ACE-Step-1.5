@@ -264,6 +264,69 @@ they do not update dataset UI state or silently replace new-server metadata.
   This check prevents cross-server writes; it is not a multi-user lock.
 - Current-HEAD compilation and browser test evidence are still required.
 
+## Verified existing-job attachment (17 November 2026 — checkpoint 10)
+
+The legacy `POST /query_result` returns `status=0, result="[]"`
+for **both nonexistent task IDs and some queued tasks**. A raw ID lookup
+therefore cannot be safely validated with that contract alone.
+
+An **additive, authenticated and read-only** API route,
+`GET /v1/studio/jobs/{task_id}`, now checks the current in-memory
+Python job store. It returns only `task_id` and its server-owned phase in
+the normal envelope, 404 if not found, 400 on malformed IDs and 401 when
+authentication is required and missing. It never accepts a prompt,
+uploads audio, changes status or launches any inference. The legacy
+generation, query and Gradio behavior are untouched.
+
+From Queue & results, open **Attach an existing task by ID**. Supply the
+exact ID from the **same backend**. Angular first verifies the task
+with this new route and then adds it to the local tracked queue; further
+updates use the existing `POST /query_result` read-only lookup. Invalid,
+missing, duplicate and mismatched IDs are rejected. Changing endpoint or
+credential while verification is in flight invalidates the attachment.
+The local entry time is not asserted to be the backend creation time.
+Original submission settings are unavailable, so parameter/seed restore
+is disabled, though safe audio preview or download may still be available.
+
+**Lost acknowledgement boundary:** A response can be lost *after* the
+server accepts `POST /release_task`. For ambiguous network/5xx/unknown
+submission failures, the user now sees a bilingual warning not to
+automatically resubmit. Attachment is only possible if the task ID is
+known independently. This flow **does not** discover tasks or invent an
+ID; it cannot solve ambiguity without a future server idempotency key
+and discovery contract.
+
+Targeted regression authored:
+- Python: `python -m unittest
+  acestep.api.http.studio_job_lookup_route_test` (known, unknown,
+  malformed and unauthorized; no new jobs). Added to Studio CI.
+- Vitest: `tests/unit/job-attachment.test.ts`,
+  `tests/unit/backend-error.test.ts` (valid/mismatched IDs,
+  ambiguous vs definite submission failure).
+- Playwright: `tests/e2e/existing-job-attachment.spec.ts`
+  (known/duplicate/unknown, read-only no duplicate `release_task`,
+  stale response after switching backend).
+- Corrected the existing `job-model-filter.spec.ts` to use the real
+  accessible model label `Model`, instead of `DiT model`.
+
+Manual acceptance: generate once on a disposable API and capture the
+server task ID; restart the browser (not the backend), manually attach
+it, observe terminal audio/analysis without a second generation
+submission. Try an unknown ID and a different backend; assert no
+phantom queued job or credential leak. Inspect network traffic:
+attachment uses `GET /v1/studio/jobs/<id>` and `POST /query_result`,
+never `POST /release_task`.
+
+The route only recognizes jobs still present in the **current Python
+process store**. A restart or retention cleanup can make old IDs
+unavailable. This does not persist server-generated audio or bypass
+retention. Older standalone servers without this route must be updated
+before the UI can verify attachment.
+
+**No new-source tests or current-head GitHub CI were executed by this
+source-only authoring session.** Run full lint, build, Vitest, browser,
+focused Python and Windows Tauri packaging from exact current HEAD.
+
 ## Non-negotiable release gate
 
 Draft PR stays unmerged until the remaining real API/GPU, visual,

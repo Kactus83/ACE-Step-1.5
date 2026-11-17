@@ -94,3 +94,24 @@ commits are **unqualified until current-head execution evidence exists**.
 
 See `docs/source-checkpoint-9.md` for exact changes, limitations and
 prioritization. Keep the PR draft, do not force-push and do not merge.
+
+## 17 November — checkpoint 10 manual task attachment
+
+The source-only team added `d44e805`, `19c0a42`, `17e9577` on
+`feature/ace-studio-angular-tauri`. Task attachment requires the new
+authenticated read-only Studio job lookup, because legacy
+`/query_result` also reports unknown IDs as queued. Angular validates
+server-owned identity before tracking; it never re-submits. Stale
+server-switch responses are ignored. Ambiguous /release_task response
+errors explicitly caution against retrying automatically.
+
+New tests: `acestep.api.http.studio_job_lookup_route_test`,
+`tests/unit/job-attachment.test.ts`,
+`tests/e2e/existing-job-attachment.spec.ts`. Existing
+`backend-error.test.ts` expanded; previously incorrect model E2E
+selector fixed.
+
+Execution must include the current head and all earlier checkpoint 9
+regressions. A lost acknowledgement **without any task ID** is still
+unrecoverable via current API; do not imply otherwise. This is not
+server job discovery or a durable archive. Preserve PR draft.

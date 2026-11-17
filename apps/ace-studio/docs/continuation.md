@@ -162,3 +162,34 @@ scenarios from the exact latest SHA, including:
 and `dataset-conflict.spec.ts`.
 Preserve existing Python/Gradio behavior and complete real audio, GPU,
 accessibility and native WebView acceptance before promotion.
+
+## 17 November continuation — task attachment checkpoint 10
+
+Three additional commits landed after checkpoint 9:
+
+- `d44e805` — additive authenticated `GET /v1/studio/jobs/{task_id}`
+  checks existing current-process Python jobs; returns 404 for unknown,
+  without touching `/release_task`. Existing `/query_result` cannot
+  distinguish missing IDs from queued tasks; therefore a separate
+  verification route is necessary. New Python tests are in Studio CI.
+- `19c0a42` — typed Angular task verification, manual Queue attachment
+  and localized EN/FR labels, same-server revision guards, ID-only
+  session restoration, unit plus mock Playwright regressions. Existing
+  generation submission is not invoked.
+- `17e9577` — warning on ambiguous submission acknowledgement so
+  users do not assume retry is safe; tests for network/5xx/unknown
+  vs definite 400/401/429 rejection. Corrected an incorrect model
+  label selector in earlier Playwright code.
+
+**Known limitations:** Attaching requires a task ID already held by the
+user and a current-process Python store record. This does not discover
+lost IDs, resolve tasks after server restart, restore unknown original
+generation settings or guarantee persistence of audio files. Idempotent
+submission with discoverable receipt remains a separate backend contract
+feature and must not be fabricated by the UI.
+
+Run the complete latest-head suite, including `studio_job_lookup_route_test`,
+`job-attachment.test.ts`, `backend-error.test.ts`,
+`existing-job-attachment.spec.ts` and corrected
+`job-model-filter.spec.ts`. Source not yet CI-qualified.
+See `docs/source-checkpoint-10.md` and `docs/verification.md`.

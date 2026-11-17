@@ -26,7 +26,7 @@ remain open. The standalone FastAPI profile is the only supported backend.
 | Extract/Lego/Complete | Partial | Only model-advertised modes; stem and track_classes; real base-model GPU QA missing |
 | Expert diffusion controls | Partial | ODE/SDE, shift, custom descending timesteps, CFG, ADG, DCW tri-state; remaining API modes and GPU behavior |
 | LM thinking/format/CoT | Partial | Explicit thinking, CoT, temperature/CFG/top-k/p; 5Hz model selection and consent-based init; backend/GPU QA pending |
-| Generation queue | Written, latest source unqualified | Task submission/status, server-origin session recovery, model filters, chronological sorting, day/variant browsing, truthful progress; non-retryable 4xx pauses polling, transient 429/5xx retries, 15-second status-read timeout; latest browser/unit regression pending |
+| Generation queue | Written, latest source unqualified | Task submission/status, server-origin session recovery, model filters, chronological sorting, day/variant browsing, truthful progress, non-retryable 4xx pause, 429/5xx backoff, 15-second status timeout; authenticated existing-job ID attachment (current-process only) via additive read-only Studio API; ambiguous submission warnings; latest tests pending |
 | Non-audio analysis | Written, awaiting new CI | Exact extract_codes_only/full_analysis_only/analysis_only, structured queued metadata, full bounded code TXT and reusable descriptions; GPU/LM contract acceptance pending |
 | Semantic code generation | Written, awaiting new CI | audio_code_string provided only with text2music and LM thinking off; transient codes excluded from presets |
 | Results and audio | Written | Authenticated Blob player/download, detailed metadata, server seed, safe edit reuse |
@@ -43,8 +43,8 @@ remain open. The standalone FastAPI profile is the only supported backend.
 | Light and dark appearance | Written | Semantic color tokens and local preference; human contrast/visual QA pending |
 | Keyboard shortcuts / translations | Partial | Alt+1..7 navigation, help panel, typed EN/FR for navigation, Create, datasets, training, Connection, Analysis, Queue/Batch, A/B, library and result detail UI. Remaining client error copy and real long-label / screen-reader QA pending |
 | Optional Tauri native integration | Partial | Safe WebView shell only; Windows MSI/NSIS built and release executable startup/layout/navigation inspected; installation and other OSes untested |
-| Tests | CI verified at 34b2fd83; new delta unverified | Windows qualification: 78 Vitest / 20 Playwright; subsequent GitHub CI and PR qualification: 122 Vitest / 38 Playwright at 34b2fd83. Three new 17 November commits add unit and E2E cases for credential isolation, model filter/sort and result localization; tests not yet executed at new SHA |
-| Existing Python CLI and Gradio | Source isolated | Opt-in desktop CORS + PUT, DCW parser forwarding, additive no-overwrite export route; complete regression testing pending |
+| Tests | CI verified at 34b2fd83; new delta unverified | Windows qualification: 78 Vitest / 20 Playwright; later green GitHub CI: 122 Vitest / 38 Playwright at 34b2fd83. Subsequent source-only regressions cover credentials, results, polling failures, status timeouts, dataset switching, authenticated job lookup/attachment and uncertain submissions; no newer green CI has been confirmed |
+| Existing Python CLI and Gradio | Source isolated | Opt-in desktop CORS + PUT, DCW parser forwarding, additive no-overwrite export route and authenticated read-only task existence lookup; legacy inference and Gradio unchanged, complete regression testing pending |
 
 Do not conflate local metadata persistence with permanent backend audio storage.
 The PR must remain draft until remaining source functionality and independent
