@@ -33,6 +33,7 @@ export class CreateComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly api = inject(BackendClient);
   private readonly connection = inject(ConnectionStore);
+  private readonly creationRevision = this.connection.revision();
   readonly backend = inject(BackendStore);
   readonly locale = inject(LocaleStore);
   readonly jobs = inject(JobsStore);
@@ -120,13 +121,13 @@ export class CreateComponent implements OnInit {
     this.error.set(null);
     try {
       const blob = await this.api.audio(draft.source.file);
+      if (this.creationRevision !== this.connection.revision() || this.workflow.draft() !== draft) return;
       this.source.set(audioBlobToSourceFile(blob, draft.source.file));
       this.workflow.clear();
     } catch (error: unknown) {
       this.error.set(error instanceof Error ? error.message : this.locale.text("create.errorAudio"));
     }
   }
-
   /** @public Drop only transient source/reference media when restoring a preset. */
   resetMedia(): void {
     this.source.set(null);
@@ -183,16 +184,16 @@ export class CreateComponent implements OnInit {
       const draft = this.workflow.draft();
       if (mode !== "text2music" && !sourceFile && draft) {
         const blob = await this.api.audio(draft.source.file);
+        if (this.creationRevision !== this.connection.revision() || this.workflow.draft() !== draft) return;
         sourceFile = audioBlobToSourceFile(blob, draft.source.file);
       }
       await this.jobs.submit(request, sourceFile || undefined,
         this.reference() || undefined,
         value.track_name.trim() || (request.sample_mode ? value.prompt.trim().slice(0, 72) : undefined));
       if (this.jobs.error()) { this.error.set(this.jobs.error()); return; }
-      this.showJobs.emit();
+      if (this.creationRevision === this.connection.revision()) this.showJobs.emit();
     } catch (error: unknown) {
       this.error.set(error instanceof Error ? error.message : this.locale.text("create.errorPrepare"));
     }
   }
 }
-

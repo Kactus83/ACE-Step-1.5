@@ -194,6 +194,22 @@ Additional tests authored on `36a2b6f`, `75e8eaf` and `a3ab529`:
   regressions. Verify Windows WebView downloads and UI at 320px/200% zoom.
 - **No current-head CI result yet recorded** as of this source update.
 
+## Source-audio backend switch regression (17 November 2026)
+
+Source-only remediation: Create captures its connection revision and refuses
+to accept an awaited source-audio Blob or advertise job submission after
+credentials/server identity changes. Reusing audio from another backend must
+never initiate a new GPU job on a different server.
+
+- Unit: `tests/unit/connection-revision.test.ts` verifies revision updates
+  on endpoint and token changes.
+- Browser E2E: `tests/e2e/create-source-revision.spec.ts` holds an old
+  authenticated audio fetch, changes the Connection endpoint, releases the
+  fetch and checks for unintended new-backend submissions.
+- Manual: queue a track, select Remix, begin loading its source, switch the
+  server while the response is pending and confirm that no new job starts.
+- **New tests still require execution and are not considered passing.**
+
 ## Non-negotiable release gate
 
 Draft PR stays unmerged until the remaining real API/GPU, visual,
