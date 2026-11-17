@@ -10,7 +10,7 @@ export const RESULT_LOCALE_MESSAGES = {
   "jobs.refresh": { en: "Check jobs now", fr: "Vérifier les tâches" },
   "jobs.connection": { en: "Connection interrupted:", fr: "Connexion interrompue :" },
   "jobs.retry": { en: "Pending jobs will be checked again automatically.", fr: "Les tâches en attente seront vérifiées automatiquement." },
-  "jobs.blocked": { en: "Automatic checks are paused until you reconnect with valid credentials.", fr: "Les vérifications automatiques sont suspendues jusqu’à une reconnexion autorisée." },
+  "jobs.blocked": { en: "Automatic checks are paused after a non-retryable backend error. Resolve the issue and reconnect in Connection.", fr: "Les vérifications automatiques sont suspendues après une erreur serveur non réessayable. Corrigez le problème et reconnectez-vous dans Connexion." },
   "jobs.compare": { en: "Compare finished tracks A/B", fr: "Comparer les morceaux A/B" },
   "jobs.status": { en: "Status", fr: "État" },
   "jobs.model": { en: "Model filter", fr: "Filtrer par modèle" },

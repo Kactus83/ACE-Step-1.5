@@ -22,7 +22,7 @@ export class JobsStore implements OnDestroy {
   private disposed = false;
   private pollInFlight = false;
   private failureCount = 0;
-  /** @public Authorization failure suspends automated polling until reconnect. */
+  /** @public Non-retryable backend failures suspend polling until reconnection. */
   readonly pollingBlocked = signal(false);
 
   /** @public All session jobs, most recent first. */
@@ -84,8 +84,8 @@ export class JobsStore implements OnDestroy {
   }
 
   /**
-   * @public Refresh pending tasks on demand, except when credentials were refused.
-   * @remarks A queue button cannot bypass an authorization failure.
+   * @public Refresh pending tasks on demand, except when automatic polling is blocked.
+   * @remarks A queue button cannot bypass non-retryable HTTP failures.
    */
   resume(): void {
     if (this.pollingBlocked()) return;
@@ -94,7 +94,7 @@ export class JobsStore implements OnDestroy {
   }
 
   /**
-   * @public Resume a previously blocked queue only after an explicit successful connect.
+   * @public Resume a blocked queue only after an explicit successful connect.
    * @remarks Called by the Connection screen after API validation, not by queue buttons.
    */
   resumeAfterReconnect(): void {
@@ -139,7 +139,7 @@ export class JobsStore implements OnDestroy {
       if (revision === this.connection.revision()) {
         this.failureCount++;
         const failure = classifyBackendFailure(error);
-        if (failure.kind === "authorization") this.pollingBlocked.set(true);
+        if (!failure.retryable) this.pollingBlocked.set(true);
         this.error.set(safeBackendMessage(error));
       }
     } finally {

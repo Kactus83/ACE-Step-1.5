@@ -12,6 +12,7 @@ const jobs = new Map();
 let lastSubmittedRequest = null;
 let rejectTaskAuth = false;
 let rejectedTaskPolls = 0;
+let taskPollFailureStatus = 0;
 let trainingActive = false;
 let lmInitialized = false;
 let lastModelInit = null;
@@ -135,6 +136,15 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === "/__mock__/task_auth" && req.method === "GET") {
     respond(wrap({ rejectTaskAuth, rejectedTaskPolls })); return;
   }
+  if (url.pathname === "/__mock__/task_poll_failure" && req.method === "POST") {
+    const status = Number(url.searchParams.get("status") || "0");
+    if (![0, 404, 409].includes(status)) {
+      respond({ detail: "Unsupported mock poll status" }, 400); return;
+    }
+    taskPollFailureStatus = status;
+    rejectedTaskPolls = 0;
+    respond(wrap({ taskPollFailureStatus })); return;
+  }
   if (url.pathname === "/__mock__/last_submission" && req.method === "GET") {
     respond(wrap(lastSubmittedRequest)); return;
   }
@@ -162,6 +172,11 @@ const server = http.createServer(async (req, res) => {
     respond(wrap({ task_id: id, status: "queued", queue_position: 1 })); return;
   }
   if (url.pathname === "/query_result" && req.method === "POST") {
+    if (taskPollFailureStatus !== 0) {
+      rejectedTaskPolls++;
+      respond({ detail: "Mock non-retryable polling failure" }, taskPollFailureStatus);
+      return;
+    }
     if (rejectTaskAuth) {
       rejectedTaskPolls++;
       respond({ detail: "Unauthorized mock polling" }, 401);

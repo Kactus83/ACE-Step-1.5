@@ -210,6 +210,22 @@ never initiate a new GPU job on a different server.
   server while the response is pending and confirm that no new job starts.
 - **New tests still require execution and are not considered passing.**
 
+## Non-retryable queue polling policy (17 November 2026)
+
+The client previously recognized HTTP 404 and 409 as non-retryable, yet
+continued periodic `/query_result` polling. The queue now pauses on any
+classified non-retryable HTTP failure, including 400/401/403/404/409, and
+only resumes following a successful explicit Connection workflow. Transient
+network failures, HTTP 429 and 5xx retain exponential-backoff retries.
+
+New browser mock regression: `tests/e2e/polling-fail-closed.spec.ts` returns
+404 and 409 from `/query_result`, verifies a single lookup despite the
+"Check jobs now" action, then explicitly reconnects and confirms a resumed
+successful task. The mock-only status switch must not affect Python.
+
+Run these new source tests and the existing `auth-recovery.spec.ts` at the
+new exact SHA; no current-head execution is claimed.
+
 ## Non-negotiable release gate
 
 Draft PR stays unmerged until the remaining real API/GPU, visual,
