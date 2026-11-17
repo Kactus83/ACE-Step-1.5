@@ -25,6 +25,18 @@
     <input id="queue-search" [value]="search()" (input)="searchChanged($event)"
       [placeholder]="locale.text('jobs.placeholder')" />
   </label>
+  <label class="field" for="queue-model"><span>{{ locale.text('jobs.model') }}</span>
+    <select id="queue-model" [value]="activeModel()" (change)="modelChanged($event)">
+      <option value="">{{ locale.text('jobs.allModels') }}</option>
+      @for (name of models(); track name) { <option [value]="name">{{ name }}</option> }
+    </select>
+  </label>
+  <label class="field" for="queue-sort"><span>{{ locale.text('jobs.sort') }}</span>
+    <select id="queue-sort" [value]="order()" (change)="orderChanged($event)">
+      <option value="newest">{{ locale.text('jobs.newest') }}</option>
+      <option value="oldest">{{ locale.text('jobs.oldest') }}</option>
+    </select>
+  </label>
 </div>
 @if (!jobs.jobs().length) {
   <section class="empty-state panel">

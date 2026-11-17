@@ -11,7 +11,7 @@ import { GeneratedAudio, JobPhase, StudioJob } from "../../core/api.types";
 import { WorkflowStore } from "../../core/workflow.store";
 import { AudioCardComponent } from "./audio-card.component";
 import { withResultSeed } from "../create/restore-request";
-import { JobFilter, filterJobs } from "./job-filter";
+import { JobFilter, JobSort, availableJobModels, filterJobs } from "./job-filter";
 import { BatchNavigatorComponent } from "./batch-navigator.component";
 import { VariantSelection, groupJobsByDay, normalizeVariantSelection } from "./batch-navigation";
 import { LibrarySaveComponent } from "../library/library-save.component";
@@ -30,8 +30,15 @@ export class JobsComponent {
   readonly locale = inject(LocaleStore);
   readonly filter = signal<JobFilter>("all");
   readonly search = signal("");
+  readonly model = signal("");
+  readonly order = signal<JobSort>("newest");
+  readonly models = computed(() => availableJobModels(this.jobs.jobs()));
+  readonly activeModel = computed(() =>
+    this.models().includes(this.model()) ? this.model() : ""
+  );
   readonly visible = computed(() =>
-    filterJobs(this.jobs.jobs(), this.filter(), this.search())
+    filterJobs(this.jobs.jobs(), this.filter(), this.search(),
+      this.activeModel(), this.order())
   );
   readonly selections = signal<Readonly<Record<string, VariantSelection>>>({});
   readonly groups = computed(() => groupJobsByDay(this.visible()));
@@ -74,6 +81,21 @@ export class JobsComponent {
     if (!(el instanceof HTMLSelectElement)) return;
     if (["all", "active", "succeeded", "failed"].includes(el.value)) {
       this.filter.set(el.value as JobFilter);
+    }
+  }
+
+  /** @public Show only explicitly recorded model choices, or all jobs. */
+  modelChanged(event: Event): void {
+    const target = event.target;
+    if (target instanceof HTMLSelectElement) this.model.set(target.value);
+  }
+
+  /** @public Change chronological order without rewriting the stored task list. */
+  orderChanged(event: Event): void {
+    const target = event.target;
+    if (target instanceof HTMLSelectElement
+      && (target.value === "newest" || target.value === "oldest")) {
+      this.order.set(target.value);
     }
   }
 

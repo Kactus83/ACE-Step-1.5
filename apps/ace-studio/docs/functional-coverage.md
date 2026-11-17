@@ -22,7 +22,7 @@ fresh local CI run. Do not treat old green results as validation of new code.
 | Extract/Lego/Complete | Partial | Only model-advertised modes; stem and track_classes; real base-model GPU QA missing |
 | Expert diffusion controls | Partial | ODE/SDE, shift, custom descending timesteps, CFG, ADG, DCW tri-state; remaining API modes and GPU behavior |
 | LM thinking/format/CoT | Partial | Explicit thinking, CoT, temperature/CFG/top-k/p; 5Hz model selection and consent-based init; backend/GPU QA pending |
-| Generation queue | Written | Task submission/status, server-origin-scoped session recovery, filters/search, day/variant batch navigation, 401/403 polling suspension, true reported progress; new QA pending |
+| Generation queue | Written | Task submission/status, server-origin-scoped session recovery, phase/search/explicit-model filters, newest/oldest sorting, day/variant batch navigation, 401/403 polling suspension, true reported progress; new model-filter regression requires qualification |
 | Non-audio analysis | Written, awaiting new CI | Exact extract_codes_only/full_analysis_only/analysis_only, structured queued metadata, full bounded code TXT and reusable descriptions; GPU/LM contract acceptance pending |
 | Semantic code generation | Written, awaiting new CI | audio_code_string provided only with text2music and LM thinking off; transient codes excluded from presets |
 | Results and audio | Written | Authenticated Blob player/download, detailed metadata, server seed, safe edit reuse |
