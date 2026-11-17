@@ -54,6 +54,15 @@ Source-level review only; **not a penetration test, compiled audit or release ap
 - Only finite, backend-provided progress fractions in [0,1] are rendered
   as percentages. Unreported values retain an indeterminate indicator.
 
+## 17 November — cross-origin dataset safety
+
+A metadata update first reads the current server dataset. It now rejects
+its stale preflight result if the active connection revision or dataset
+generation changes before the ensuing PUT. A delayed response from server A
+must not cause a metadata mutation on server B. This remains a client-side
+guard, not an atomic backend compare-and-swap; concurrent operators on one
+server can still race between preflight and PUT.
+
 ## Residual risks
 
 - Configured export roots are a path boundary, not an atomic OS sandbox:

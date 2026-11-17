@@ -247,6 +247,23 @@ audio transfers. Do not assume aborting any of those would undo backend work.
 - Run the complete current-head suite; this source change has no executed
   CI/local test evidence yet.
 
+## Cross-server dataset edit preflight (17 November 2026)
+
+A Dataset sample edit reads the current server snapshot before a PUT.
+Previously, changing the Connection endpoint while this GET was pending
+could direct the subsequent PUT to a different server. The dataset store
+now checks its captured connection/generation token **after** preflight
+resolution and **before** issuing any mutation. Stale responses are discarded;
+they do not update dataset UI state or silently replace new-server metadata.
+
+- Regression: `tests/e2e/dataset-server-switch.spec.ts` suspends the old
+  server's preflight GET, changes the Connection to a different mock origin,
+  resumes the GET and asserts zero PUT requests to the new server.
+- Also rerun `dataset-conflict.spec.ts` for same-server concurrent edits.
+- Real server-global dataset changes remain non-atomic without backend CAS.
+  This check prevents cross-server writes; it is not a multi-user lock.
+- Current-HEAD compilation and browser test evidence are still required.
+
 ## Non-negotiable release gate
 
 Draft PR stays unmerged until the remaining real API/GPU, visual,

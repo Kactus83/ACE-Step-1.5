@@ -32,7 +32,7 @@ export class DatasetStore {
   }
 
   private async perform<T>(
-    task: () => Promise<T>,
+    task: (token: string) => Promise<T>,
     onSuccess: (result: T, token: string) => Promise<void> | void
   ): Promise<boolean> {
     if (this.busy()) return false;
@@ -41,7 +41,7 @@ export class DatasetStore {
     this.error.set(null);
     this.message.set(null);
     try {
-      const result = await task();
+      const result = await task(token);
       if (token !== this.token()) return false;
       await onSuccess(result, token);
       return token === this.token();
@@ -97,8 +97,11 @@ export class DatasetStore {
 
   /** @public Update indexed sample metadata, then reload the latest backend state. */
   async update(request: UpdateSampleRequest, expected: DatasetSample): Promise<boolean> {
-    return this.perform(async () => {
+    return this.perform(async token => {
       const current = await this.client.samples();
+      if (token !== this.token()) {
+        throw new Error("Connection changed during dataset validation.");
+      }
       assertSampleUnchanged(expected, current);
       return this.client.update(request);
     }, async (result, token) => {
