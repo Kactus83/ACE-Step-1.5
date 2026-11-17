@@ -6,7 +6,7 @@
 import { Component, inject, signal } from "@angular/core";
 import { BackendStore } from "../../core/backend.store";
 import { LocaleStore } from "../../core/locale.store";
-import { ConnectionStore } from "../../core/connection.store";
+import { ConnectionStore, credentialAfterEndpointEdit } from "../../core/connection.store";
 import { JobsStore } from "../../core/jobs.store";
 import { AudioService } from "../../core/audio.service";
 import { WorkflowStore } from "../../core/workflow.store";
@@ -41,8 +41,12 @@ export class ConnectionComponent {
   setField(event: Event, target: "endpoint" | "token"): void {
     const element = event.target;
     if (!(element instanceof HTMLInputElement)) return;
-    if (target === "endpoint") this.endpoint.set(element.value);
-    else this.token.set(element.value);
+    if (target === "endpoint") {
+      this.token.set(credentialAfterEndpointEdit(
+        this.endpoint(), element.value, this.token()
+      ));
+      this.endpoint.set(element.value);
+    } else this.token.set(element.value);
     this.saved.set(false);
   }
 

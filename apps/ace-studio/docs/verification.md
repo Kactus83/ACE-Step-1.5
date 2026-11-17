@@ -147,6 +147,22 @@ Run the entire existing suite at current HEAD and specifically include:
 environment.** Record toolchain, exit status, test counts, SHA and logs after
 the next local team validation pass.
 
+## Endpoint credential isolation regression (17 November 2026 source change)
+
+The Connection form clears its draft bearer token immediately when the URL
+field is edited. A new server cannot inherit the previous server's token,
+and its credential must be entered explicitly after selecting its address.
+
+- Unit: `tests/unit/connection-credential.test.ts` tests unchanged and edited
+  drafts, including partial URL edits.
+- Browser mock: `tests/e2e/connection-credential-isolation.spec.ts` connects
+  with token A, edits to server B, verifies no bearer secret is forwarded,
+  and checks that an explicitly entered token B is used.
+- Manual: connect to server A with a disposable token, change its URL, verify
+  the field is cleared, check outgoing Authorization headers to server B
+  and repeat after entering token B. Check English and French notices.
+- Execution evidence is pending until CI or local tests run at the new SHA.
+
 ## Non-negotiable release gate
 
 Draft PR stays unmerged until the remaining real API/GPU, visual,

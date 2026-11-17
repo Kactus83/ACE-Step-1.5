@@ -6,6 +6,17 @@
 import { Injectable, signal } from "@angular/core";
 import { normalizeEndpoint } from "./api-decoder";
 
+/**
+ * @public Preserve a draft credential only while its server address is unchanged.
+ * @remarks A partial URL edit also clears the previous server's credential.
+ * @returns The previous draft token only for the identical address.
+ */
+export function credentialAfterEndpointEdit(
+  previousDraft: string, nextDraft: string, draftToken: string
+): string {
+  return previousDraft === nextDraft ? draftToken : "";
+}
+
 /** @public Session-scoped connection configuration shared by all features. */
 @Injectable({ providedIn: "root" })
 export class ConnectionStore {

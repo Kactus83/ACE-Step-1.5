@@ -5,8 +5,10 @@ Source-level review only; **not a penetration test, compiled audit or release ap
 ## Enforced trust boundaries
 
 1. **Backend identity:** only explicitly selected HTTPS or loopback HTTP;
-   API key remains session-only. Endpoint or credentials changes invalidate
-   stale task, model, dataset, training and audio states.
+   API key remains session-only. Editing the Connection address clears its
+   draft token so no previous credential can be sent to the new server unless
+   explicitly re-entered. Endpoint or credentials changes invalidate stale
+   task, model, dataset, training and audio states.
 2. **Untrusted responses:** inventories, job statuses, references, task IDs,
    counters and envelope shapes are checked before display or use. Angular
    displays backend descriptions as escaped text, never dynamic HTML.

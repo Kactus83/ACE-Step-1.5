@@ -13,7 +13,7 @@ export const SYSTEM_LOCALE_MESSAGES = {
   "system.token": { en: "API token", fr: "Jeton API" },
   "system.optional": { en: "optional", fr: "facultatif" },
   "system.tokenHelp": { en: "The token is held in memory only, never saved in localStorage or the repository.", fr: "Le jeton est conservé uniquement en mémoire, jamais dans localStorage ni dans le dépôt." },
-  "system.serverSwitch": { en: "Changing the server clears this session’s job list, but never cancels tasks on the old backend.", fr: "Changer de serveur vide les tâches de cette session, mais n’annule jamais les calculs du serveur précédent." },
+  "system.serverSwitch": { en: "Changing the address clears the previous API token and this session’s job list; enter a token for the new server. Existing backend tasks are not cancelled.", fr: "Changer l’adresse efface le jeton précédent et les tâches de cette session ; saisissez le jeton du nouveau serveur. Les calculs en cours ne sont pas annulés." },
   "system.connecting": { en: "Connecting…", fr: "Connexion…" },
   "system.connect": { en: "Save & connect", fr: "Enregistrer et connecter" },
   "system.connected": { en: "Connected to ACE-Step API.", fr: "Connecté à l’API ACE-Step." },
