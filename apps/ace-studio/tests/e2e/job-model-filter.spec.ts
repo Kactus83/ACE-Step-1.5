@@ -27,14 +27,16 @@ test("filter session jobs by model and switch between chronological orders", asy
   await expect(page.getByText("Connected to ACE-Step API.")).toBeVisible();
 
   await page.getByRole("button", { name: "Create", exact: true }).click();
-  await page.getByLabel("Model", { exact: true }).selectOption("acestep-v15-turbo");
+  await page.getByRole("combobox", { name: "Model", exact: true })
+    .selectOption("acestep-v15-turbo");
   await page.getByLabel("Music description").fill("Turbo model session");
   await page.getByRole("button", { name: /Generate music/ }).click();
   await expect(page.getByRole("heading", { name: "Turbo model session" })).toBeVisible();
   await expect(page.getByText("succeeded", { exact: true })).toBeVisible({ timeout: 15_000 });
 
   await page.getByRole("button", { name: "Create", exact: true }).click();
-  await page.getByLabel("Model", { exact: true }).selectOption("acestep-v15-base");
+  await page.getByRole("combobox", { name: "Model", exact: true })
+    .selectOption("acestep-v15-base");
   await page.getByLabel("Music description").fill("Base model session");
   await page.getByRole("button", { name: /Generate music/ }).click();
   await expect(page.getByRole("heading", { name: "Base model session" })).toBeVisible();
