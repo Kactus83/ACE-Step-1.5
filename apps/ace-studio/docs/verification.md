@@ -334,3 +334,47 @@ multiplatform and full-regression gates are completed, remaining security
 issues are addressed, CI reviewer signs off and user explicitly authorizes
 promotion. Local mock and packaging evidence is not a production certificate.
 
+
+## 18 November — model selection and actual DiT provenance (checkpoint 11)
+
+The Create workspace now uses the current server's validated inventory to
+allow only explicitly advertised task modes on a **loaded** DiT. An explicitly
+selected, available-but-unloaded model no longer silently falls back to the
+primary model. Explicit DiT initialization remains a separate two-step user
+action in Connection. There is no automatic model download or GPU work.
+
+The Python `/query_result` store-result serialization now conditionally
+forwards a validated `dit_model` into each audio variant's `metas`, when the
+existing generation result actually reports it. The original result remains
+unchanged. Studio compares this against an explicit submitted model and
+warns if they differ. No model is inferred for absent metadata or old
+cache-derived results. The Python change intentionally preserves the legacy
+response shape and optional field behavior.
+
+**New tests (authored, not yet executed on latest SHA):**
+
+- `tests/unit/model-policy.test.ts`: selection, loading, task capabilities
+  and stale mode/model switching.
+- `tests/e2e/model-fallback-guard.spec.ts`: prevent unloaded-model and
+  incompatible-mode submissions, without additional `/release_task` calls.
+- `tests/e2e/job-model-filter.spec.ts`: mock now explicitly represents
+  two loaded models instead of relying on silent server fallback.
+- `tests/unit/reported-model.test.ts`: compare only trustworthy reported
+  model names; ignore absent/invalid metadata.
+- `tests/e2e/reported-model-mismatch.spec.ts`: display discrepancy with
+  server-reported actual DiT and exactly one GPU-submission mock request.
+- `acestep.api.http.query_result_route_test`: positive server provenance
+  serialization. Also rerun all existing Python route and source regressions.
+
+Run, from `apps/ace-studio`, `npm ci`, `npm run lint`,
+`npm run test`, `npm run build`, `npm run e2e:mock`,
+`npm run desktop:build`; and, from repository root,
+`python -m unittest acestep.api.http.query_result_route_test` plus all
+focused Python contracts. Capture the exact SHA and real result logs.
+
+**Limits:** The inventory is a snapshot and a separate client-side check
+cannot guarantee atomic model selection on a concurrently changing server.
+A legacy cache hit may omit `dit_model` even when the in-memory job store
+has it. Real server GPU model provenance and multi-slot/on-demand model
+routing remain a mandatory local acceptance test. Do not claim CI green or
+100% release readiness before the new SHA is qualified.

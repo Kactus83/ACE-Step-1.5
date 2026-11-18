@@ -115,3 +115,17 @@ Execution must include the current head and all earlier checkpoint 9
 regressions. A lost acknowledgement **without any task ID** is still
 unrecoverable via current API; do not imply otherwise. This is not
 server job discovery or a durable archive. Preserve PR draft.
+
+## 18 November — source checkpoint 11
+
+The latest source tranche protects explicit model selection from silent
+fallback, advertises only actual supported modes and surfaces server-reported
+DiT discrepancies in Queue. Commits `6c0d589`, `7ee2f97`, followed by
+a minimal regex fix in the documentation checkpoint.
+
+Required validation: Python `query_result_route_test`; model-policy and
+reported-model Vitest; model-fallback and provenance browser scenarios;
+the adjusted two-model queue filter scenario; all previous 17 November
+regressions; full Angular lint/build; Windows Tauri and real model/GPU
+smoke. Tests are authored, **not confirmed passing on the new head**.
+Keep PR #2 draft. No force-push or main merge.

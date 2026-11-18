@@ -20,7 +20,7 @@ remain open. The standalone FastAPI profile is the only supported backend.
 | --- | --- | --- |
 | Angular 21 + Tauri 2 optional client | Verified locally | Shared frontend; Angular production build plus unsigned Windows MSI/NSIS packaging passed |
 | Connection/authentication/CORS | Written | Explicit HTTPS or loopback URL; volatile API key; Tauri CORS opt-in; CORS PUT added |
-| Backend readiness/model inventory/init | Written | /health, validated /v1/model_inventory (not OpenAI-compatible /v1/models), double-confirmed DiT + 5Hz LM /v1/init; one real DiT GPU load smoke verified, full workflows pending |
+| Backend readiness/model inventory/init | Written, current-head CI pending | /health, validated /v1/model_inventory, explicit double-confirmed DiT + 5Hz LM /v1/init; Create now refuses unloaded/unknown/incompatible DiT selections to avoid primary fallback; full GPU model routing QA pending |
 | Text-to-music | Written | Queued /release_task; prompt, instrumental, lyrics, model plus LM sample_mode/sample_query with resource confirmation; GPU QA pending |
 | Cover/Remix/Repaint | Partial | Multipart source/reference; waveform, ranges, latent/audio crossfade, source preservation, cover noise; codec QA pending |
 | Extract/Lego/Complete | Partial | Only model-advertised modes; stem and track_classes; real base-model GPU QA missing |
@@ -50,3 +50,10 @@ Do not conflate local metadata persistence with permanent backend audio storage.
 The PR must remain draft until remaining source functionality and independent
 local CI, real API/GPU and native visual validation are completed.
 
+
+**18 November checkpoint 11:** Source-only tests now cover advertised model
+capabilities and actual DiT provenance: optional real `dit_model` is retained
+from the Python job store in `/query_result` audio metadata, and the UI
+warns only on a known requested/reported mismatch. Cache-derived results
+without provenance remain unknown; no claim of model identity is fabricated.
+No current-head CI or real GPU qualification is yet available.

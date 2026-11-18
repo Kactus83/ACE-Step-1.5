@@ -193,3 +193,25 @@ Run the complete latest-head suite, including `studio_job_lookup_route_test`,
 `existing-job-attachment.spec.ts` and corrected
 `job-model-filter.spec.ts`. Source not yet CI-qualified.
 See `docs/source-checkpoint-10.md` and `docs/verification.md`.
+
+## 18 November source checkpoint 11 — DiT identity safeguards
+
+Following checkpoint 10, two source commits landed:
+
+- `6c0d589`: a separate pure `model-policy.ts` rejects unavailable,
+  unlisted, unloaded or unsupported DiT/mode combinations in Create.
+  The UI advertises only server-known modes and explains why generation
+  is disabled. Model initialization remains explicit in Connection.
+  The previously written two-model filter browser test now mocks both
+  models as loaded; two new browser cases and a unit suite cover refusal.
+- `7ee2f97`: the legacy Python store-result projection conveys the actual
+  server `dit_model` only if safely present; Angular shows a localized
+  warning when this differs from an explicitly requested DiT. Python, unit
+  and Playwright scenarios added. A subsequent correction fixes the Python
+  regex end-anchor used to validate this optional model identifier.
+
+See `docs/source-checkpoint-11.md` and `docs/verification.md`.
+These commits were authored through GitHub source tools, not executed
+in local Python/Angular/Chromium/Rust. They are not CI-qualified at
+the time of this checkpoint. No automatic GPU work or legacy route
+semantics have been intentionally changed.

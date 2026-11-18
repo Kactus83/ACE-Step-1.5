@@ -7,7 +7,7 @@ import re
 import time
 from typing import Any, Callable, Dict, List
 
-_SAFE_MODEL_NAME = re.compile(r"[A-Za-z0-9_.:-]{1,160}\\Z")
+_SAFE_MODEL_NAME = re.compile(r"[A-Za-z0-9_.:-]{1,160}\Z")
 
 
 def parse_task_id_list(task_id_list_raw: Any) -> Any:
