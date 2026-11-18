@@ -7,6 +7,19 @@ import { expect, test } from "@playwright/test";
 
 test("filter session jobs by model and switch between chronological orders", async ({ page }) => {
   const server = "http://127.0.0.1:18081";
+  // This scenario represents a backend with both DiT models already loaded.
+  // It must not rely on the real server's unsafe silent fallback to primary.
+  await page.route(server + "/v1/model_inventory", async route => {
+    const response = await route.fetch();
+    const envelope = await response.json();
+    const inventory = envelope.data;
+    await route.fulfill({
+      response, json: { ...envelope, data: {
+        ...inventory, models: inventory.models.map((entry: { name: string }) =>
+          entry.name === "acestep-v15-base" ? { ...entry, is_loaded: true } : entry)
+      } }
+    });
+  });
   await page.goto("/");
   await page.getByRole("button", { name: "Connection" }).click();
   await page.getByLabel("API server address").fill(server);

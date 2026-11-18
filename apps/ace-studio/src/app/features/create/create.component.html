@@ -48,6 +48,12 @@
           </select>
         </label>
       </div>
+      @switch (modelIssue()) {
+        @case ("unavailable") { <p class="small-note" role="alert">{{ locale.text('create.modelUnavailable') }}</p> }
+        @case ("unknown") { <p class="small-note" role="alert">{{ locale.text('create.modelUnknown') }}</p> }
+        @case ("not-loaded") { <p class="small-note" role="alert">{{ locale.text('create.modelNotLoaded') }}</p> }
+        @case ("unsupported") { <p class="small-note" role="alert">{{ locale.text('create.errorMode') }}</p> }
+      }
 
       @if (selectedMode() === 'text2music') {
         <label class="checkbox-label"><input type="checkbox" formControlName="sample_mode" />
@@ -218,7 +224,7 @@
       <h2>{{ locale.text('create.ready') }}</h2>
       <p>{{ locale.text('create.readyHelp') }}</p>
       <button class="primary-action" type="submit"
-        [disabled]="form.invalid || jobs.submitting() || backend.health()?.status !== 'ok'">
+        [disabled]="form.invalid || jobs.submitting() || modelIssue() !== null || backend.health()?.status !== 'ok'">
         {{ jobs.submitting() ? locale.text('create.submitting') : locale.text('create.generate') }}
         <span aria-hidden="true">→</span>
       </button>

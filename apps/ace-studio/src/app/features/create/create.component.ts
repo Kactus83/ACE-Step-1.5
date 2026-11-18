@@ -22,6 +22,7 @@ import { WorkflowStore } from "../../core/workflow.store";
 import { CreatePresetsComponent } from "./create-presets.component";
 import { CreateExpertComponent } from "./create-expert.component";
 import { CreateSourceEditComponent } from "./create-source-edit.component";
+import { advertisedTaskModes, generationModelIssue } from "./model-policy";
 /** @public Primary creation form, shared by web and desktop. */
 @Component({
   selector: "ace-create",
@@ -53,13 +54,11 @@ export class CreateComponent implements OnInit {
   );
   readonly selectedMode = computed(() => this.changes().task_type || "text2music");
   readonly selectedModel = computed(() => this.changes().model || "");
-  readonly supportedModes = computed<readonly TaskType[]>(() => {
-    const selected = this.selectedModel() || this.backend.inventory()?.default_model;
-    const current = this.backend.inventory()?.models.find(item => item.name === selected);
-    const tasks = current?.supported_task_types || ["text2music"];
-    return (["text2music", "cover", "repaint", "extract", "lego", "complete"] as TaskType[])
-      .filter(mode => tasks.includes(mode) || mode === "text2music");
-  });
+  readonly supportedModes = computed(() =>
+    advertisedTaskModes(this.backend.inventory(), this.selectedModel()));
+  readonly modelIssue = computed(() =>
+    generationModelIssue(this.backend.inventory(), this.selectedModel(),
+      this.selectedMode() as TaskType));
   /** @public Apply a previously generated track as an editing source. */
   ngOnInit(): void {
     const staged = this.workflow.takeSettings();
@@ -144,9 +143,7 @@ export class CreateComponent implements OnInit {
     }
     const value = this.form.getRawValue();
     const mode = value.task_type as TaskType;
-    if (!this.supportedModes().includes(mode)) {
-      this.error.set(this.locale.text("create.errorMode")); return;
-    }
+    if (this.modelIssue()) return;
     let sourceFile = this.source();
     if (mode !== "text2music" && !sourceFile && !this.workflow.draft()) {
       this.error.set(this.locale.text("create.errorSource")); return;
