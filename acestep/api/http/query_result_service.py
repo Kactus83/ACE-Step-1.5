@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import json
+import re
 import time
 from typing import Any, Callable, Dict, List
+
+_SAFE_MODEL_NAME = re.compile(r"[A-Za-z0-9_.:-]{1,160}\\Z")
 
 
 def parse_task_id_list(task_id_list_raw: Any) -> Any:
@@ -81,6 +84,12 @@ def _build_store_result_payload(
         else:
             audio_paths = record.result.get("audio_paths", [])
             metas = record.result.get("metas", {}) or {}
+            dit_model = record.result.get("dit_model")
+            reported_model = (
+                {"dit_model": dit_model}
+                if isinstance(dit_model, str) and _SAFE_MODEL_NAME.fullmatch(dit_model)
+                else {}
+            )
             result_data = [
                 {
                     "file": path,
@@ -96,6 +105,7 @@ def _build_store_result_payload(
                         "genres": metas.get("genres", ""),
                         "keyscale": metas.get("keyscale", ""),
                         "timesignature": metas.get("timesignature", ""),
+                        **reported_model,
                     },
                 }
                 for path in audio_paths
@@ -113,6 +123,7 @@ def _build_store_result_payload(
                     "genres": metas.get("genres", ""),
                     "keyscale": metas.get("keyscale", ""),
                     "timesignature": metas.get("timesignature", ""),
+                    **reported_model,
                 },
             }]
     else:

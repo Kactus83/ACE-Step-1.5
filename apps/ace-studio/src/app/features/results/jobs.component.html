@@ -63,6 +63,12 @@
         @if (!job.request) {
           <p class="small-note">{{ locale.text('jobs.attachUnrestorable') }}</p>
         }
+        @if (reportedModelMismatch(job); as mismatch) {
+          <p class="notice warning" role="alert">
+            {{ locale.text('jobs.modelMismatch') }}
+            <strong>{{ mismatch.requested }}</strong> → <strong>{{ mismatch.actual }}</strong>
+          </p>
+        }
         @if (job.phase === "running" || job.phase === "queued" || job.phase === "unknown") {
           @let progress = reportedProgress(job);
           @if (progress !== null) {

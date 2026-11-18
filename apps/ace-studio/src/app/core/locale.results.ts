@@ -27,6 +27,7 @@ export const RESULT_LOCALE_MESSAGES = {
   "jobs.compare": { en: "Compare finished tracks A/B", fr: "Comparer les morceaux A/B" },
   "jobs.status": { en: "Status", fr: "État" },
   "jobs.model": { en: "Model filter", fr: "Filtrer par modèle" },
+  "jobs.modelMismatch": { en: "ACE-Step reports a different DiT model than the one requested:", fr: "ACE-Step signale un modèle DiT différent de celui demandé :" },
   "jobs.allModels": { en: "All models (including unreported)", fr: "Tous les modèles (y compris non renseignés)" },
   "jobs.sort": { en: "Sort jobs", fr: "Trier les tâches" },
   "jobs.newest": { en: "Newest first", fr: "Plus récentes d’abord" },

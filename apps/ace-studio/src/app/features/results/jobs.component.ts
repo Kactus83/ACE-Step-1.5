@@ -18,6 +18,7 @@ import { LibrarySaveComponent } from "../library/library-save.component";
 import { ComparisonComponent } from "./comparison.component";
 import { AnalysisResultComponent } from "./analysis-result.component";
 import { JobAttachComponent } from "./job-attach.component";
+import { reportedModelMismatch } from "./reported-model";
 
 /** @public Accessible generation queue and track results. */
 @Component({
@@ -29,6 +30,8 @@ import { JobAttachComponent } from "./job-attach.component";
 export class JobsComponent {
   readonly jobs = inject(JobsStore);
   readonly locale = inject(LocaleStore);
+  /** @public Flag only observed server model differences, never guessed ones. */
+  readonly reportedModelMismatch = reportedModelMismatch;
   readonly filter = signal<JobFilter>("all");
   readonly search = signal("");
   readonly model = signal("");
