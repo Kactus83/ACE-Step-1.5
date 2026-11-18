@@ -21,7 +21,8 @@ test("an available but unloaded model cannot silently fall back to the loaded pr
   await expect(page.getByText("Connected to ACE-Step API.")).toBeVisible();
 
   await page.getByRole("button", { name: "Create", exact: true }).click();
-  await page.getByLabel("Model", { exact: true }).selectOption("acestep-v15-base");
+  await page.getByRole("combobox", { name: "Model", exact: true })
+    .selectOption("acestep-v15-base");
   await page.getByLabel("Music description").fill("Do not silently change the model");
   await expect(page.getByText(/model is available but not loaded/)).toBeVisible();
   await expect(page.getByRole("button", { name: /Generate music/ })).toBeDisabled();
@@ -38,9 +39,11 @@ test("changing from base to turbo never submits a stale unsupported Extract requ
   await page.getByLabel("API server address").fill(server);
   await page.getByRole("button", { name: "Save & connect" }).click();
   await page.getByRole("button", { name: "Create", exact: true }).click();
-  await page.getByLabel("Model", { exact: true }).selectOption("acestep-v15-base");
+  await page.getByRole("combobox", { name: "Model", exact: true })
+    .selectOption("acestep-v15-base");
   await page.getByLabel("Creation mode").selectOption("extract");
-  await page.getByLabel("Model", { exact: true }).selectOption("acestep-v15-turbo");
+  await page.getByRole("combobox", { name: "Model", exact: true })
+    .selectOption("acestep-v15-turbo");
   await expect(page.getByText(/selected model does not advertise this mode/))
     .toBeVisible();
   await expect(page.getByRole("button", { name: /Generate music/ })).toBeDisabled();

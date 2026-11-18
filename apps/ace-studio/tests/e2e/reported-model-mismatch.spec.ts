@@ -38,7 +38,8 @@ test("a successful job warns when actual backend DiT differs from the requested 
   await page.getByRole("button", { name: "Save & connect" }).click();
   await expect(page.getByText("Connected to ACE-Step API.")).toBeVisible();
   await page.getByRole("button", { name: "Create", exact: true }).click();
-  await page.getByLabel("Model", { exact: true }).selectOption("acestep-v15-turbo");
+  await page.getByRole("combobox", { name: "Model", exact: true })
+    .selectOption("acestep-v15-turbo");
   await page.getByLabel("Music description").fill("Model provenance mismatch test");
   await page.getByRole("button", { name: /Generate music/ }).click();
   await expect(page.getByText("succeeded", { exact: true }))
