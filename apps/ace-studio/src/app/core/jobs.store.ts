@@ -6,8 +6,7 @@
 import { Injectable, OnDestroy, inject, signal } from "@angular/core";
 import { BackendClient } from "./backend.client";
 import { classifyBackendFailure, safeSubmissionFailureMessage, safeBackendMessage } from "./backend-error";
-import { decodeTask } from "./api-decoder";
-import { decodeAnalysisResult } from "./analysis-result";
+import { applyTaskRecord } from "./job-result-reducer";
 import { AnalysisResultMode, GenerateRequest, StudioJob } from "./api.types";
 import { ConnectionStore } from "./connection.store";
 import { decodeSessionJobs, encodeSessionJobs } from "./job-session-codec";
@@ -24,6 +23,7 @@ export class JobsStore implements OnDestroy {
   private disposed = false;
   private pollInFlight = false;
   private failureCount = 0;
+  private submissionGeneration = 0;
   /** @public Non-retryable backend failures suspend polling until reconnection. */
   readonly pollingBlocked = signal(false);
 
@@ -63,9 +63,11 @@ export class JobsStore implements OnDestroy {
     this.submitting.set(true);
     this.error.set(null);
     const revision = this.connection.revision();
+    const generation = this.submissionGeneration;
     try {
       const accepted = await this.api.submit(request, source, reference);
-      if (revision !== this.connection.revision()) return;
+      if (generation !== this.submissionGeneration ||
+          revision !== this.connection.revision()) return;
       const analysisMode: AnalysisResultMode | undefined = request.extract_codes_only
         ? "codes" : request.full_analysis_only ? "deep"
           : request.analysis_only ? "metadata" : undefined;
@@ -79,11 +81,14 @@ export class JobsStore implements OnDestroy {
       this.persist();
       this.schedule(0);
     } catch (error: unknown) {
-      if (revision === this.connection.revision()) {
+      if (generation === this.submissionGeneration &&
+          revision === this.connection.revision()) {
         this.error.set(safeSubmissionFailureMessage(
           error, this.locale.text("jobs.submitUncertain")));
       }
-    } finally { this.submitting.set(false); }
+    } finally {
+      if (generation === this.submissionGeneration) this.submitting.set(false);
+    }
   }
 
   /**
@@ -124,17 +129,7 @@ export class JobsStore implements OnDestroy {
       const byId = new Map(received.map(result => [result.task_id, result]));
       this.jobs.update(items => items.map(job => {
         const raw = byId.get(job.id);
-        if (!raw) return job;
-        try {
-          const next = decodeTask(raw);
-          const analysis = decodeAnalysisResult(raw, job.request, job.analysisMode);
-          return { ...job, phase: next.phase, results: next.results, analysis,
-            progressText: next.progressText || job.progressText,
-            error: next.results.find(result => result.error)?.error || undefined };
-        } catch (error: unknown) {
-          return { ...job, phase: "unknown",
-            progressText: error instanceof Error ? error.message : "Malformed result" };
-        }
+        return raw ? applyTaskRecord(job, raw) : job;
       }));
       this.failureCount = 0;
       this.error.set(null);
@@ -160,6 +155,8 @@ export class JobsStore implements OnDestroy {
    * @remarks Does not cancel any running computation on the prior server.
    */
   resetSession(): void {
+    this.submissionGeneration++;
+    this.submitting.set(false);
     if (this.timer) clearTimeout(this.timer);
     this.timer = undefined;
     this.jobs.set([]);

@@ -378,3 +378,27 @@ A legacy cache hit may omit `dit_model` even when the in-memory job store
 has it. Real server GPU model provenance and multi-slot/on-demand model
 routing remain a mandatory local acceptance test. Do not claim CI green or
 100% release readiness before the new SHA is qualified.
+
+## 18 November — in-flight submission isolation across backend switches
+
+A generation request may have been accepted server-side while its
+`POST /release_task` HTTP acknowledgement remains unresolved. When
+Connection switches endpoint or credentials, `JobsStore.resetSession()`
+now invalidates the old submission generation and releases the
+**new** session's submit UI lock. The old asynchronous `finally` may
+not clear the submitting state of a later request. Old acknowledgements
+and errors cannot register tasks in a different backend session.
+
+The polling result mapping was extracted to the pure
+`job-result-reducer.ts` module to retain the project 200-line
+source cap and preserve existing result/analysis semantics.
+
+- Vitest: `tests/unit/job-result-reducer.test.ts` covers successful
+  results, malformed payloads and missing progress without mutating input.
+- Playwright: `tests/e2e/submission-backend-switch.spec.ts` holds
+  submit A, switches backend, holds submit B, releases A and verifies
+  that B remains pending; then releases B and confirms B alone is tracked.
+- **Important:** this intentionally does not cancel A's Python
+  computation or re-submit it. With a lost ACK, acceptance is ambiguous.
+- Run with the rest of checkpoint 11/current-head suite locally before
+  claiming any qualification evidence.

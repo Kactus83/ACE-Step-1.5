@@ -67,6 +67,7 @@ Sur Windows, vérifie la présence effective des MSI/NSIS, le chargement du WebV
 
 - `connection-credential-isolation.spec.ts` : un token du serveur A ne va jamais au serveur B ;
 - `create-source-revision.spec.ts` : l'ancien audio ne déclenche pas un calcul sur le nouveau serveur ;
+- `submission-backend-switch.spec.ts` : une ancienne soumission HTTP en attente ne bloque pas le nouveau serveur, et sa réponse tardive ne déverrouille ni ne pollue la nouvelle soumission ;
 - `polling-fail-closed.spec.ts` et `auth-recovery.spec.ts` : 404/409/401/403 arrêtent le polling, 429/5xx restent retryables, reconnexion explicite ;
 - `dataset-server-switch.spec.ts` et `dataset-conflict.spec.ts` : aucun PUT vers B après prélecture sur A, collision de métadonnées ;
 - `existing-job-attachment.spec.ts` : retrouver un ID via GET sans `/release_task`, refuser absence/doublon/changement de serveur ;
