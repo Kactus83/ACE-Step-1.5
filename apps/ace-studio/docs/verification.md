@@ -421,3 +421,35 @@ source cap and preserve existing result/analysis semantics.
   computation or re-submit it. With a lost ACK, acceptance is ambiguous.
 - Run with the rest of checkpoint 11/current-head suite locally before
   claiming any qualification evidence.
+
+## 19 November — source checkpoint 12: per-variant seed + legacy-cache parity
+
+The executed local Windows qualification **still applies only to SHA
+`8ceb2ec`**. Later source changes have not yet been executed by
+that local team. Source commits `ff558c6` and `a4d864a` plus
+a small precedence clarification:
+
+1. Store-derived `/query_result` response projection preserves
+   optional bounded `generation_info` and exactly aligned per-audio
+   `seed_value`, using a focused Python helper. Real server analysis
+   output remains unchanged.
+2. The legacy local-cache response has priority over the job store.
+   It repeats the entire comma-separated batch seed list for every
+   variant and reports actual `dit_model` at top level. Angular
+   now normalizes this *existing* response without modifying the
+   cache writer or other legacy clients. No seed is assigned where
+   matching is ambiguous.
+3. Tests added: Python `query_result_audio_projection_test`,
+   extended `query_result_route_test`, Vitest
+   `task-variant-provenance.test.ts`, expanded
+   `api-decoder.test.ts` and `restore-request.test.ts`;
+   Playwright `legacy-cache-provenance.spec.ts`.
+
+Rerun full current-head build/typecheck/lint/Vitest/Chromium, Python
+HTTP/API tests and Windows Tauri smoke; capture exact SHA/evidence
+in a new qualification record. Source contract and tests are not
+a substitute for a real GPU batch with server-reported actual seeds
+and DiT. Native `Alt+2` remains a manual verification gap;
+do not claim a bug or change a global shortcut without evidence.
+Detailed mandate: `source-checkpoint-12.md` and
+`local-ci-followup-2026-11-19.md`.

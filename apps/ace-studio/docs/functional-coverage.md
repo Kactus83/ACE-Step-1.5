@@ -1,7 +1,7 @@
 # ACE Studio — Functional coverage against ACE-Step 1.5
 
-Status: **locally qualified on Windows at current SHA `8ceb2ec` on
-19 November 2026**. Supported Node 24 passed install, typecheck, lint,
+Status: **last qualified on Windows at SHA `8ceb2ec` on
+19 November 2026; later checkpoint-12 source changes require requalification**. Supported Node 24 passed install, typecheck, lint,
 production build, 149 Vitest tests and 51 Chromium mock scenarios. Python
 3.12 passed 25 focused contracts and 110 HTTP/API tests with one Windows
 symlink skip in each run; Cargo checks and unsigned MSI/NSIS packaging passed.
@@ -60,3 +60,15 @@ from the Python job store in `/query_result` audio metadata, and the UI
 warns only on a known requested/reported mismatch. Cache-derived results
 without provenance remain unknown; no claim of model identity is fabricated.
 No current-head CI or real GPU qualification is yet available.
+
+## 19 November — source checkpoint 12 (unqualified delta)
+
+The Python store-result projection now carries aligned per-audio seed
+values and bounded generation summaries. The Angular task decoder
+also supports the real **cache-priority** legacy format, where the
+whole batch seed string is repeated in every result and the actual
+DiT model is reported at top level. Model identity is validated and
+the selected variant receives only its own unambiguous numeric seed.
+This is regression-covered in authored Python, Vitest and Playwright
+tests, not yet confirmed by a local execution after `8ceb2ec`.
+The old cache writer, engine, Gradio and training are unchanged.

@@ -144,3 +144,19 @@ the adjusted two-model queue filter scenario; all previous 17 November
 regressions; full Angular lint/build; Windows Tauri and real model/GPU
 smoke. Tests are authored, **not confirmed passing on the new head**.
 Keep PR #2 draft. No force-push or main merge.
+
+## 19 November — source checkpoint 12 and requalification
+
+Source commits `ff558c6` and `a4d864a` (plus a later bounded
+provenance-precedence adjustment) follow the executed Windows
+qualification at `8ceb2ec`. Their tests are **authored, not
+yet locally verified**. The Python job-store result representation
+preserves individual seeds and generation information. Studio also
+normalizes the dominant legacy cache representation with repeated
+batch-wide seeds and top-level actual DiT names, without altering the
+legacy cache writer.
+
+See `docs/source-checkpoint-12.md` and
+`docs/local-ci-followup-2026-11-19.md` for the exact regression
+commands and native shortcut acceptance procedure. Preserve the
+19 November Windows evidence at its original SHA. Keep draft PR #2.

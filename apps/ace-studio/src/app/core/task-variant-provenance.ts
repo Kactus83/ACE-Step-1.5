@@ -46,9 +46,9 @@ export function taskVariantProvenance(
     const metadata = record(row?.["metas"]);
     const nested = metadata?.["dit_model"];
     const direct = row?.["dit_model"];
-    const ditModel = typeof nested === "string" && VALID_MODEL.test(nested)
-      ? nested : typeof direct === "string" && VALID_MODEL.test(direct)
-        ? direct : undefined;
+    const ditModel = typeof direct === "string" && VALID_MODEL.test(direct)
+      ? direct : typeof nested === "string" && VALID_MODEL.test(nested)
+        ? nested : undefined;
     return { ...(seed ? { seed } : {}), ...(ditModel ? { ditModel } : {}) };
   });
 }

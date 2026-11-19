@@ -37,6 +37,14 @@ describe("legacy cache provenance normalization", () => {
     ]);
   });
 
+  it("prefers the canonical direct server model when nested cache metadata disagrees", () => {
+    const [actual] = taskVariantProvenance([{
+      dit_model: "acestep-v15-base",
+      metas: { dit_model: "acestep-v15-turbo" }
+    }]);
+    expect(actual?.ditModel).toBe("acestep-v15-base");
+  });
+
   it("omits mismatched batch seeds and unsafe model identity", () => {
     expect(taskVariantProvenance([
       { seed_value: "101,202", dit_model: "/etc/secrets" },
