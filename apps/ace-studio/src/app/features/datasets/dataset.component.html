@@ -1,0 +1,21 @@
+<div class="page-heading">
+  <div><p class="eyebrow">TRAINING / DATA PREPARATION</p>
+    <h1>{{ locale.text('dataset.title') }}</h1>
+    <p class="lead">{{ locale.text('dataset.lead') }}</p>
+  </div>
+</div>
+@if (dataset.error()) { <p class="notice danger" role="alert">{{ dataset.error() }}</p> }
+@if (dataset.message()) { <p class="notice success" role="status">{{ dataset.message() }}</p> }
+@if (tasks.error()) { <p class="notice danger" role="alert">{{ tasks.error() }}</p> }
+@if (tasks.message()) { <p class="notice success" role="status">{{ tasks.message() }}</p> }
+<div class="dataset-layout">
+  <div class="dataset-column">
+    <ace-dataset-sources />
+    <ace-dataset-workflows />
+  </div>
+  <div class="dataset-column">
+    <ace-dataset-samples />
+  </div>
+</div>
+
+

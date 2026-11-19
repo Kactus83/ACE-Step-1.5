@@ -1,0 +1,49 @@
+<article class="library-track">
+  <div class="library-track-heading">
+    <div><strong>{{ track().title }}</strong>
+      <p class="small-note">{{ locale.text('track.variant') }} {{ track().variant }} · {{ savedDate(track().savedAt) }}</p>
+    </div>
+    <button type="button" class="quiet" [attr.aria-label]="track().favorite ? locale.text('track.favoriteRemove') : locale.text('track.favoriteAdd')"
+      (click)="toggleFavorite()">{{ track().favorite ? locale.text('track.favoriteSaved') : locale.text('track.favoriteMark') }}</button>
+  </div>
+  @if (track().tags.length) {
+    <div class="library-tags">
+      @for (tag of track().tags; track tag) { <span>{{ tag }}</span> }
+    </div>
+  }
+  @if (track().note) { <p class="muted">{{ track().note }}</p> }
+  @if (track().result.seed_value) { <p class="small-note">{{ locale.text('track.seed') }} {{ track().result.seed_value }}</p> }
+  @if (sameBackend()) {
+    <ace-audio-card [result]="track().result" [index]="track().variant"
+      (reuseRequested)="reuse($event)" />
+  } @else {
+    <div class="notice warning">
+      {{ locale.text('track.otherBackendStart') }} {{ track().backend }}.
+      {{ locale.text('track.otherBackendEnd') }}
+    </div>
+  }
+  @if (editing()) {
+    <form (submit)="$event.preventDefault(); save()">
+      <label class="field" [attr.for]="'track-note-' + track().id"><span>{{ locale.text('track.notes') }}</span>
+        <textarea [id]="'track-note-' + track().id" rows="3" maxlength="3000"
+          [value]="note()" (input)="setField($event,'note')"></textarea>
+      </label>
+      <label class="field" [attr.for]="'track-tags-' + track().id"><span>{{ locale.text('track.tags') }}</span>
+        <input [id]="'track-tags-' + track().id" maxlength="300"
+          [value]="tags()" (input)="setField($event,'tags')" />
+      </label>
+      <label class="checkbox-label"><input type="checkbox" [checked]="favorite()"
+        (change)="favorite.set(!favorite())" /> <span>{{ locale.text('track.favorite') }}</span></label>
+      <button type="submit" class="secondary-action">{{ locale.text('track.save') }}</button>
+      <button type="button" class="quiet" (click)="editing.set(false)">{{ locale.text('track.cancel') }}</button>
+    </form>
+  } @else {
+    <button type="button" class="quiet" (click)="beginEdit()">{{ locale.text('track.edit') }}</button>
+  }
+  <button type="button" class="quiet danger-text" (click)="remove()">
+    {{ confirmingRemove() ? locale.text('track.removeConfirm') : locale.text('track.remove') }}
+  </button>
+</article>
+
+
+

@@ -1,0 +1,35 @@
+<section class="panel" aria-labelledby="presets-heading">
+  <div class="section-heading"><div><p class="eyebrow">YOUR WORKSPACE</p>
+    <h2 id="presets-heading">{{ locale.text('preset.title') }}</h2></div>
+    <span class="section-mark" aria-hidden="true">▧</span>
+  </div>
+  <label class="field" for="preset-name"><span>{{ locale.text('preset.newName') }}</span>
+    <input id="preset-name" type="text" maxlength="80" [value]="presetName()"
+      (input)="changePresetName($event)" [placeholder]="locale.text('preset.namePlaceholder')" />
+  </label>
+  <button type="button" class="secondary-action" [disabled]="!presetName().trim()"
+    (click)="savePreset()">{{ locale.text('preset.save') }}</button>
+  @if (presets.presets().length) {
+    <label class="field preset-select" for="preset-existing"><span>{{ locale.text('preset.existing') }}</span>
+      <select id="preset-existing" [value]="selectedPresetId()" (change)="selectPreset($event)">
+        <option value="">{{ locale.text('preset.choose') }}</option>
+        @for (preset of presets.presets(); track preset.id) {
+          <option [value]="preset.id">{{ preset.name }}</option>
+        }
+      </select>
+    </label>
+    <div class="preset-actions">
+      <button type="button" class="quiet" [disabled]="!selectedPresetId()"
+        (click)="restorePreset()">{{ locale.text('preset.load') }}</button>
+      <button type="button" class="quiet" [disabled]="!selectedPresetId()"
+        (click)="deletePreset()">{{ deletingPreset() ? locale.text('preset.deleteConfirm') : locale.text('preset.delete') }}</button>
+    </div>
+  }
+  <p class="small-note">{{ locale.text('preset.storageNotice') }}</p>
+  @if (error()) { <p class="field-error" role="alert">{{ error() }}</p> }
+  @if (notice()) { <p class="small-note" role="status">{{ notice() }}</p> }
+</section>
+
+
+
+

@@ -1,0 +1,50 @@
+<section class="analysis-result" [attr.aria-label]="locale.text('analysisResult.aria')">
+  <div class="section-heading"><div>
+    <p class="eyebrow">{{ locale.text('analysisResult.eyebrow') }}</p>
+    <h3>@switch (result().kind) {
+      @case ('codes') { {{ locale.text('analysisResult.codesTitle') }} }
+      @case ('deep') { {{ locale.text('analysisResult.deepTitle') }} }
+      @case ('metadata') { {{ locale.text('analysisResult.metadataTitle') }} }
+    }</h3>
+  </div></div>
+  <p role="status" class="small-note">{{ result().status }}</p>
+  @if (result().fields.length) {
+    <dl class="analysis-facts">
+      @for (field of result().fields; track field.label) {
+        <div><dt>{{ field.label }}</dt><dd>{{ field.value }}</dd></div>
+      }
+    </dl>
+  }
+  @if (result().prompt) {
+    <h4>{{ locale.text('analysisResult.description') }}</h4>
+    <p class="muted analysis-text">{{ result().prompt }}</p>
+    <button type="button" class="secondary-action" (click)="reuseDescription()">
+      {{ locale.text('analysisResult.reuseDescription') }}
+    </button>
+  }
+  @if (result().lyrics) {
+    <h4>{{ locale.text('analysisResult.lyrics') }}</h4>
+    <pre class="metadata-lyrics">{{ result().lyrics }}</pre>
+  }
+  @if (result().audioCodes) {
+    <h4>{{ locale.text('analysisResult.codes') }}</h4>
+    <pre class="metadata-lyrics analysis-code">{{ codePreview() }}{{ codeTruncated() ? '…' : '' }}</pre>
+    <p class="small-note">{{ locale.text('analysisResult.previewNotice') }}</p>
+    <div class="comparison-actions">
+      <button type="button" class="secondary-action" (click)="downloadCodes()">
+        {{ locale.text('analysisResult.download') }}
+      </button>
+      <button type="button" class="secondary-action" [disabled]="!codesReusable()"
+        (click)="reuseCodes()">
+        {{ locale.text('analysisResult.reuseCodes') }}
+      </button>
+    </div>
+    @if (!codesReusable()) {
+      <p class="small-note">{{ locale.text('analysisResult.limit') }}</p>
+    }
+    @if (downloaded()) {
+      <p class="small-note" role="status">{{ locale.text('analysisResult.exported') }}</p>
+    }
+  }
+  <p class="small-note">{{ locale.text('analysisResult.disclaimer') }}</p>
+</section>

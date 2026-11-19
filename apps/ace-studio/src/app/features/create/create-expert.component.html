@@ -1,0 +1,98 @@
+<div [formGroup]="form()" class="expert-controls">
+  <h3>{{ locale.text('expert.scheduler') }}</h3>
+  <div class="field-row">
+    <label class="field" for="infer-method"><span>{{ locale.text('expert.method') }}</span>
+      <select id="infer-method" formControlName="infer_method">
+        <option value="ode">ODE</option><option value="sde">SDE</option>
+      </select>
+    </label>
+    <label class="field" for="shift"><span>{{ locale.text('expert.shift') }}</span>
+      <input id="shift" type="number" step=".1" min="1" max="5" formControlName="shift" />
+    </label>
+  </div>
+  <label class="field" for="custom-timesteps"><span>{{ locale.text('expert.timesteps') }}</span>
+    <textarea id="custom-timesteps" rows="2" formControlName="timesteps"
+      placeholder="0.97,0.76,0.5,0.28,0"></textarea>
+  </label>
+  <p class="small-note">{{ locale.text('expert.timestepsHint') }}</p>
+  <label class="checkbox-label"><input type="checkbox" formControlName="use_adg" />
+    <span>{{ locale.text('expert.adg') }}</span>
+  </label>
+  <div class="field-row">
+    <label class="field" for="cfg-start"><span>{{ locale.text('expert.cfgStart') }}</span>
+      <input id="cfg-start" type="number" min="0" max="1" step=".01"
+        formControlName="cfg_interval_start" />
+    </label>
+    <label class="field" for="cfg-end"><span>{{ locale.text('expert.cfgEnd') }}</span>
+      <input id="cfg-end" type="number" min="0" max="1" step=".01"
+        formControlName="cfg_interval_end" />
+    </label>
+  </div>
+
+  <h3>{{ locale.text('expert.dcwTitle') }}</h3>
+  <label class="field" for="dcw-override"><span>{{ locale.text('expert.dcwPolicy') }}</span>
+    <select id="dcw-override" formControlName="dcw_override">
+      <option value="auto">{{ locale.text('expert.dcwAuto') }}</option>
+      <option value="off">{{ locale.text('expert.dcwOff') }}</option>
+      <option value="on">{{ locale.text('expert.dcwOn') }}</option>
+    </select>
+  </label>
+  <p class="small-note">{{ locale.text('expert.dcwHint') }}</p>
+  @if (form().controls.dcw_override.value === "on") {
+    <div class="field-row">
+      <label class="field" for="dcw-mode"><span>{{ locale.text('expert.dcwMode') }}</span>
+        <select id="dcw-mode" formControlName="dcw_mode">
+          <option value="double">{{ locale.text('expert.double') }}</option>
+          <option value="low">{{ locale.text('expert.low') }}</option>
+          <option value="high">{{ locale.text('expert.high') }}</option>
+          <option value="pix">{{ locale.text('expert.pixel') }}</option>
+        </select>
+      </label>
+      <label class="field" for="dcw-wavelet"><span>{{ locale.text('expert.wavelet') }}</span>
+        <select id="dcw-wavelet" formControlName="dcw_wavelet">
+          <option value="haar">Haar</option><option value="db4">Daubechies 4</option>
+          <option value="sym8">Symlet 8</option>
+        </select>
+      </label>
+    </div>
+    <div class="field-row">
+      <label class="field" for="dcw-low"><span>{{ locale.text('expert.lowScaler') }}</span>
+        <input id="dcw-low" type="number" min="0" max="1" step=".01"
+          formControlName="dcw_scaler" />
+      </label>
+      <label class="field" for="dcw-high"><span>{{ locale.text('expert.highScaler') }}</span>
+        <input id="dcw-high" type="number" min="0" max="1" step=".01"
+          formControlName="dcw_high_scaler" />
+      </label>
+    </div>
+  }
+
+  <h3>{{ locale.text('expert.lmTitle') }}</h3>
+  <p class="small-note">{{ locale.text('expert.lmHint') }}</p>
+  <label class="checkbox-label"><input type="checkbox" formControlName="use_cot_caption" />
+    <span>{{ locale.text('expert.cotCaption') }}</span>
+  </label>
+  <label class="checkbox-label"><input type="checkbox" formControlName="use_cot_language" />
+    <span>{{ locale.text('expert.cotLanguage') }}</span>
+  </label>
+  <div class="field-row">
+    <label class="field" for="lm-temperature"><span>{{ locale.text('expert.temperature') }}</span>
+      <input id="lm-temperature" type="number" min=".05" max="2" step=".05"
+        formControlName="lm_temperature" />
+    </label>
+    <label class="field" for="lm-cfg"><span>{{ locale.text('expert.lmCfg') }}</span>
+      <input id="lm-cfg" type="number" min="0" max="20" step=".1"
+        formControlName="lm_cfg_scale" />
+    </label>
+  </div>
+  <div class="field-row">
+    <label class="field" for="lm-top-k"><span>{{ locale.text('expert.topK') }}</span>
+      <input id="lm-top-k" type="number" min="0" max="10000" step="1"
+        formControlName="lm_top_k" />
+    </label>
+    <label class="field" for="lm-top-p"><span>{{ locale.text('expert.topP') }}</span>
+      <input id="lm-top-p" type="number" min=".01" max=".99" step=".01"
+        formControlName="lm_top_p" />
+    </label>
+  </div>
+</div>

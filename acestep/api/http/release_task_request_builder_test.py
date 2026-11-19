@@ -134,6 +134,32 @@ class ReleaseTaskRequestBuilderTests(unittest.TestCase):
         self.assertEqual("<|audio_code_7|>", request.audio_code_string)
         self.assertAlmostEqual(0.6, request.cover_noise_strength)
 
+    def test_dcw_override_is_tristate_and_model_default_is_preserved(self):
+        """Absent DCW must remain None; explicit True/False must be forwarded."""
+
+        options = dict(
+            request_model_cls=lambda **kwargs: SimpleNamespace(**kwargs),
+            default_dit_instruction="default-instruction",
+            lm_default_temperature=0.85,
+            lm_default_cfg_scale=2.5,
+            lm_default_top_p=0.9,
+        )
+        cases = [
+            ({}, None, "double", 0.05, 0.02, "haar"),
+            ({"dcw_enabled": "false"}, False, "double", 0.05, 0.02, "haar"),
+            ({"dcw_enabled": "true", "dcw_mode": "high", "dcw_scaler": 0.07,
+              "dcw_high_scaler": 0.03, "dcw_wavelet": "db4"},
+             True, "high", 0.07, 0.03, "db4"),
+        ]
+        for values, enabled, mode, low, high, wavelet in cases:
+            with self.subTest(values=values):
+                actual = build_generate_music_request(parser=_FakeParser(values), **options)
+                self.assertIs(actual.dcw_enabled, enabled)
+                self.assertEqual(actual.dcw_mode, mode)
+                self.assertAlmostEqual(actual.dcw_scaler, low)
+                self.assertAlmostEqual(actual.dcw_high_scaler, high)
+                self.assertEqual(actual.dcw_wavelet, wavelet)
+
     def test_build_request_forwards_custom_timesteps(self):
         """Builder should forward custom timesteps, and leave them unset when absent."""
 

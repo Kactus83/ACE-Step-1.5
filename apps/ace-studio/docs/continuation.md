@@ -1,0 +1,217 @@
+# ACE Studio — Autonomous coordination and next source passes (checkpoint 9)
+
+Repository: `Kactus83/ACE-Step-1.5`
+Branch: `feature/ace-studio-angular-tauri`
+Draft PR: https://github.com/Kactus83/ACE-Step-1.5/pull/2
+Fork main last synchronized: `d207bdd283dc726a0d9c711ca518dcf3accd1381`,
+merged into the feature branch via `73b32efc`.
+
+## Collaboration boundary
+
+The independent Windows team already committed compilation, debugging, CSP,
+dependency lockfile and packaged WebView corrections on this *same* feature
+branch (latest local qualification lineage includes `20286b7`).
+These changes must **not** be overwritten or silently reverted. Always inspect
+the current HEAD and changed paths before writing. Commit coherent increments
+and update the ref with `expected_sha` and `force=false`. On a rejected
+lease, refresh and reconcile, never force-push or reset the other team's work.
+Do not merge PR #2 into `main`. Codex/Claude Code will handle final promotion.
+
+## Evidence separation
+
+The local team recorded real Windows evidence on 15 November 2026:
+`npm ci`, Angular production build/lint, 78 Vitest tests, 20 Playwright
+mock scenarios, Cargo check/test, unsigned MSI/NSIS packaging, real packaged
+WebView launch, and focused Python unittests (18 tests with one skip).
+Read `docs/verification.md` and retain the exact logs and toolchain details.
+
+A later GitHub Actions qualification at **34b2fd83** succeeded on
+16 November 2026: Angular/browser mocks, focused Python contracts, Windows
+desktop package and CodeQL. The PR records 122 Vitest and 38 Playwright
+checks for that SHA. This supersedes the old unexecuted-checkpoint warning,
+but not the separate Windows runtime, GPU and accessibility acceptance gates.
+
+**17 November source delta after 34b2fd83:** `36a2b6f` isolates API
+tokens when changing the draft endpoint, `75e8eaf` adds recorded-model
+filtering and chronological queue sorting, and `a3ab529` localizes audio,
+metadata and analysis result controls. No GitHub check-runs were present for
+these SHA values when this report was updated. The tests are source-authored
+only. Full Python regression, real music inference/training, other platforms,
+install/upgrade and screen-reader acceptance remain unverified.
+
+## Source now written
+
+- Angular 21 standalone frontend and Tauri 2 shell, shared UI, typed
+  standalone API adapter and opt-in desktop CORS.
+- Connection credentials only in memory; model inventory, explicit DiT +
+  LM initialization, validated task and queue state.
+- Text2music, Cover/Repaint, Extract/Lego/Complete where advertised,
+  expert scheduler/DCW/ADG/LM controls, 5Hz concept sample generation.
+- **New Analysis workspace:** actual `extract_codes_only`,
+  `full_analysis_only` and `analysis_only` flags, ephemeral audio upload,
+  typed non-audio results, bounded metadata/code display and TXT export.
+- **Code-control generation:** exact `audio_code_string` forwarded to
+  `/release_task` only with normal text2music and LM thinking disabled.
+  Codes may be transferred to Create from completed analysis without
+  automatic GPU work; excluded from presets and local project storage.
+- Description-from-analysis to Create, explicit intent only.
+- Queue/status/results, authenticated audio, actual progress fractions when
+  valid, day-grouped multi-variant explorer, approximate A/B audition with
+  backend-revision invalidation and seed restoration. Recovered session IDs
+  are bound to their originating backend; 401/403 suspend background polling
+  until explicit successful reconnection.
+- Local project library, bookmarks, notes/tags/favorites, bounded JSON
+  import/export, stale-tab protection and **backup-first corrupt-data
+  recovery with two-click reset only when the current catalog is invalid**.
+- Datasets scan/load/save, read-before-write metadata conflict checks,
+  sample updates, async label/tensors, LoRA/LoKr
+  training/status/stop/loss and safe adapter export within explicitly
+  approved server directories. Legacy destructive export route unchanged.
+- Dark/light tokens, keyboard help with Alt+1–7, typed EN/FR persistence,
+  translated navigation, Analysis, Queue, A/B and Library. Localized dates
+  use client timezone; other forms and backend-owned errors remain untranslated.
+
+## Highest-priority remaining source work
+
+1. **Batch/results explorer:** daily groups, variant navigation, recorded-model
+   filters and newest/oldest sorting now exist. Finish intentional repeat
+   with source reattachment and detailed seed/metadata comparisons,
+   without inventing GPU cancellation or persisting audio binaries.
+2. **API lifecycle robustness:** task and server errors (401/403/404/409),
+   recovery/timeouts, capability unavailable UX, pre-existing task
+   observation and strict model/profile compatibility.
+3. **Server-global dataset contention:** clear ownership warnings, active
+   task recovery, safe write/overwrite rules and coordination guidance.
+4. **Internationalization:** Queue/Batch/A-B, Library, Create, datasets,
+   training, Connection and audio/analysis result details have typed EN/FR
+   text. Audit remaining exception copy, validation feedback and dynamic
+   messages; verify French layouts visually.
+5. **Native acceptance:** decide browser versus Tauri media save/dialog
+   boundary with a capability-gated adapter, without blanket filesystem
+   permissions or duplicate Python processes. Validate actual packaged
+   WebView audio, downloads and CORS.
+6. **A11y and visual review:** narrow/zoomed layouts, color contrast,
+   keyboard traversal, focus management, reduced motion, screen readers.
+7. **Test expansion:** new analysis/code-control/recovery/locale/progress
+   tests and existing mock suite, real Python API/GPU variants and
+   cross-platform packaging. Current branch must pass fresh tests before
+   any 100% claim.
+8. Perform separate contradictory architecture/security and UX reviews,
+   apply remaining corrections, update matrix and handoff evidence.
+
+## Required local-team test delta
+
+At **current branch HEAD**, rerun:
+- `npm ci && npm run lint && npm run test && npm run build`
+- `npm run e2e:mock` including the new `connection-credential-isolation.spec.ts`,
+  `job-model-filter.spec.ts`, `result-localization.spec.ts`,
+  `analysis.spec.ts`,
+  `analysis-codes-reuse.spec.ts`, `library-recovery.spec.ts`,
+  `locale.spec.ts`, `localized-workspaces.spec.ts`, `batch-navigation.spec.ts`,
+  `dataset-conflict.spec.ts`, `auth-recovery.spec.ts`,
+  `comparison-connection.spec.ts` and all older regressions
+- focused Python tests and later real GPU analysis/code-control paths
+- Windows packaged WebView navigation and file downloads; record exact
+  exit status, SHA, platform and evidence
+- Rust/Tauri checks if capabilities, plugins or native files were changed.
+
+The web team must keep writing remaining source even when the local toolchain
+is inaccessible. The local team's job is to compile/debug and validate,
+not to replace the web team or become its approval gate.
+
+## Non-negotiable restrictions
+
+No force push, no automatic merge, no invented endpoints or model behavior,
+no silent loading/downloading, no API secrets in browser storage,
+no native shell/filesystem wildcard capabilities, no Python engine duplication,
+and no claim of 100% or production readiness without both complete source
+and actual acceptance evidence.
+
+
+
+## 17 November continuation — hardening checkpoint 9
+
+Following `0fbf33b`, three source commits landed on this same branch:
+
+- `418345c`: auto-polling now respects the transport classifier's
+  `retryable=false` result. HTTP 404/409 and other non-retryable errors pause
+  background polling; explicit successful Connection is required to resume.
+  Playwright fixture and `polling-fail-closed.spec.ts` cover 404/409.
+- `29e65a1`: status-only HTTP calls (`/health`, model inventory, stats,
+  task lookup) use a shared 15-second first-response deadline; an abandoned
+  client request **does not** cancel a Python job. Mutation and media calls
+  remain outside the timeout policy. `read-only-timeout.test.ts` covers
+  successful and indefinitely silent streams.
+- `6f2bd1a`: an indexed dataset sample PUT now checks the captured
+  connection/generation token after the preflight GET before issuing any
+  write. `dataset-server-switch.spec.ts` simulates switching backend during
+  the held preflight. This is **not** an atomic CAS on one server.
+
+Latest source head at this checkpoint:
+`6f2bd1aeea450bb8f6a5d6cb613bb218160f96fd`.
+GitHub CI was last confirmed green at `34b2fd83`, before all 17 November
+changes. No fresh compilation, unit tests, browser tests, Rust/Python execution
+or GPU QA is claimed for the new commits.
+
+**Next execution gate:** run lint, Vitest, Angular build and all Playwright
+scenarios from the exact latest SHA, including:
+`connection-credential-isolation.spec.ts`,
+`job-model-filter.spec.ts`, `result-localization.spec.ts`,
+`create-source-revision.spec.ts`, `polling-fail-closed.spec.ts`,
+`dataset-server-switch.spec.ts`, `auth-recovery.spec.ts`,
+and `dataset-conflict.spec.ts`.
+Preserve existing Python/Gradio behavior and complete real audio, GPU,
+accessibility and native WebView acceptance before promotion.
+
+## 17 November continuation — task attachment checkpoint 10
+
+Three additional commits landed after checkpoint 9:
+
+- `d44e805` — additive authenticated `GET /v1/studio/jobs/{task_id}`
+  checks existing current-process Python jobs; returns 404 for unknown,
+  without touching `/release_task`. Existing `/query_result` cannot
+  distinguish missing IDs from queued tasks; therefore a separate
+  verification route is necessary. New Python tests are in Studio CI.
+- `19c0a42` — typed Angular task verification, manual Queue attachment
+  and localized EN/FR labels, same-server revision guards, ID-only
+  session restoration, unit plus mock Playwright regressions. Existing
+  generation submission is not invoked.
+- `17e9577` — warning on ambiguous submission acknowledgement so
+  users do not assume retry is safe; tests for network/5xx/unknown
+  vs definite 400/401/429 rejection. Corrected an incorrect model
+  label selector in earlier Playwright code.
+
+**Known limitations:** Attaching requires a task ID already held by the
+user and a current-process Python store record. This does not discover
+lost IDs, resolve tasks after server restart, restore unknown original
+generation settings or guarantee persistence of audio files. Idempotent
+submission with discoverable receipt remains a separate backend contract
+feature and must not be fabricated by the UI.
+
+Run the complete latest-head suite, including `studio_job_lookup_route_test`,
+`job-attachment.test.ts`, `backend-error.test.ts`,
+`existing-job-attachment.spec.ts` and corrected
+`job-model-filter.spec.ts`. Source not yet CI-qualified.
+See `docs/source-checkpoint-10.md` and `docs/verification.md`.
+
+## 18 November source checkpoint 11 — DiT identity safeguards
+
+Following checkpoint 10, two source commits landed:
+
+- `6c0d589`: a separate pure `model-policy.ts` rejects unavailable,
+  unlisted, unloaded or unsupported DiT/mode combinations in Create.
+  The UI advertises only server-known modes and explains why generation
+  is disabled. Model initialization remains explicit in Connection.
+  The previously written two-model filter browser test now mocks both
+  models as loaded; two new browser cases and a unit suite cover refusal.
+- `7ee2f97`: the legacy Python store-result projection conveys the actual
+  server `dit_model` only if safely present; Angular shows a localized
+  warning when this differs from an explicitly requested DiT. Python, unit
+  and Playwright scenarios added. A subsequent correction fixes the Python
+  regex end-anchor used to validate this optional model identifier.
+
+See `docs/source-checkpoint-11.md` and `docs/verification.md`.
+These commits were authored through GitHub source tools, not executed
+in local Python/Angular/Chromium/Rust. They are not CI-qualified at
+the time of this checkpoint. No automatic GPU work or legacy route
+semantics have been intentionally changed.

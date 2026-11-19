@@ -1,0 +1,62 @@
+<div class="page-heading">
+  <div><p class="eyebrow">ENGINE / CONFIGURATION</p>
+    <h1>{{ locale.text('system.title') }}</h1>
+    <p class="lead">{{ locale.text('system.lead') }}</p>
+  </div>
+</div>
+<div class="settings-layout">
+  <section class="panel" aria-labelledby="api-heading">
+    <div class="section-heading">
+      <div><p class="eyebrow">01 / CONNECTIVITY</p><h2 id="api-heading">{{ locale.text('system.connection') }}</h2></div>
+      <span class="section-mark" aria-hidden="true">⌁</span>
+    </div>
+    <form (submit)="$event.preventDefault(); save()">
+      <label class="field" for="server-url"><span>{{ locale.text('system.url') }}</span>
+        <input id="server-url" type="url" [value]="endpoint()"
+          (input)="setField($event,'endpoint')" spellcheck="false" required />
+      </label>
+      <p class="small-note">{{ locale.text('system.urlHelp') }}</p>
+      <label class="field" for="server-key"><span>{{ locale.text('system.token') }} <small>{{ locale.text('system.optional') }}</small></span>
+        <input id="server-key" type="password" [value]="token()"
+          (input)="setField($event,'token')" autocomplete="off" />
+      </label>
+      <p class="small-note">{{ locale.text('system.tokenHelp') }}</p>
+      <p class="small-note">{{ locale.text('system.serverSwitch') }}</p>
+      <button class="primary-action" type="submit" [disabled]="backend.busy()">
+        {{ backend.busy() ? locale.text('system.connecting') : locale.text('system.connect') }}
+        <span aria-hidden="true">→</span>
+      </button>
+    </form>
+    @if (error()) { <p class="notice danger" role="alert">{{ error() }}</p> }
+    @if (backend.error()) { <p class="notice danger" role="alert">{{ backend.error() }}</p> }
+    @if (saved()) { <p class="notice success" role="status">{{ locale.text('system.connected') }}</p> }
+  </section>
+  <section class="panel" aria-labelledby="server-heading">
+    <div class="section-heading"><div><p class="eyebrow">02 / ENGINE STATUS</p>
+      <h2 id="server-heading">{{ locale.text('system.serverModels') }}</h2></div>
+      <span class="section-mark" aria-hidden="true">◉</span>
+    </div>
+    <dl class="status-details">
+      <div><dt>{{ locale.text('system.service') }}</dt><dd>{{ backend.health()?.service || locale.text('system.unavailable') }}</dd></div>
+      <div><dt>{{ locale.text('system.version') }}</dt><dd>{{ backend.health()?.version || '—' }}</dd></div>
+      <div><dt>{{ locale.text('system.modelReady') }}</dt><dd>{{ backend.health()?.models_initialized ? locale.text('system.yes') : locale.text('system.notReady') }}</dd></div>
+      <div><dt>{{ locale.text('system.languageModel') }}</dt><dd>{{ backend.inventory()?.llm_initialized ? locale.text('system.ready') : locale.text('system.notInitialized') }}</dd></div>
+    </dl>
+    @if (backend.stats(); as stats) {
+      <h3>{{ locale.text('system.queue') }}</h3>
+      <dl class="status-details">
+        <div><dt>{{ locale.text('system.queued') }}</dt><dd>{{ stats.queue_size }} / {{ stats.queue_maxsize }}</dd></div>
+        <div><dt>{{ locale.text('system.running') }}</dt><dd>{{ stats.jobs['running'] ?? '—' }}</dd></div>
+        <div><dt>{{ locale.text('system.succeeded') }}</dt><dd>{{ stats.jobs['succeeded'] ?? '—' }}</dd></div>
+        <div><dt>{{ locale.text('system.failed') }}</dt><dd>{{ stats.jobs['failed'] ?? '—' }}</dd></div>
+        <div><dt>{{ locale.text('system.duration') }}</dt><dd>{{ stats.avg_job_seconds }}s</dd></div>
+      </dl>
+    } @else {
+      <p class="small-note">{{ locale.text('system.noStats') }}</p>
+    }
+    <ace-model-manager />
+  </section>
+</div>
+
+
+

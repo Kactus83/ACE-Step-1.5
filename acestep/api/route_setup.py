@@ -10,9 +10,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.datastructures import UploadFile as StarletteUploadFile
 
 from acestep.api.http.audio_route import register_audio_route
+from acestep.api.http.studio_cors import optional_studio_origins, studio_api_cors_methods
+from acestep.api.http.studio_adapter_export_route import register_studio_adapter_export_route
 from acestep.api.http.lora_routes import register_lora_routes
 from acestep.api.http.model_service_routes import register_model_service_routes
 from acestep.api.http.query_result_route import register_query_result_route
+from acestep.api.http.studio_job_lookup_route import register_studio_job_lookup_route
 from acestep.api.http.reinitialize_route import register_reinitialize_route
 from acestep.api.http.release_task_route import register_release_task_route
 from acestep.api.http.sample_format_routes import register_sample_format_routes
@@ -61,9 +64,9 @@ def configure_api_routes(
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["null", "http://localhost", "http://127.0.0.1"],
+        allow_origins=["null", "http://localhost", "http://127.0.0.1", *optional_studio_origins()],
         allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
-        allow_methods=["GET", "POST", "OPTIONS"],
+        allow_methods=studio_api_cors_methods(),
         allow_headers=["Content-Type", "Authorization"],
     )
 
@@ -129,6 +132,14 @@ def configure_api_routes(
         append_jsonl=runtime_append_jsonl,
     )
 
+    # ACE Studio's additive no-overwrite endpoint is separate from the
+    # legacy destructive /v1/training/export contract.
+    register_studio_adapter_export_route(
+        app=app,
+        verify_api_key=verify_api_key,
+        wrap_response=wrap_response,
+    )
+
     register_audio_route(app=app, verify_api_key=verify_api_key)
 
     register_release_task_route(
@@ -156,4 +167,13 @@ def configure_api_routes(
         result_key_prefix=result_key_prefix,
         task_timeout_seconds=task_timeout_seconds,
         log_buffer=log_buffer,
+    )
+
+    # Unlike legacy /query_result, this optional Studio route distinguishes
+    # unknown task IDs from queued tasks without launching new GPU work.
+    register_studio_job_lookup_route(
+        app=app,
+        verify_api_key=verify_api_key,
+        wrap_response=wrap_response,
+        store=store,
     )

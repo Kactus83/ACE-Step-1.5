@@ -1,0 +1,32 @@
+<section class="repaint-timeline" aria-label="Repaint audio waveform">
+  @if (file()) {
+    @if (!ready()) {
+      <button type="button" class="secondary-action" [disabled]="loading()" (click)="decode()">
+        {{ loading() ? 'Decoding audio…' : 'Show audio waveform' }}
+      </button>
+    } @else {
+      <svg class="waveform" viewBox="0 0 672 100" preserveAspectRatio="none" role="img"
+        aria-label="Audio amplitude waveform; use the two range sliders to choose start and end">
+        <line x1="0" y1="50" x2="672" y2="50" class="waveform-center" />
+        @for (peak of peaks(); track $index) {
+          <rect [attr.x]="$index * 7 + 1" [attr.y]="50 - peak * 40"
+            width="5" [attr.height]="peak * 80" rx="1.5" />
+        }
+      </svg>
+      <div class="timeline-range">
+        <label for="repaint-range-start">Region start: {{ start() | number:'1.1-1' }}s</label>
+        <input id="repaint-range-start" type="range" min="0" [max]="duration()"
+          step="0.5" [value]="start()" (input)="selectStart($event)" />
+        <label for="repaint-range-end">Region end: {{ end() | number:'1.1-1' }}s</label>
+        <input id="repaint-range-end" type="range" min="0" [max]="duration()"
+          step="0.5" [value]="end()" (input)="selectEnd($event)" />
+        <p class="small-note">Decoded duration: {{ duration() | number:'1.1-1' }}s.
+          Timeline sliders and advanced numeric boundaries use the same values.</p>
+      </div>
+    }
+    @if (error()) { <p class="field-error" role="alert">{{ error() }}</p> }
+  } @else {
+    <p class="small-note">Choose a local source or load an existing result to enable the waveform.</p>
+  }
+</section>
+

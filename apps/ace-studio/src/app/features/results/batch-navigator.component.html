@@ -1,0 +1,33 @@
+@if (indices().length > 1) {
+  <nav class="batch-navigator" [attr.aria-label]="locale.text('batch.navigation')">
+    <div class="batch-count">
+      <strong>{{ indices().length }} {{ locale.text('batch.count') }}</strong>
+      <span class="small-note">
+        {{ normalized() === 'all' ? locale.text('batch.all') :
+          locale.text('batch.viewing') + ' ' + current() + ' ' + locale.text('batch.of') + ' ' + indices().length }}
+      </span>
+    </div>
+    <div class="batch-controls">
+      <button class="quiet" type="button" (click)="previous()" [attr.aria-label]="locale.text('batch.previousAria')">
+        {{ locale.text('batch.previous') }}
+      </button>
+      <button class="quiet" type="button" (click)="showAll()"
+        [attr.aria-pressed]="normalized() === 'all'">{{ locale.text('batch.showAll') }}</button>
+      <button class="quiet" type="button" (click)="next()" [attr.aria-label]="locale.text('batch.nextAria')">
+        {{ locale.text('batch.next') }}
+      </button>
+    </div>
+    <div class="batch-index" [attr.aria-label]="locale.text('batch.choose')">
+      @for (index of indices(); track index) {
+        <button type="button" class="quiet" (click)="select(index)"
+          [attr.aria-pressed]="normalized() === index"
+          [attr.aria-label]="locale.text('batch.show') + ' ' + (index + 1)">
+          {{ index + 1 }}
+        </button>
+      }
+    </div>
+  </nav>
+}
+
+
+

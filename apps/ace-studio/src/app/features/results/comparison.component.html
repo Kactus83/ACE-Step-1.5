@@ -1,0 +1,59 @@
+<section class="panel comparison-panel" aria-labelledby="compare-title">
+  <div class="section-heading"><div>
+    <p class="eyebrow">A / B MONITOR</p><h2 id="compare-title">{{ locale.text('compare.title') }}</h2>
+  </div><span class="section-mark" aria-hidden="true">↔</span></div>
+  <p class="muted">{{ locale.text('compare.description') }}</p>
+  @if (options().length < 2) {
+    <p class="small-note">{{ locale.text('compare.needTwo') }}</p>
+  } @else {
+    <div class="comparison-selectors">
+      <label class="field" for="compare-a"><span>{{ locale.text('compare.trackA') }}</span>
+        <select id="compare-a" [value]="selectedA()" (change)="select($event,'A')">
+          <option value="">{{ locale.text('compare.selectA') }}</option>
+          @for (option of options(); track option.id) {
+            <option [value]="option.id">{{ option.label }}</option>
+          }
+        </select>
+      </label>
+      <label class="field" for="compare-b"><span>{{ locale.text('compare.trackB') }}</span>
+        <select id="compare-b" [value]="selectedB()" (change)="select($event,'B')">
+          <option value="">{{ locale.text('compare.selectB') }}</option>
+          @for (option of options(); track option.id) {
+            <option [value]="option.id">{{ option.label }}</option>
+          }
+        </select>
+      </label>
+    </div>
+    @if (a() && b()) {
+      <button type="button" class="secondary-action" [disabled]="loading()"
+        (click)="load()">{{ loading() ? locale.text('compare.loading') : locale.text('compare.load') }}</button>
+    }
+    @if (ready()) {
+      <div class="comparison-players">
+        <div><strong>{{ locale.text('compare.trackA') }}</strong>
+          <audio #playerA [src]="urlA()" preload="none" controls
+            aria-label="A/B audio track A"></audio>
+          <p class="small-note">{{ a()?.label }} · {{ locale.text('compare.seed') }} {{ a()?.seed || locale.text('compare.notReported') }}</p>
+          <button type="button" class="quiet" (click)="audition('A')">{{ locale.text('compare.listenA') }}</button>
+        </div>
+        <div><strong>{{ locale.text('compare.trackB') }}</strong>
+          <audio #playerB [src]="urlB()" preload="none" controls
+            aria-label="A/B audio track B"></audio>
+          <p class="small-note">{{ b()?.label }} · {{ locale.text('compare.seed') }} {{ b()?.seed || locale.text('compare.notReported') }}</p>
+          <button type="button" class="quiet" (click)="audition('B')">{{ locale.text('compare.listenB') }}</button>
+        </div>
+      </div>
+      <div class="comparison-actions">
+        <button type="button" class="secondary-action" (click)="playTogether()">
+          {{ locale.text('compare.start') }}
+        </button>
+        <button type="button" class="quiet" (click)="stop()">{{ locale.text('compare.pause') }}</button>
+      </div>
+      <p class="small-note">{{ locale.text('compare.warning') }}</p>
+    }
+  }
+  @if (error()) { <p class="field-error" role="alert">{{ error() }}</p> }
+</section>
+
+
+

@@ -1,0 +1,104 @@
+name: ACE Studio
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/ace-studio/**"
+      - "acestep/api/http/release_task_param_parser.py"
+      - "acestep/api/http/release_task_request_builder.py"
+      - "acestep/api/http/release_task_request_builder_test.py"
+      - "acestep/api/http/studio_*.py"
+      - "acestep/api/route_setup.py"
+      - "acestep/api/http/query_result_route.py"
+      - "acestep/api/http/query_result_service.py"
+      - "acestep/api/http/query_result_audio_projection.py"
+      - "acestep/api/http/query_result_audio_projection_test.py"
+      - "acestep/api/http/query_result_route_test.py"
+      - ".github/workflows/ace-studio.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/ace-studio/**"
+      - "acestep/api/http/release_task_param_parser.py"
+      - "acestep/api/http/release_task_request_builder.py"
+      - "acestep/api/http/release_task_request_builder_test.py"
+      - "acestep/api/http/studio_*.py"
+      - "acestep/api/route_setup.py"
+      - "acestep/api/http/query_result_route.py"
+      - "acestep/api/http/query_result_service.py"
+      - "acestep/api/http/query_result_audio_projection.py"
+      - "acestep/api/http/query_result_audio_projection_test.py"
+      - "acestep/api/http/query_result_route_test.py"
+      - ".github/workflows/ace-studio.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ace-studio-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    name: Angular and browser mocks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/ace-studio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/ace-studio/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e:mock
+
+  python-contracts:
+    name: Focused Python contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run Studio API contract tests
+        run: >-
+          python -m unittest
+          acestep.api.http.release_task_request_builder_test
+          acestep.api.http.studio_adapter_export_test
+          acestep.api.http.studio_cors_test
+          acestep.api.http.studio_job_lookup_route_test
+          acestep.api.http.query_result_route_test
+          acestep.api.http.query_result_audio_projection_test
+
+  desktop-windows:
+    name: Windows desktop package
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: apps/ace-studio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/ace-studio/package-lock.json
+      - run: npm ci
+      - run: npm run desktop:build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ace-studio-windows-installers
+          path: |
+            apps/ace-studio/src-tauri/target/release/bundle/msi/*.msi
+            apps/ace-studio/src-tauri/target/release/bundle/nsis/*-setup.exe
+          if-no-files-found: error

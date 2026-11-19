@@ -6,6 +6,7 @@ import json
 import time
 from typing import Any, Callable, Dict, List
 
+from acestep.api.http.query_result_audio_projection import project_audio_variants
 
 def parse_task_id_list(task_id_list_raw: Any) -> Any:
     """Parse raw ``task_id_list`` input using legacy permissive semantics.
@@ -79,42 +80,10 @@ def _build_store_result_payload(
         ):
             result_data = [record.result]
         else:
-            audio_paths = record.result.get("audio_paths", [])
-            metas = record.result.get("metas", {}) or {}
-            result_data = [
-                {
-                    "file": path,
-                    "wave": "",
-                    "status": status_int,
-                    "create_time": int(create_time),
-                    "env": env,
-                    "prompt": metas.get("caption", ""),
-                    "lyrics": metas.get("lyrics", ""),
-                    "metas": {
-                        "bpm": metas.get("bpm"),
-                        "duration": metas.get("duration"),
-                        "genres": metas.get("genres", ""),
-                        "keyscale": metas.get("keyscale", ""),
-                        "timesignature": metas.get("timesignature", ""),
-                    },
-                }
-                for path in audio_paths
-            ] if audio_paths else [{
-                "file": "",
-                "wave": "",
-                "status": status_int,
-                "create_time": int(create_time),
-                "env": env,
-                "prompt": metas.get("caption", ""),
-                "lyrics": metas.get("lyrics", ""),
-                "metas": {
-                    "bpm": metas.get("bpm"),
-                    "duration": metas.get("duration"),
-                    "genres": metas.get("genres", ""),
-                    "keyscale": metas.get("keyscale", ""),
-                    "timesignature": metas.get("timesignature", ""),
-                },
-            }]
+            result_data = project_audio_variants(
+                record.result, status_int=status_int,
+                create_time=create_time, environment=env,
+            )
     else:
         result_data = [{
             "file": "",

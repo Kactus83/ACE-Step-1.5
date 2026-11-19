@@ -1,0 +1,133 @@
+/**
+ * @module training-store
+ * @remarks Read-only periodic status and explicit high-impact operations.
+ * @public
+ */
+import { Injectable, OnDestroy, inject, signal } from "@angular/core";
+import { ConnectionStore } from "../../core/connection.store";
+import { TrainingClient } from "./training.client";
+import {
+  StartLoKrRequest, StartLoRARequest,
+  TensorDirectoryInfo, TrainingStatus
+} from "./training.types";
+
+/** @public Training orchestration with a single active poll and bounded rate. */
+@Injectable({ providedIn: "root" })
+export class TrainingStore implements OnDestroy {
+  private readonly client = inject(TrainingClient);
+  private readonly connection = inject(ConnectionStore);
+  private timer: ReturnType<typeof setTimeout> | undefined;
+  private active = false;
+  private generation = 0;
+  readonly status = signal<TrainingStatus | null>(null);
+  readonly tensorInfo = signal<TensorDirectoryInfo | null>(null);
+  readonly busy = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly message = signal<string | null>(null);
+
+  /** @public Begin periodic observation only while the training view is displayed. */
+  begin(): void {
+    this.active = true;
+    void this.refresh();
+  }
+
+  /** @public Suspend background UI polling when the view closes. */
+  pause(): void {
+    this.active = false;
+    if (this.timer) clearTimeout(this.timer);
+    this.timer = undefined;
+  }
+
+  /** @public Inspect live status without initiating a job. */
+  async refresh(): Promise<void> {
+    if (this.busy()) return;
+    const generation = this.generation;
+    if (this.timer) clearTimeout(this.timer);
+    this.busy.set(true);
+    try {
+      const status = await this.client.status();
+      if (generation !== this.generation) return;
+      this.status.set(status);
+      this.error.set(null);
+    } catch (error: unknown) {
+      if (generation === this.generation) {
+        this.error.set(error instanceof Error ? error.message : "Training status unavailable.");
+      }
+    } finally {
+      if (generation === this.generation) this.busy.set(false);
+      if (this.active && generation === this.generation) this.timer = setTimeout(() => { void this.refresh(); }, 5000);
+    }
+  }
+
+  /** @public Validate tensor manifest before submitting an expensive run. */
+  async validateTensors(directory: string): Promise<void> {
+    const revision = this.connection.revision();
+    this.tensorInfo.set(null);
+    this.error.set(null);
+    try {
+      const info = await this.client.tensors(directory.trim());
+      if (revision === this.connection.revision()) this.tensorInfo.set(info);
+    } catch (error: unknown) {
+      if (revision === this.connection.revision()) {
+        this.error.set(error instanceof Error ? error.message : "Tensor validation failed.");
+      }
+    }
+  }
+
+  /**
+   * @public Start one confirmed train run from a validated server directory.
+   * @throws Error when tensors were not validated for this exact path.
+   */
+  async start(mode: "lora" | "lokr", payload: StartLoRARequest | StartLoKrRequest): Promise<void> {
+    const revision = this.connection.revision();
+    if (!this.tensorInfo() || this.tensorInfo()?.tensor_dir !== payload.tensor_dir) {
+      throw new Error("Validate the exact tensor directory before starting training.");
+    }
+    this.error.set(null);
+    try {
+      const accepted = mode === "lora"
+        ? await this.client.startLoRA(payload as StartLoRARequest)
+        : await this.client.startLoKr(payload as StartLoKrRequest);
+      if (revision !== this.connection.revision()) return;
+      this.message.set(accepted.message);
+      await this.refresh();
+    } catch (error: unknown) {
+      if (revision === this.connection.revision()) {
+        this.error.set(error instanceof Error ? error.message : "Unable to start training.");
+      }
+    }
+  }
+
+  /** @public Ask the backend to stop a run gracefully, not terminate a process. */
+  async requestStop(): Promise<void> {
+    const revision = this.connection.revision();
+    this.error.set(null);
+    try {
+      const result = await this.client.requestStop();
+      if (revision !== this.connection.revision()) return;
+      this.message.set(result.message);
+      await this.refresh();
+    } catch (error: unknown) {
+      if (revision === this.connection.revision()) {
+        this.error.set(error instanceof Error ? error.message : "Stop request failed.");
+      }
+    }
+  }
+
+  /** @public Erase prior server status and validations on connection changes. */
+  clear(): void {
+    this.pause();
+    this.generation++;
+    this.status.set(null);
+    this.tensorInfo.set(null);
+    this.error.set(null);
+    this.message.set(null);
+    this.busy.set(false);
+  }
+
+  /** @public Release observation timers. */
+  ngOnDestroy(): void { this.pause(); }
+}
+
+
+

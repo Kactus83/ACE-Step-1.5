@@ -104,6 +104,30 @@ class ModelServiceRoutesTests(unittest.TestCase):
         self.assertEqual("acestep-v15-base", inventory["default_model"])
         self.assertTrue(inventory["llm_initialized"])
 
+    def test_inventory_advertises_unloaded_configured_default(self):
+        """The configured model must be selectable before its first download."""
+
+        app = self._build_app()
+        app.state._initialized = False
+        with mock.patch(
+            "acestep.api.http.model_service_routes.os.path.isdir", return_value=False
+        ):
+            inventory = _collect_model_inventory(
+                app=app,
+                get_project_root=lambda: "/fake/project",
+                get_model_name=lambda p: os.path.basename(str(p).rstrip("/\\")),
+            )
+
+        self.assertEqual(
+            [{
+                "name": "acestep-v15-base",
+                "is_default": True,
+                "is_loaded": False,
+                "supported_task_types": mock.ANY,
+            }],
+            inventory["models"],
+        )
+
     def test_init_route_wraps_initializer_exception(self):
         """Init endpoint should convert initializer exceptions into wrapped code=500 payloads."""
 

@@ -1,0 +1,100 @@
+<div class="page-heading">
+  <div>
+    <p class="eyebrow">STUDIO LAB / NON-AUDIO ANALYSIS</p>
+    <h1>{{ locale.text('analysis.title') }}</h1>
+    <p class="lead">{{ locale.text('analysis.lead') }}
+      Results appear in the Queue &amp; results view.</p>
+  </div>
+</div>
+@if (error()) { <p class="notice danger" role="alert">{{ error() }}</p> }
+<div class="analysis-layout">
+  <section class="panel" aria-labelledby="analysis-workflow-title">
+    <div class="section-heading"><div>
+      <p class="eyebrow">01 / ANALYSIS WORKFLOW</p>
+      <h2 id="analysis-workflow-title">Select an operation</h2>
+    </div><span class="section-mark" aria-hidden="true">⌁</span></div>
+    <label class="field" for="analysis-operation"><span>{{ locale.text('analysis.operation') }}</span>
+      <select id="analysis-operation" [value]="mode()" (change)="chooseMode($event)">
+        <option value="codes">{{ locale.text('analysis.codes') }}</option>
+        <option value="deep">{{ locale.text('analysis.deep') }}</option>
+        <option value="metadata">{{ locale.text('analysis.text') }}</option>
+      </select>
+    </label>
+    @switch (mode()) {
+      @case ("codes") {
+        <p class="muted">The DiT encoder converts a source file into semantic
+          audio codes. This does not synthesize new audio or require the language model.</p>
+      }
+      @case ("deep") {
+        <p class="muted">The DiT encoder extracts codes and the initialized 5Hz
+          language model estimates the musical description, BPM, genre and other metadata.</p>
+      }
+      @case ("metadata") {
+        <p class="muted">The initialized 5Hz language model interprets the
+          supplied description and optional lyrics without producing audio.</p>
+      }
+    }
+    <label class="field" for="analysis-model"><span>{{ locale.text('analysis.model') }}</span>
+      <select id="analysis-model" [value]="model()" (change)="chooseModel($event)">
+        <option value="">Backend default</option>
+        @for (entry of backend.inventory()?.models || []; track entry.name) {
+          <option [value]="entry.name">{{ entry.name }}
+            {{ entry.is_loaded ? '· loaded' : '· available' }}</option>
+        }
+      </select>
+    </label>
+    @if (needsMedia()) {
+      <label class="field" for="analysis-source"><span>{{ locale.text('analysis.source') }}</span>
+        <input id="analysis-source" type="file"
+          accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a" (change)="chooseFile($event)" />
+        <small>WAV · MP3 · FLAC · OGG · M4A · up to 120 MB</small>
+      </label>
+      @if (source()) {
+        <p class="small-note">Selected {{ source()?.name }}.
+          It is uploaded only after you submit the analysis.</p>
+      }
+    } @else {
+      <label class="field" for="analysis-prompt"><span>{{ locale.text('analysis.metadata') }}</span>
+        <textarea id="analysis-prompt" rows="5" maxlength="5000" required
+          [value]="prompt()" (input)="setText($event,'prompt')"
+          placeholder="An evolving ambient track with acoustic percussion…"></textarea>
+      </label>
+      <label class="field" for="analysis-lyrics"><span>{{ locale.text('analysis.lyrics') }}</span>
+        <textarea id="analysis-lyrics" rows="4" maxlength="10000"
+          [value]="lyrics()" (input)="setText($event,'lyrics')"
+          placeholder="[Instrumental]"></textarea>
+      </label>
+    }
+  </section>
+  <aside class="configuration-panel">
+    <section class="panel" aria-labelledby="analysis-readiness-title">
+      <div class="section-heading"><div>
+        <p class="eyebrow">02 / MODEL READINESS</p>
+        <h2 id="analysis-readiness-title">Backend requirements</h2>
+      </div></div>
+      <dl class="status-details">
+        <div><dt>API connection</dt>
+          <dd>{{ backend.health()?.status === 'ok' ? 'Connected' : 'Offline' }}</dd></div>
+        <div><dt>5Hz language model</dt>
+          <dd>{{ backend.inventory()?.llm_initialized ? 'Initialized' : 'Not initialized' }}</dd>
+        </div>
+      </dl>
+      @if (needsLm() && !backend.inventory()?.llm_initialized) {
+        <p class="notice warning" role="status">Deep and metadata-only analysis
+          requires a 5Hz language model. Initialize it explicitly from Connection.
+          This can download a checkpoint and allocate GPU memory.</p>
+      }
+      <p class="small-note">These are actual queued backend operations.
+        They may occupy the GPU; no work starts automatically.</p>
+      <button type="button" class="primary-action" [disabled]="!canSubmit()"
+        (click)="submit()">
+        {{ jobs.submitting() ? 'Submitting…' : locale.text('analysis.submit') }}
+        <span aria-hidden="true">→</span>
+      </button>
+      <p class="small-note">The result is metadata or audio codes, not a playable
+        sound file. Source bytes are not saved in browser-local projects.</p>
+    </section>
+  </aside>
+</div>
+
+

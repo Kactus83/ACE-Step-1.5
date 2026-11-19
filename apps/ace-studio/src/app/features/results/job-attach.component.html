@@ -1,0 +1,16 @@
+<details class="comparison-details advanced">
+  <summary>{{ locale.text('jobs.attachTitle') }} <span aria-hidden="true">⌄</span></summary>
+  <p class="small-note">{{ locale.text('jobs.attachHelp') }}</p>
+  <form class="queue-filters" (submit)="submit($event)">
+    <label class="field" for="existing-job-id"><span>{{ locale.text('jobs.attachId') }}</span>
+      <input id="existing-job-id" type="text" [value]="taskId()" (input)="idChanged($event)"
+        [disabled]="attachment.busy()" maxlength="160" autocapitalize="none"
+        autocomplete="off" spellcheck="false" />
+    </label>
+    <button type="submit" class="secondary-action" [disabled]="attachment.busy()">
+      {{ attachment.busy() ? locale.text('jobs.attachBusy') : locale.text('jobs.attachAction') }}
+    </button>
+  </form>
+  @if (attachment.error()) { <p class="notice warning" role="alert">{{ attachment.error() }}</p> }
+  @if (attachment.notice()) { <p class="notice success" role="status">{{ attachment.notice() }}</p> }
+</details>

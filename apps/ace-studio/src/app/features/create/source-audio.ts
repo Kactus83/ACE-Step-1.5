@@ -1,0 +1,37 @@
+/**
+ * @module source-audio
+ * @remarks Convert authenticated browser audio blobs to accurately named upload files.
+ * @public
+ */
+
+/**
+ * @public Repackage generated server audio for a follow-on source upload.
+ * @remarks The filename extension follows the MIME type rather than assuming WAV.
+ */
+export function audioBlobToSourceFile(blob: Blob, backendAudioUrl?: string): File {
+  const type = blob.type.toLowerCase();
+  const path = backendAudioUrl
+    ? new URL(backendAudioUrl, "http://localhost").searchParams.get("path") || "" : "";
+  const matching = path.match(/\.(mp3|wav|flac|ogg|opus|aac)$/i);
+  const extension = matching?.[1]?.toLowerCase() || (type.includes("mpeg") ? "mp3"
+    : type.includes("flac") ? "flac"
+    : type.includes("ogg") ? "ogg"
+    : type.includes("opus") ? "opus"
+    : type.includes("aac") ? "aac"
+    : type.includes("wav") ? "wav" : "audio");
+  return new File([blob], "ace-result." + extension, {
+    type: blob.type || "application/octet-stream"
+  });
+}
+
+/**
+ * @public Validate transient audio upload metadata before sending to the backend.
+ * @returns A user-facing reason to reject this file, or null when accepted.
+ */
+export function validateAudioUpload(file: Pick<File, "size" | "name" | "type">): string | null {
+  if (file.size <= 0 || file.size > 120 * 1024 * 1024
+    || !(file.type.startsWith("audio/") || /\.(wav|mp3|flac|ogg|m4a)$/i.test(file.name))) {
+    return "Use an audio file under 120 MB (WAV, MP3, FLAC, OGG or M4A).";
+  }
+  return null;
+}

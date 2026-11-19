@@ -1,0 +1,133 @@
+<div class="page-heading">
+  <div><p class="eyebrow">STUDIO MONITOR / OUTPUT</p>
+    <h1>{{ locale.text('jobs.title') }}</h1>
+    <p class="lead">{{ locale.text('jobs.lead') }}</p>
+  </div>
+  <button type="button" class="secondary-action" (click)="jobs.resume()">{{ locale.text('jobs.refresh') }}</button>
+</div>
+@if (jobs.error()) {
+  <div class="notice warning" role="alert">
+    {{ locale.text('jobs.connection') }} {{ jobs.error() }}. {{ jobs.pollingBlocked() ? locale.text('jobs.blocked') : locale.text('jobs.retry') }}
+  </div>
+}
+<ace-job-attach />
+<details class="comparison-details advanced">
+  <summary>{{ locale.text('jobs.compare') }} <span aria-hidden="true">⌄</span></summary>
+  <ace-comparison />
+</details>
+<div class="queue-filters">
+  <label class="field" for="queue-filter"><span>{{ locale.text('jobs.status') }}</span>
+    <select id="queue-filter" [value]="filter()" (change)="filterChanged($event)">
+      <option value="all">{{ locale.text('jobs.all') }}</option><option value="active">{{ locale.text('jobs.active') }}</option>
+      <option value="succeeded">{{ locale.text('jobs.succeeded') }}</option><option value="failed">{{ locale.text('jobs.failed') }}</option>
+    </select>
+  </label>
+  <label class="field" for="queue-search"><span>{{ locale.text('jobs.search') }}</span>
+    <input id="queue-search" [value]="search()" (input)="searchChanged($event)"
+      [placeholder]="locale.text('jobs.placeholder')" />
+  </label>
+  <label class="field" for="queue-model"><span>{{ locale.text('jobs.model') }}</span>
+    <select id="queue-model" [value]="activeModel()" (change)="modelChanged($event)">
+      <option value="">{{ locale.text('jobs.allModels') }}</option>
+      @for (name of models(); track name) { <option [value]="name">{{ name }}</option> }
+    </select>
+  </label>
+  <label class="field" for="queue-sort"><span>{{ locale.text('jobs.sort') }}</span>
+    <select id="queue-sort" [value]="order()" (change)="orderChanged($event)">
+      <option value="newest">{{ locale.text('jobs.newest') }}</option>
+      <option value="oldest">{{ locale.text('jobs.oldest') }}</option>
+    </select>
+  </label>
+</div>
+@if (!jobs.jobs().length) {
+  <section class="empty-state panel">
+    <span class="empty-icon" aria-hidden="true">♫</span>
+    <h2>{{ locale.text('jobs.emptyTitle') }}</h2>
+    <p>{{ locale.text('jobs.emptyLead') }}</p>
+  </section>
+} @else {
+  <div class="job-list">
+    @for (group of groups(); track group.key) {
+      <h2 class="job-day-heading">{{ group.label }} · {{ group.count }} {{ locale.text('jobs.unit') }}</h2>
+      @for (job of group.jobs; track job.id) {
+      <article class="panel job-card" [attr.aria-label]="locale.text('jobs.job') + job.title">
+        <div class="job-heading">
+          <div>
+            <p class="eyebrow">JOB / {{ job.id.slice(0, 12) }}</p>
+            <h2>{{ job.title }}</h2>
+            <p class="muted"><time>{{ dateLabel(job.createdAt) }}</time></p>
+          </div>
+          <span class="job-status" [class.success]="job.phase === 'succeeded'"
+            [class.failed]="job.phase === 'failed'">{{ phaseLabel(job.phase) }}</span>
+        </div>
+        @if (!job.request) {
+          <p class="small-note">{{ locale.text('jobs.attachUnrestorable') }}</p>
+        }
+        @if (reportedModelMismatch(job); as mismatch) {
+          <p class="notice warning" role="alert">
+            {{ locale.text('jobs.modelMismatch') }}
+            <strong>{{ mismatch.requested }}</strong> → <strong>{{ mismatch.actual }}</strong>
+          </p>
+        }
+        @if (job.phase === "running" || job.phase === "queued" || job.phase === "unknown") {
+          @let progress = reportedProgress(job);
+          @if (progress !== null) {
+            <div class="determinate-progress" role="progressbar"
+              [attr.aria-label]="locale.text('jobs.numericAria')"
+              aria-valuemin="0" aria-valuemax="100"
+              [attr.aria-valuenow]="progress">
+              <span [style.width.%]="progress"></span>
+            </div>
+            <p class="small-note">{{ progress }}% {{ locale.text('jobs.reported') }}</p>
+          } @else {
+            <div class="indeterminate-progress" [attr.aria-label]="locale.text('jobs.indeterminateAria')">
+              <span></span>
+            </div>
+            <p class="small-note">{{ locale.text('jobs.progressAbsent') }}</p>
+          }
+          <p role="status" class="progress-note">{{ job.progressText || locale.text("jobs.waiting") }}</p>
+        }
+        @if (job.phase === "failed") {
+          <p class="notice danger" role="alert">
+            {{ job.error || job.progressText || locale.text('jobs.failure') }}
+          </p>
+        }
+        @if (job.phase === "succeeded" && job.analysis; as analysis) {
+          <ace-analysis-result [result]="analysis" [jobId]="job.id"
+            (useCodesRequested)="useCodes($event)"
+            (useDescriptionRequested)="useDescription($event)" />
+        } @else if (job.phase === "succeeded" && !hasPlayableAudio(job)) {
+          <p class="muted">{{ locale.text('jobs.noAudio') }}</p>
+        }
+        @if (job.results.length) {
+          <ace-batch-navigator [results]="job.results"
+            (chosen)="chooseVariant(job.id, $event)" />
+          <div class="audio-results">
+            @for (result of job.results; track $index) {
+              @if (result.file && showVariant(job, $index)) {
+                <ace-audio-card [result]="result" [index]="$index + 1"
+                  [canRestore]="!!job.request"
+                  (reuseRequested)="edit(result, $event)"
+                  (restoreRequested)="restore(job, result)" />
+                @if (job.phase === "succeeded") {
+                  <ace-library-save [job]="job" [result]="result" [variant]="$index + 1" />
+                }
+              }
+            }
+          </div>
+        }
+        <div class="job-actions">
+          <button type="button" class="quiet" (click)="jobs.forget(job.id)">
+            {{ locale.text('jobs.forget') }}
+          </button>
+          <span class="small-note">{{ locale.text('jobs.forgetNote') }}</span>
+        </div>
+      </article>
+      }
+    } @empty {
+      <p class="panel muted">{{ locale.text('jobs.noMatch') }}</p>
+    }
+  </div>
+}
+
+

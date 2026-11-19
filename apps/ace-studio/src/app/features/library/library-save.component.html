@@ -1,0 +1,20 @@
+<div class="library-save">
+  @if (library.projects().length) {
+    <label class="field" [attr.for]="'project-for-' + job().id + '-' + variant()">
+      <span>{{ locale.text('librarySave.label') }}</span>
+      <select [id]="'project-for-' + job().id + '-' + variant()"
+        [value]="selected()" (change)="choose($event)">
+        <option value="">{{ locale.text('librarySave.choose') }}</option>
+        @for (project of library.projects(); track project.id) {
+          <option [value]="project.id">{{ project.name }}</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="secondary-action" [disabled]="!selected() || saved()"
+      (click)="save()">{{ saved() ? locale.text('librarySave.saved') : locale.text('librarySave.save') }}</button>
+  } @else {
+    <p class="small-note">{{ locale.text('librarySave.empty') }}</p>
+  }
+</div>
+
+

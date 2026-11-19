@@ -1,0 +1,244 @@
+<div class="page-heading">
+  <div>
+    <p class="eyebrow">CREATIVE WORKSPACE / GENERATION</p>
+    <h1>{{ locale.text('create.title') }}</h1>
+    <p class="lead">{{ locale.text('create.lead') }}</p>
+  </div>
+  <div class="header-note">{{ locale.text('create.control') }} <span aria-hidden="true">✳</span></div>
+</div>
+
+@if (error()) { <p class="notice danger" role="alert">{{ error() }}</p> }
+@if (backend.error()) { <p class="notice warning" role="status">{{ locale.text('create.connection') }} {{ backend.error() }}</p> }
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="create-layout">
+  <div class="main-panel">
+    <section class="panel" aria-labelledby="composition-heading">
+      <div class="section-heading">
+        <div><p class="eyebrow">01 / FOUNDATION</p><h2 id="composition-heading">{{ locale.text('create.sound') }}</h2></div>
+        <span class="section-mark" aria-hidden="true">◈</span>
+      </div>
+      <label class="field" for="track-title"><span>{{ locale.text('create.trackName') }} <small>{{ locale.text('create.optional') }}</small></span>
+        <input id="track-title" formControlName="track_name" [placeholder]="locale.text('create.trackExample')" />
+      </label>
+      <label class="field" for="prompt"><span>
+        {{ changes().sample_mode && selectedMode() === 'text2music'
+          ? locale.text('create.idea') : locale.text('create.description') }}
+        <small>{{ locale.text('create.required') }}</small></span>
+        <textarea id="prompt" formControlName="prompt" rows="5"
+          [placeholder]="locale.text('create.promptPlaceholder')"></textarea>
+      </label>
+      @if (form.controls.prompt.invalid && form.controls.prompt.touched) {
+        <p class="field-error" role="alert">{{ locale.text('create.promptError') }}</p>
+      }
+
+      <div class="field-row">
+        <label class="field" for="model"><span>{{ locale.text('create.model') }}</span>
+          <select id="model" formControlName="model">
+            <option value="">{{ locale.text('create.default') }}</option>
+            @for (model of backend.inventory()?.models || []; track model.name) {
+              <option [value]="model.name">{{ model.name }} {{ model.is_loaded ? locale.text('create.loaded') : locale.text('create.available') }}</option>
+            }
+          </select>
+        </label>
+        <label class="field" for="mode"><span>{{ locale.text('create.mode') }}</span>
+          <select id="mode" formControlName="task_type">
+            @for (mode of supportedModes(); track mode) {
+              <option [value]="mode">{{ mode === 'text2music' ? locale.text('create.modeText') : mode }}</option>
+            }
+          </select>
+        </label>
+      </div>
+      @switch (modelIssue()) {
+        @case ("unavailable") { <p class="small-note" role="alert">{{ locale.text('create.modelUnavailable') }}</p> }
+        @case ("unknown") { <p class="small-note" role="alert">{{ locale.text('create.modelUnknown') }}</p> }
+        @case ("not-loaded") { <p class="small-note" role="alert">{{ locale.text('create.modelNotLoaded') }}</p> }
+        @case ("unsupported") { <p class="small-note" role="alert">{{ locale.text('create.errorMode') }}</p> }
+      }
+
+      @if (selectedMode() === 'text2music') {
+        <label class="checkbox-label"><input type="checkbox" formControlName="sample_mode" />
+          <span><strong>{{ locale.text('create.sampleTitle') }}</strong>
+            <small>{{ locale.text('create.sampleHint') }}</small></span>
+        </label>
+      }
+      <div class="toggle-row">
+        @if (!changes().sample_mode || selectedMode() !== 'text2music') {
+        <label class="checkbox-label"><input type="checkbox" formControlName="instrumental" />
+          <span><strong>{{ locale.text('create.instrumental') }}</strong><small>{{ locale.text('create.noVocals') }}</small></span>
+        </label>
+        }
+        <label class="checkbox-label"><input type="checkbox" formControlName="thinking" />
+          <span><strong>{{ locale.text('create.thinking') }}</strong><small>{{ locale.text('create.thinkingHint') }}</small></span>
+        </label>
+      </div>
+
+      @if (!form.controls.instrumental.value && (!changes().sample_mode || selectedMode() !== "text2music")) {
+        <label class="field" for="lyrics"><span>{{ locale.text('create.lyrics') }}</span>
+          <textarea id="lyrics" formControlName="lyrics" rows="7"
+            [placeholder]="locale.text('create.lyricsPlaceholder')"></textarea>
+        </label>
+      }
+    </section>
+
+    <section class="panel" aria-labelledby="conditioning-heading">
+      <div class="section-heading"><div>
+        <p class="eyebrow">02 / TRANSFORMATION</p>
+        <h2 id="conditioning-heading">{{ locale.text('create.conditioning') }}</h2>
+      </div><span class="section-mark" aria-hidden="true">♫</span></div>
+      @if (selectedMode() !== "text2music") {
+        <p class="muted">{{ locale.text('create.sourceRequired') }} {{ selectedMode() }}. {{ locale.text('create.sourceOnly') }}</p>
+        @if (selectedMode() === "extract" || selectedMode() === "lego") {
+          <label class="field" for="target-stem"><span>{{ locale.text('create.stem') }} {{ selectedMode() }}</span>
+            <select id="target-stem" formControlName="target_stem">
+              @for (stem of stems; track stem) {
+                <option [value]="stem">{{ stem }}</option>
+              }
+            </select>
+          </label>
+          <p class="small-note">{{ locale.text('create.stemHint') }}</p>
+        }
+        @if (selectedMode() === "complete") {
+          <label class="field" for="complete-classes"><span>{{ locale.text('create.classes') }}</span>
+            <input id="complete-classes" formControlName="track_classes" [placeholder]="locale.text('create.classesPlaceholder')" />
+          </label>
+          <p class="small-note">{{ locale.text('create.classesHint') }} {{ stems.join(', ') }}. {{ locale.text('create.classesDefault') }}</p>
+        }
+        @if (workflow.draft()) {
+          <div class="imported-asset">
+            <span>{{ locale.text('create.imported') }} {{ importName() }}</span>
+            <button type="button" class="quiet" (click)="workflow.clear()">{{ locale.text('create.remove') }}</button>
+          </div>
+        }
+      } @else { <p class="muted">{{ locale.text('create.referenceStyle') }}</p> }
+
+      @if (selectedMode() !== "text2music") {
+        <label class="file-picker" for="source-audio">
+          <span class="file-icon" aria-hidden="true">♫</span>
+          <span><strong>{{ source()?.name || locale.text('create.sourceChoice') }}</strong>
+            <small>{{ locale.text('create.sourceFileHint') }}</small></span>
+        </label>
+        <input id="source-audio" type="file" accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a"
+          (change)="pickAudio($event, 'source')" class="visually-hidden" />
+      }
+      @if (selectedMode() === 'repaint') {
+        @if (workflow.draft() && !source()) {
+          <button type="button" class="secondary-action" (click)="loadDraftSource()">
+            {{ locale.text('create.loadWaveform') }}
+          </button>
+        }
+        <ace-repaint-timeline [file]="source()" [start]="changes().repainting_start || 0"
+          [end]="changes().repainting_end || 30" (rangeChange)="setRepaintRange($event)" />
+      }
+      <label class="file-picker" for="reference-audio">
+        <span class="file-icon" aria-hidden="true">⊛</span>
+        <span><strong>{{ reference()?.name || locale.text('create.referenceChoice') }}</strong>
+          <small>{{ locale.text('create.referenceHint') }}</small></span>
+      </label>
+      <input id="reference-audio" type="file" accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a"
+        (change)="pickAudio($event, 'reference')" class="visually-hidden" />
+    </section>
+  </div>
+
+  <aside class="configuration-panel">
+    <ace-create-presets [form]="form" (resetMedia)="resetMedia()" />
+
+    <section class="panel" aria-labelledby="settings-heading">
+      <div class="section-heading"><div><p class="eyebrow">03 / PARAMETERS</p>
+        <h2 id="settings-heading">{{ locale.text('create.fineTune') }}</h2></div>
+        <span class="section-mark" aria-hidden="true">⚙</span>
+      </div>
+      <label class="field" for="duration"><span>{{ locale.text('create.duration') }} <small>{{ locale.text('create.seconds') }}</small></span>
+        <input id="duration" type="number" formControlName="duration" min="10" max="600" step="1" />
+      </label>
+      <div class="field-row">
+        <label class="field" for="bpm"><span>BPM <small>{{ locale.text('create.autoBpm') }}</small></span>
+          <input id="bpm" type="number" formControlName="bpm" min="0" max="300" />
+        </label>
+        <label class="field" for="batch-size"><span>{{ locale.text('create.variations') }}</span>
+          <input id="batch-size" type="number" formControlName="batch_size" min="1" max="8" />
+        </label>
+      </div>
+      <label class="field" for="key-scale"><span>{{ locale.text('create.scale') }}</span>
+        <input id="key-scale" formControlName="key_scale" [placeholder]="locale.text('create.auto')" />
+      </label>
+
+      <details class="advanced">
+        <summary>{{ locale.text('create.advanced') }} <span aria-hidden="true">⌄</span></summary>
+        <label class="field" for="inference-steps"><span>{{ locale.text('create.steps') }}</span>
+          <input id="inference-steps" type="number" formControlName="inference_steps" min="1" max="200" />
+        </label>
+        <label class="field" for="guidance"><span>{{ locale.text('create.guidance') }}</span>
+          <input id="guidance" type="number" step="0.1" formControlName="guidance_scale" min="0" max="30" />
+        </label>
+        <label class="checkbox-label"><input type="checkbox" formControlName="use_random_seed" />
+          <span>{{ locale.text('create.randomSeed') }}</span>
+        </label>
+        @if (!form.controls.use_random_seed.value) {
+          <label class="field" for="seed"><span>{{ locale.text('create.seed') }}</span>
+            <input id="seed" type="number" formControlName="seed" />
+          </label>
+        }
+        <label class="checkbox-label"><input type="checkbox" formControlName="use_format" />
+          <span>{{ locale.text('create.formatPrompt') }}</span>
+        </label>
+        <label class="field" for="vocal-language"><span>{{ locale.text('create.vocalLang') }}</span>
+          <input id="vocal-language" formControlName="vocal_language" placeholder="en" />
+        </label>
+        <label class="field" for="audio-format"><span>{{ locale.text('create.format') }}</span>
+          <select id="audio-format" formControlName="audio_format">
+            <option value="mp3">MP3</option><option value="wav">WAV</option>
+            <option value="flac">FLAC</option><option value="opus">Opus</option>
+            <option value="aac">AAC</option><option value="wav32">WAV 32-bit</option>
+          </select>
+        </label>
+        <ace-create-expert [form]="form" />
+        <ace-create-source-edit [form]="form" [mode]="selectedMode()" />
+        @if (selectedMode() === 'text2music' && !changes().sample_mode) {
+          <label class="field" for="semantic-audio-codes">
+            <span>{{ locale.text('create.codes') }} <small>{{ locale.text('create.experimental') }}</small></span>
+            <textarea id="semantic-audio-codes" formControlName="audio_code_string"
+              rows="4" maxlength="1000000" spellcheck="false"
+              [placeholder]="locale.text('create.codesPlaceholder')"></textarea>
+          </label>
+          <p class="small-note">{{ locale.text('create.codesHint') }}</p>
+        }
+        @if (selectedMode() === 'cover') {
+          <label class="field" for="cover-strength"><span>{{ locale.text('create.coverStrength') }}</span>
+            <input id="cover-strength" type="number" min="0" max="1" step=".05"
+              formControlName="audio_cover_strength" />
+          </label>
+        }
+        @if (selectedMode() === 'repaint') {
+          <label class="field" for="repaint-start"><span>{{ locale.text('create.repaintStart') }}</span>
+            <input id="repaint-start" type="number" min="0" formControlName="repainting_start" />
+          </label>
+          <label class="field" for="repaint-end"><span>{{ locale.text('create.repaintEnd') }}</span>
+            <input id="repaint-end" type="number" min="0" formControlName="repainting_end" />
+          </label>
+        }
+      </details>
+    </section>
+
+    <section class="submit-card">
+      <div class="submit-decor" aria-hidden="true">✳</div>
+      <h2>{{ locale.text('create.ready') }}</h2>
+      <p>{{ locale.text('create.readyHelp') }}</p>
+      <button class="primary-action" type="submit"
+        [disabled]="form.invalid || jobs.submitting() || modelIssue() !== null || backend.health()?.status !== 'ok'">
+        {{ jobs.submitting() ? locale.text('create.submitting') : locale.text('create.generate') }}
+        <span aria-hidden="true">→</span>
+      </button>
+      @if (backend.health()?.status !== "ok") {
+        <p class="small-note">{{ locale.text('create.needBackend') }}</p>
+      }
+    </section>
+  </aside>
+</form>
+
+
+
+
+
+
+
+

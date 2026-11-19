@@ -1,0 +1,122 @@
+<a class="skip-link" href="#main-content">{{ locale.text("nav.skip") }}</a>
+<div class="shell">
+  <aside class="sidebar" aria-label="Studio navigation">
+    <div class="brand" aria-label="ACE Studio">
+      <div class="brand-mark" aria-hidden="true">A<span>·</span></div>
+      <div><strong>ACE Studio</strong><small>Make music, your way</small></div>
+    </div>
+
+    <nav aria-label="Primary navigation" class="nav-list">
+      <button type="button" [class.active]="section() === 'create'" (click)="navigate('create')"
+        [attr.aria-current]="section() === 'create' ? 'page' : null">
+        <span class="nav-icon" aria-hidden="true">✳</span> {{ locale.text("nav.create") }}
+      </button>
+      <button type="button" [class.active]="section() === 'analysis'" (click)="navigate('analysis')"
+        [attr.aria-current]="section() === 'analysis' ? 'page' : null">
+        <span class="nav-icon" aria-hidden="true">⌁</span> {{ locale.text("nav.analysis") }}
+      </button>
+      <button type="button" [class.active]="section() === 'jobs'" (click)="navigate('jobs')"
+        [attr.aria-current]="section() === 'jobs' ? 'page' : null">
+        <span class="nav-icon" aria-hidden="true">◷</span> {{ locale.text("nav.jobs") }}
+        @if (jobs.jobs().length) { <span class="nav-count">{{ jobs.jobs().length }}</span> }
+      </button>
+      <button type="button" [class.active]="section() === 'library'" (click)="navigate('library')"
+        [attr.aria-current]="section() === 'library' ? 'page' : null">
+        <span class="nav-icon" aria-hidden="true">▦</span> {{ locale.text("nav.library") }}
+      </button>
+      <button type="button" [class.active]="section() === 'datasets'" (click)="navigate('datasets')"
+        [attr.aria-current]="section() === 'datasets' ? 'page' : null">
+        <span class="nav-icon" aria-hidden="true">▧</span> {{ locale.text("nav.datasets") }}
+      </button>
+      <button type="button" [class.active]="section() === 'training'" (click)="navigate('training')"
+        [attr.aria-current]="section() === 'training' ? 'page' : null">
+        <span class="nav-icon" aria-hidden="true">◈</span> {{ locale.text("nav.training") }}
+      </button>
+      <button type="button" [class.active]="section() === 'system'" (click)="navigate('system')"
+        [attr.aria-current]="section() === 'system' ? 'page' : null">
+        <span class="nav-icon" aria-hidden="true">⚙</span> {{ locale.text("nav.system") }}
+      </button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="engine-status">
+        <span class="status-dot" [class.online]="backend.health()?.status === 'ok'"></span>
+        <div>
+          <strong>{{ backend.health()?.status === 'ok' ? locale.text("nav.connected") : locale.text("nav.disconnected") }}</strong>
+          <small>{{ backend.inventory()?.default_model || locale.text("nav.noModel") }}</small>
+        </div>
+      </div>
+      <p class="sidebar-footnote">An independent interface for ACE-Step 1.5</p>
+    </div>
+  </aside>
+
+  <div class="workspace">
+    <header class="topbar">
+      <div class="breadcrumbs"><span>ACE Studio</span> <span aria-hidden="true">/</span>
+        <strong>@switch (section()) {
+          @case ("create") { {{ locale.text("nav.create") }} }
+          @case ("analysis") { {{ locale.text("nav.analysis") }} }
+          @case ("jobs") { {{ locale.text("nav.jobs") }} }
+          @case ("library") { {{ locale.text("nav.library") }} }
+          @case ("datasets") { {{ locale.text("nav.datasets") }} }
+          @case ("training") { {{ locale.text("nav.training") }} }
+          @case ("system") { {{ locale.text("nav.system") }} }
+        }</strong>
+      </div>
+      <div class="topbar-actions">
+        <button type="button" class="locale-toggle"
+          [attr.aria-label]="locale.mode() === 'en'
+            ? 'Switch interface to French' : 'Passer l’interface en anglais'"
+          (click)="locale.toggle()" [attr.title]="locale.text('nav.language')">
+          {{ locale.mode() === 'en' ? 'FR' : 'EN' }}
+        </button>
+        <button type="button" class="quiet" [attr.aria-expanded]="shortcutsOpen()"
+          aria-controls="studio-shortcuts" (click)="toggleShortcuts()">{{ locale.text("nav.shortcuts") }}</button>
+        <button type="button" class="theme-toggle" (click)="theme.toggle()"
+          [attr.aria-label]="theme.mode() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'">
+          {{ theme.mode() === 'dark' ? '☀ ' + locale.text("nav.themeLight") : '☾ ' + locale.text("nav.themeDark") }}
+        </button>
+        <span class="engine-pill" [class.connected]="backend.health()?.status === 'ok'">
+          <span class="status-dot" [class.online]="backend.health()?.status === 'ok'"></span>
+          {{ backend.health()?.status === 'ok' ? locale.text("nav.online") : locale.text("nav.offline") }}
+        </span>
+        <button type="button" class="quiet" [disabled]="backend.busy()" (click)="backend.refresh()">
+          Refresh status
+        </button>
+      </div>
+    </header>
+    <main class="content" id="main-content" tabindex="-1">
+      @if (shortcutsOpen()) {
+        <section id="studio-shortcuts" class="panel shortcut-help" aria-label="Keyboard shortcuts">
+          <div class="section-heading"><h2>{{ locale.text("nav.shortcutsHelp") }}</h2>
+            <button type="button" class="quiet" (click)="toggleShortcuts()">{{ locale.text("nav.close") }}</button>
+          </div>
+          <p class="small-note">{{ locale.text("nav.shortcutHint") }}</p>
+          <div class="shortcut-list">
+            <span><kbd>Alt + 1</kbd> Create</span><span><kbd>Alt + 2</kbd> Queue</span>
+            <span><kbd>Alt + 3</kbd> Library</span><span><kbd>Alt + 4</kbd> Datasets</span>
+            <span><kbd>Alt + 5</kbd> Training</span><span><kbd>Alt + 6</kbd> Connection</span>
+            <span><kbd>Alt + 7</kbd> Analysis</span>
+          </div>
+          <p class="small-note"><kbd>?</kbd> Toggle help · <kbd>Esc</kbd> Close help</p>
+        </section>
+      }
+      @switch (section()) {
+        @case ("create") { <ace-create (showJobs)="navigate('jobs')" /> }
+        @case ("analysis") { <ace-analysis (showJobs)="navigate('jobs')" /> }
+        @case ("jobs") { <ace-jobs (reuse)="navigate('create')" /> }
+        @case ("library") { <ace-library (navigateCreate)="navigate('create')" /> }
+        @case ("datasets") { <ace-datasets /> }
+        @case ("training") { <ace-training (openDatasets)="navigate('datasets')" /> }
+        @case ("system") { <ace-connection /> }
+      }
+    </main>
+  </div>
+</div>
+
+
+
+
+
+
+
