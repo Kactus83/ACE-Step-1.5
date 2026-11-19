@@ -75,9 +75,9 @@ provenance DiT, localisation EN/FR et absence de double soumission.
 
 | Artefact | Taille | SHA-256 | Signature |
 | --- | ---: | --- | --- |
-| `ace-studio-desktop.exe` | 8 861 184 octets | `2D6885C755EFCD354F9A99A9941545FE87379CD306CEB4BAE7673CCD2A045301` | non signé |
-| `ACE Studio_0.1.0_x64_en-US.msi` | 2 973 696 octets | `D4026CECAB71F75CD5ACF1B17784146BF7661B0BF3A07A97A264281E05C83731` | non signé |
-| `ACE Studio_0.1.0_x64-setup.exe` | 1 996 607 octets | `5EB624E789111F9290CDDD00F7D8BE20AA8C6E295A1052BECBDFC5FD923023D6` | non signé |
+| `ace-studio-desktop.exe` | 8 861 184 octets | `A846CAA5480D653BBB8FDBF8B5CE33521477B31B4DCAFF22ED8C6A0C0D19B78C` | non signé |
+| `ACE Studio_0.1.0_x64_en-US.msi` | 2 973 696 octets | `920667383F9049223E5FC2862A90326A56F3B6F3DD66BB454C727B5EF8E95807` | non signé |
+| `ACE Studio_0.1.0_x64-setup.exe` | 1 997 117 octets | `C61187D885F9B659241233601B2E73BF7D802DDECF531E69C4ABC15990C36054` | non signé |
 
 L'exécutable release a été lancé dans le WebView2 réel. Le rendu sombre et la
 CSP chargent correctement. Les vues Create, Analyze, Queue & results et
