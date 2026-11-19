@@ -6,6 +6,7 @@
 import {
   ApiEnvelope, GeneratedAudio, JobPhase, TaskRecordDto
 } from "./api.types";
+import { taskVariantProvenance } from "./task-variant-provenance";
 
 /** @internal Guard against malformed or unexpectedly shaped responses. */
 export function isObject(value: unknown): value is Record<string, unknown> {
@@ -57,17 +58,21 @@ export function decodeTask(raw: unknown): {
     }
   }
   if (!Array.isArray(parsed)) throw new Error("Expected a job result array.");
-  const results: GeneratedAudio[] = parsed.map((item: unknown) => {
+  const provenance = taskVariantProvenance(parsed);
+  const results: GeneratedAudio[] = parsed.map((item: unknown, index: number) => {
     if (!isObject(item)) throw new Error("Malformed audio result item.");
+    const model = provenance[index]?.ditModel;
     return {
       file: typeof item["file"] === "string" ? item["file"] : "",
       prompt: typeof item["prompt"] === "string" ? item["prompt"] : undefined,
       lyrics: typeof item["lyrics"] === "string" ? item["lyrics"] : undefined,
       status: typeof item["status"] === "number" ? item["status"] : undefined,
-      seed_value: typeof item["seed_value"] === "string" ? item["seed_value"] : undefined,
+      seed_value: provenance[index]?.seed,
       generation_info: typeof item["generation_info"] === "string"
         ? item["generation_info"] : undefined,
-      metas: isObject(item["metas"]) ? item["metas"] : undefined,
+      metas: isObject(item["metas"])
+        ? model ? { ...item["metas"], dit_model: model } : item["metas"]
+        : model ? { dit_model: model } : undefined,
       error: typeof item["error"] === "string" ? item["error"] : undefined,
       stage: typeof item["stage"] === "string" ? item["stage"] : undefined,
       progress: decodeReportedProgress(item["progress"])
