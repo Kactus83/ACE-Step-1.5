@@ -20,10 +20,12 @@ describe("query_result legacy result decoding", () => {
   it("parses JSON-encoded audio arrays and preserves server seed", () => {
     const decoded = decodeTask({
       task_id: "t1", status: 1, progress_text: "Done",
-      result: JSON.stringify([{ file: "/v1/audio?path=%2Ftmp%2Fa.mp3", seed_value: "42" }])
+      result: JSON.stringify([{ file: "/v1/audio?path=%2Ftmp%2Fa.mp3",
+        seed_value: "42", generation_info: "Backend inference: 8 steps" }])
     });
     expect(decoded.phase).toBe("succeeded");
     expect(decoded.results[0]?.seed_value).toBe("42");
+    expect(decoded.results[0]?.generation_info).toBe("Backend inference: 8 steps");
     expect(decoded.results[0]?.file).toContain("/v1/audio?");
   });
   it("does not manufacture a numeric percent from a nonterminal state", () => {

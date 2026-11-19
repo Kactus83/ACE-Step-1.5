@@ -5,6 +5,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { GenerateRequest } from "../../src/app/core/api.types";
+import { decodeTask } from "../../src/app/core/api-decoder";
 import {
   restoreGenerateRequest, withResultSeed
 } from "../../src/app/features/create/restore-request";
@@ -31,6 +32,19 @@ describe("reusing generation settings", () => {
     }, "Singer and ambience");
     expect(values.target_stem).toBe("vocals");
     expect(values.track_name).toBe("Singer and ambience");
+  });
+
+  it("uses the actual seed of the selected backend audio variant", () => {
+    const result = decodeTask({
+      task_id: "batch", status: 1, result: JSON.stringify([
+        { file: "/v1/audio?path=first", seed_value: "11" },
+        { file: "/v1/audio?path=second", seed_value: "22" }
+      ])
+    });
+    const second = withResultSeed(request, result.results[1]?.seed_value);
+    expect(second.seed).toBe(22);
+    expect(second.use_random_seed).toBe(false);
+    expect(request.seed).toBe(-1);
   });
 
   it("retains an exact numeric server seed without faking reproducibility", () => {
