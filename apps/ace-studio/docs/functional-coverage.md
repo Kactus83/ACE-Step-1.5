@@ -1,12 +1,15 @@
 # ACE Studio — Functional coverage against ACE-Step 1.5
 
-Status: **qualified through 34b2fd83 on GitHub Actions, not yet at the
-current branch head**. A 15 November Windows qualification passed 78 Vitest
-tests, 20 browser mock scenarios, Rust checks, focused Python contracts and
-unsigned Windows packaging with a real WebView smoke. The later
-16 November GitHub Actions at `34b2fd83` passed Angular/browser mocks,
-focused Python contracts, Windows desktop packaging and CodeQL; PR evidence
-records 122 Vitest and 38 Playwright scenarios. Those are distinct runs.
+Status: **locally qualified on Windows at current SHA `8ceb2ec` on
+19 November 2026**. Supported Node 24 passed install, typecheck, lint,
+production build, 149 Vitest tests and 51 Chromium mock scenarios. Python
+3.12 passed 25 focused contracts and 110 HTTP/API tests with one Windows
+symlink skip in each run; Cargo checks and unsigned MSI/NSIS packaging passed.
+The real WebView launched and read-only local API/CORS checks passed. The last
+fully green GitHub Actions SHA remains `34b2fd83`; no new paid workflow was
+triggered. Real GPU generation/training, signed installer, screen-reader,
+cross-platform packaging and native media acceptance remain open. Detailed
+evidence is in `local-qualification-2026-11-18.md`.
 
 **Evidence boundary (17 November):** the newer `36a2b6f`, `75e8eaf`
 and `a3ab529` commits have tests authored but **no check-run evidence**
@@ -43,7 +46,7 @@ remain open. The standalone FastAPI profile is the only supported backend.
 | Light and dark appearance | Written | Semantic color tokens and local preference; human contrast/visual QA pending |
 | Keyboard shortcuts / translations | Partial | Alt+1..7 navigation, help panel, typed EN/FR for navigation, Create, datasets, training, Connection, Analysis, Queue/Batch, A/B, library and result detail UI. Remaining client error copy and real long-label / screen-reader QA pending |
 | Optional Tauri native integration | Partial | Safe WebView shell only; Windows MSI/NSIS built and release executable startup/layout/navigation inspected; installation and other OSes untested |
-| Tests | CI verified at 34b2fd83; new delta unverified | Windows qualification: 78 Vitest / 20 Playwright; later green GitHub CI: 122 Vitest / 38 Playwright at 34b2fd83. Subsequent source-only regressions cover credentials, results, polling failures, status timeouts, dataset switching, authenticated job lookup/attachment and uncertain submissions; no newer green CI has been confirmed |
+| Tests | Locally verified at 8ceb2ec; GitHub CI last verified at 34b2fd83 | Current Windows qualification: 149 Vitest / 51 Playwright, 110 Python HTTP/API tests, Cargo and unsigned packaging. No current-HEAD GitHub check was triggered |
 | Existing Python CLI and Gradio | Source isolated | Opt-in desktop CORS + PUT, DCW parser forwarding, additive no-overwrite export route and authenticated read-only task existence lookup; legacy inference and Gradio unchanged, complete regression testing pending |
 
 Do not conflate local metadata persistence with permanent backend audio storage.

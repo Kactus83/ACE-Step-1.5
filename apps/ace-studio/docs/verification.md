@@ -6,6 +6,25 @@ Python and Windows desktop packaging evidence is recorded below. Real GPU,
 real-model, signed-installer and non-Windows acceptance is still pending.
 Do not substitute the completed mock coverage for those remaining gates.
 
+## Executed local evidence (19 November 2026, SHA 8ceb2ec)
+
+Windows qualification at exact SHA
+`8ceb2ec0634bdc6d6a2144fcfbb9790ff1fb0dae` passed supported Node
+`24.22.3` / npm `11.17.0` install, typecheck, lint, production build,
+**149 Vitest tests** and **51 Playwright Chromium mock scenarios**. Python
+`3.12.16` passed the five focused Studio modules (25 tests, one Windows
+symlink skip) and the complete `acestep/api/http` discovery (110 tests, one
+skip). Cargo check/test and unsigned x64 MSI/NSIS packaging passed.
+
+The release WebView2 `157.0.4341.60` executable was launched and inspected.
+Create, Analyze, Queue and Connection rendered and navigated without starting
+GPU work. A pre-existing local API was verified read-only for health,
+inventory and stats; real PUT preflights accepted both browser origins and
+`http://tauri.localhost`, while rejecting external origins. No real job,
+dataset mutation, model initialization, training, export or installer run was
+performed. See `local-qualification-2026-11-18.md` for exact commands,
+artifact hashes, findings and the acceptance matrix.
+
 ## Executed GitHub Actions evidence (16 November 2026, SHA 34b2fd83)
 
 At the exact SHA `34b2fd83feab714bb009d23712015882bf000204`

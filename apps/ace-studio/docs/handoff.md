@@ -15,6 +15,21 @@ Consolidation PR #1 was already merged independently. Do not reapply it.
 4. `docs/review-architecture.md`, `docs/review-ux.md`,
    `docs/security-review.md`, and `docs/verification.md`.
 
+## 19 November local qualification
+
+The branch head `8ceb2ec0634bdc6d6a2144fcfbb9790ff1fb0dae` was qualified
+locally on Windows with supported Node 24 and Python 3.12. Typecheck, lint,
+production build, 149 Vitest tests, 51 Chromium mock scenarios, 110 Python
+HTTP/API tests, Cargo and unsigned MSI/NSIS packaging passed. The release
+WebView launched and real local API/CORS read-only checks passed. No GPU job,
+dataset mutation, training, adapter export or installer execution occurred.
+
+The authoritative run report is `docs/local-qualification-2026-11-18.md`.
+The PR remains draft, and the last green GitHub Actions SHA remains
+`34b2fd83`; local evidence must not be relabeled as a current-head GitHub CI
+run. Real GPU/media, auth-enabled API, accessibility, signed install and
+other-OS acceptance remain required.
+
 ## Local workflow
 
 - Check that the PR is still draft, inspect latest `main` and other teams'
